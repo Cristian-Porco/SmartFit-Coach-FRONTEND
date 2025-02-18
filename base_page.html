@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Sidebar</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;700&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', Arial, sans-serif;
+            color: #000100;
+        }
+        body {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+        }
+        .icon-sidebar {
+            background: #e3e9f0;
+            color: #6a728a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .icon-item {
+            padding: 15px;
+            margin: 2px 10px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .icon-item i {
+            font-size: 30px;
+        }
+        .icon-item:hover {
+            background: #ced4e2;
+        }
+        .sidebar {
+            width: 250px;
+            background: #f9fbfc;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 2px 10px;
+            border-radius: 54px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .menu-item:hover {
+            background: #e3e9f0;
+        }
+        .menu-item i {
+            margin-right: 15px;
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow-y: auto;
+        }
+        .header {
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 1px solid #e5e5e5;
+            z-index: 1000;
+        }
+        .header h1 {
+            flex-grow: 1;
+            text-align: center;
+        }
+        .header i {
+            cursor: pointer;
+        }
+        .account-menu {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 15px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            width: 300px;
+        }
+        .account-menu .account-item {
+            color: black;
+            padding: 10px 10px;
+            display: flex;
+            align-items: center;
+        }
+        .account-menu .account-item:hover {
+            background: #f1f1f1;
+        }
+        .account-item i {
+            margin-right: 15px;
+        }
+        .footer {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid #e5e5e5;
+            width: 100%;
+        }
+        .main-content {
+            padding: 50px;
+            flex-grow: 1;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        .form-container input, .form-container select, .form-container textarea, .form-container button {
+            display: block;
+            width: 100%;
+            padding: 15px 30px;
+            margin-bottom: 10px;
+            border: 0px;
+            border-radius: 40px;
+            background: #f1f5f9;
+        }
+        .form-container button {
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+            .icon-sidebar {
+                flex-direction: row;
+                width: 100%;
+                height: 60px;
+                padding: 0;
+                justify-content: center;
+            }
+            .sidebar {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 10px 0;
+            }
+            .menu-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            .menu-item i {
+                margin: 0;
+            }
+            .header {
+                padding: 10px;
+            }
+            .main-content {
+                padding: 20px;
+                flex-grow: 1;
+            }
+        }
+    </style>
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('accountMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="icon-sidebar">
+        <div class="icon-item">
+            <i class="material-icons">menu_open</i>
+        </div>
+        <div class="icon-item">
+            <i class="material-icons">person</i>
+        </div>
+        <div class="icon-item">
+            <i class="material-icons">settings</i>
+        </div>
+        <div class="icon-item">
+            <i class="material-icons">exit_to_app</i>
+        </div>
+    </div>
+    <div class="sidebar">
+        <div class="menu-item">
+            <i class="material-icons">home</i> Home
+        </div>
+        <div class="menu-item">
+            <i class="material-icons">person</i> Profilo
+        </div>
+        <div class="menu-item">
+            <i class="material-icons">settings</i> Impostazioni
+        </div>
+        <div class="menu-item">
+            <i class="material-icons">exit_to_app</i> Logout
+        </div>
+    </div>
+    <div class="content">
+        <div class="header">
+            <h1>SmartFit Coach</h1>
+            <i class="material-icons" onclick="toggleMenu()">account_circle</i>
+            <div class="account-menu" id="accountMenu">
+                <div class="account-item">Login</div>
+                <div class="account-item">Registrati</div>
+            </div>
+        </div>
+        <div class="main-content">
+            <h2>Form di esempio</h2>
+            <div class="form-container">
+                <input type="text" placeholder="Nome">
+                <input type="email" placeholder="Email">
+                <input type="password" placeholder="Password">
+                <input type="date">
+                <input type="number" placeholder="Età">
+                <select>
+                    <option>Opzione 1</option>
+                    <option>Opzione 2</option>
+                </select>
+                <textarea placeholder="Messaggio"></textarea>
+                <button>Invia</button>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 SmartFit Coach. Tutti i diritti riservati.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,218 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Google Sans', Arial, sans-serif;
+    color: #000100;
+}
+body {
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+.icon-sidebar {
+    display: none;
+    background: #e3e9f0;
+    color: #6a728a;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+.icon-item {
+    padding: 15px;
+    margin: 2px 10px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+.icon-item i {
+    font-size: 30px;
+}
+.icon-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: black;
+}
+.icon-item:hover {
+    background: #ced4e2;
+}
+.icon-item:active {
+    transform: scale(0.80);
+}
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    background: #f9fbfc;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.icon-sidebar a, .sidebar a {
+    text-decoration: none;
+}
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin: 2px 10px;
+    border-radius: 54px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+.menu-item:hover {
+    background: #e3e9f0;
+}
+.menu-item:active {
+    transform: scale(0.90);
+}
+.menu-item i {
+    margin-right: 15px;
+}
+.menu-separator {
+    height: 1px;
+    background: #dcdcdc;
+    margin: 10px 20px;
+}
+.content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-y: auto;
+}
+.header {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: white;
+    border-bottom: 1px solid #e5e5e5;
+    z-index: 1000;
+}
+.header h1 a {
+    flex-grow: 1;
+    text-align: center;
+    text-decoration: none;
+}
+.account-menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    right: 15px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    width: 300px;
+}
+.account-menu .account-item {
+    color: black;
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+}
+.account-menu .account-item:hover {
+    background: #f1f1f1;
+}
+.account-item i {
+    margin-right: 15px;
+}
+.footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 10px;
+    text-align: center;
+    border-top: 1px solid #e5e5e5;
+    width: 100%;
+    z-index: 1000;
+}
+.main-content {
+    padding: 50px;
+    flex-grow: 1;
+}
+.form-container {
+    margin-top: 20px;
+}
+.form-container input, .form-container select, .form-container textarea, .form-container button {
+    display: block;
+    width: 100%;
+    padding: 15px 30px;
+    margin-bottom: 10px;
+    border: 0px;
+    border-radius: 40px;
+    background: #f1f5f9;
+}
+.form-container button {
+    background: #007bff;
+    color: white;
+    font-weight: bolder;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+.form-container button:hover {
+    background: #0056b3;
+}
+.form-container button:active {
+    transform: scale(0.95);
+    background: #004494;
+}
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    .icon-sidebar {
+        flex-direction: row;
+        width: 100%;
+        padding: 10px 0;
+        justify-content: center;
+    }
+    .icon-sidebar i {
+        font-size: 28px;
+    }
+    .sidebar {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 15px 0;
+    }
+    .sidebar i {
+        font-size: 34px;
+    }
+    .sidebar p {
+        display: none;
+    }
+    .menu-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    .menu-item i {
+        margin: 0;
+    }
+    .menu-separator {
+        width: 1px;
+        height: 91%;
+        background: #dcdcdc;
+        margin: 5px 5px;
+    }
+    .header {
+        padding: 10px 20px;
+    }
+    .header h1 {
+        text-align: left;
+    }
+    .main-content {
+        padding: 20px;
+        flex-grow: 1;
+    }
+}

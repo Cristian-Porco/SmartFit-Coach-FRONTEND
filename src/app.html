@@ -2,11 +2,65 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<link rel="stylesheet" href="%sveltekit.assets%/css/style_base.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;700&display=swap">
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
+		<div class="icon-sidebar">
+			<a><div class="icon-item">
+				<img src="avatar.jpg" alt="Avatar">
+			</div></a>
+			<a><div class="icon-item">
+				<i class="material-symbols-outlined">weight</i>
+			</div></a>
+			<div class="icon-item">
+				<i class="material-symbols-outlined">body_fat</i>
+			</div>
+			<div class="icon-item">
+				<i class="material-symbols-outlined">restaurant</i>
+			</div>
+			<div class="icon-item">
+				<i class="material-symbols-outlined">exercise</i>
+			</div>
+			<div class="icon-item">
+				<i class="material-icons">logout</i>
+			</div>
+		</div>
+		<div class="sidebar">
+			<a href="/#home"><div class="menu-item">
+				<i class="material-icons">home</i> <p>Home</p>
+			</div></a>
+			<a href="/#chi-siamo"><div class="menu-item">
+				<i class="material-icons">info</i> <p>Chi siamo</p>
+			</div></a>
+			<a href="/#contatti"><div class="menu-item">
+				<i class="material-icons">mail</i> <p>Contatti</p>
+			</div></a>
+			<div class="menu-separator"></div>
+			<a href="/login"><div class="menu-item">
+				<i class="material-icons">login</i> <p>Accedi</p>
+			</div></a>
+			<a href="/signup"><div class="menu-item">
+				<i class="material-icons">person_add</i> <p>Registrati</p>
+			</div></a>a>
+		</div>
+		<div class="content">
+			<div class="header">
+				<h1><a href="/">SmartFit Coach</a></h1>
+			</div>
+			<div class="main-content">
+				%sveltekit.body%
+			</div>
+			<div class="footer">
+				<p>&copy; 2025 SmartFit Coach. Tutti i diritti riservati.</p>
+			</div>
+		</div>
 	</body>
+	<script src="%sveltekit.assets%/js/js_base.js" defer></script>
 </html>

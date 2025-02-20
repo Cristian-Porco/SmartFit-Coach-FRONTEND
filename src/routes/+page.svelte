@@ -73,6 +73,10 @@
             font-size: 1.2em;
             margin-top: 20px;
         }
+
+        .contenitore {
+            
+        }
     </style>
 </head>
 

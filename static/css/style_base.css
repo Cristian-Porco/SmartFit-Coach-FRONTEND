@@ -139,6 +139,10 @@ body {
 .main-content {
     padding: 50px;
     flex-grow: 1;
+    max-width: 1000px; /* O una larghezza fissa come 300px */
+    min-width: 400px;
+    margin: 0 auto; /* Margini automatici orizzontali */
+    text-align: center; /* Per centrare il testo */
 }
 .form-container {
     margin-top: 20px;

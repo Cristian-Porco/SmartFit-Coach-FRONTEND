@@ -11,7 +11,6 @@
         }
         .login-container {
             width: 100%;
-            max-width: 400px;
         }
         .login-container h2 {
             text-align: center;

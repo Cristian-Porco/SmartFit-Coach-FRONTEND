@@ -137,15 +137,15 @@ body {
     z-index: 1000;
 }
 .main-content {
-    padding: 50px;
+    padding: 25px;
     flex-grow: 1;
     max-width: 1000px; /* O una larghezza fissa come 300px */
-    min-width: 400px;
+    min-width: 500px;
     margin: 0 auto; /* Margini automatici orizzontali */
-    text-align: center; /* Per centrare il testo */
 }
 .form-container {
     margin-top: 20px;
+    margin-bottom: 20px;
 }
 .form-container input, .form-container select, .form-container textarea, .form-container button {
     display: block;
@@ -170,6 +170,23 @@ body {
     transform: scale(0.95);
     background: #004494;
 }
+.form-container label {
+    margin-bottom: 5px;
+}
+
+.form-container #error {
+    display: none;
+    width: 100%;
+    min-height: 50px;
+    padding: 15px 30px;
+    margin-bottom: 20px;
+    border: 3px red solid;
+    border-radius: 40px;
+    background: #ffdada;
+    color:red;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     body {
         flex-direction: column;

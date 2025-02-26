@@ -28,8 +28,8 @@
         <h2>Accedi</h2>
         <form class="form-container" on:submit={login}>
             <div class="form-group">
-                <div id="error">
-                    Credenziali non valide!
+                <div class="error" id="error">
+                    <p>Credenziali non valide!</p>
                 </div>
             </div>
             <div class="form-group">

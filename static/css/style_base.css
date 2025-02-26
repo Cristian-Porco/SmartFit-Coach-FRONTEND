@@ -156,6 +156,9 @@ body {
     border-radius: 40px;
     background: #f1f5f9;
 }
+.form-container input:disabled, .form-container select:disabled, .form-container textarea:disabled {
+    background: #d5dde5;
+}
 .form-container button {
     background: #007bff;
     color: white;
@@ -174,17 +177,55 @@ body {
     margin-bottom: 5px;
 }
 
-.form-container #error {
+.error {
     display: none;
     width: 100%;
     min-height: 50px;
     padding: 15px 30px;
-    margin-bottom: 20px;
+    margin: 5px 0;
     border: 3px red solid;
     border-radius: 40px;
     background: #ffdada;
+}
+
+.error p {
     color:red;
     font-weight: bold;
+    text-align: left;
+}
+
+.warning {
+    display: none;
+    width: 100%;
+    min-height: 50px;
+    padding: 15px 30px;
+    margin: 5px 0;
+    border: 3px gold solid;
+    border-radius: 40px;
+    background: #fff8da;
+}
+
+.warning p {
+    color: gold;
+    font-weight: bold;
+    text-align: left;
+}
+
+.info {
+    display: none;
+    width: 100%;
+    min-height: 50px;
+    padding: 15px 30px;
+    margin: 5px 0;
+    border: 3px #007bff solid;
+    border-radius: 40px;
+    background: #daf1ff;
+}
+
+.info p {
+    color: #007bff;
+    font-weight: bold;
+    text-align: left;
 }
 
 @media (max-width: 768px) {

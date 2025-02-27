@@ -143,11 +143,14 @@ body {
     min-width: 500px;
     margin: 0 auto; /* Margini automatici orizzontali */
 }
+.titlePage {
+    font-size: 50px;
+}
 .form-container {
     margin-top: 20px;
     margin-bottom: 20px;
 }
-.form-container input, .form-container select, .form-container textarea, .form-container button {
+input, select, textarea, button {
     display: block;
     width: 100%;
     padding: 15px 30px;
@@ -156,24 +159,24 @@ body {
     border-radius: 40px;
     background: #f1f5f9;
 }
-.form-container input:disabled, .form-container select:disabled, .form-container textarea:disabled {
+input:disabled, select:disabled, textarea:disabled {
     background: #d5dde5;
 }
-.form-container button {
+button {
     background: #007bff;
     color: white;
     font-weight: bolder;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
 }
-.form-container button:hover {
+button:hover {
     background: #0056b3;
 }
-.form-container button:active {
+button:active {
     transform: scale(0.95);
     background: #004494;
 }
-.form-container label {
+label {
     margin-bottom: 5px;
 }
 

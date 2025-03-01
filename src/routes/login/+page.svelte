@@ -55,7 +55,7 @@
     async function login(event) {
         event.preventDefault();
 
-        const response = await fetch("http://127.0.0.1:8000/api/v1/auth/login/", {
+        const response1 = await fetch("http://127.0.0.1:8000/api/v1/auth/login/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -63,11 +63,25 @@
             body: JSON.stringify({ username: email, password: password })
         });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            setCookie("csrftoken", data.key);
+        if (response1.ok) {
+            const data1 = await response1.json();
+            console.log(data1);
+            setCookie("csrftoken", data1.key);
             window.location.href = "/account";
+
+            const response2 = await fetch("http://127.0.0.1:8000/api/v1/auth/user/", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + getCookie('csrftoken')
+                }
+            });
+            
+            if (response2.ok) {
+                const data2 = await response2.json();
+                setCookie("pk", data2.pk);
+                setCookie("username", data2.username);
+            }
         } else {
             document.getElementById("error").style.display = "block";
         }

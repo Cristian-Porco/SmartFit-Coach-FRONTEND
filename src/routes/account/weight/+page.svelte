@@ -24,7 +24,6 @@
         .areaChartZone p {
             color: white;
         }
-        /* Stile per il form */
         .form-container {
             display: flex;
             flex-direction: column;
@@ -50,7 +49,7 @@
             transition: transform 0.2s;
         }
         .weight-item:first-child {
-            font-size: 40px !important;
+            font-size: 50px !important;
         }
         .weight-item:first-child .details .date {
             font-size: 16px;
@@ -60,12 +59,10 @@
             justify-content: flex-start;
             align-items: center;
         }
-
         .weight-item .details .weight {
             margin-right: 10px;
             font-weight: bold;
         }
-
         .weight-item .details .date {
             color: #777;
         }
@@ -80,9 +77,51 @@
             height: 100%;
             margin: 0
         }
+        .weight-item .buttons .delete-btn {
+            background: red;
+        }
+        .weight-item .buttons .delete-btn:hover {
+            background: #a62f28;
+        }
         .weight-item:last-child {
             border-bottom: none;
         }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .popup {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            width: 500px;
+        }
+
+        .popup h3 {
+            margin-bottom: 15px;
+        }
+
+        .popup .form-group {
+            display: flex;
+            gap: 0px;
+            flex-direction: column;
+        }
+
+        .popup #cancel-edit {
+            margin-bottom: 0px;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 width: 100%;
@@ -97,16 +136,22 @@
 
 <h2 class="titlePage">Peso</h2>
 
-<form class="form-container">
+<form class="form-container" on:submit={addWeight}>
     <h3>Aggiungi peso</h3>
+    <div class="error" id="error1">
+        <p></p>
+    </div>
+    <div class="info" id="info1">
+        <p></p>
+    </div>
     <div class="form-group">
         <div class="input-container">
             <label for="weight">Peso:</label>
-            <input type="text" id="weight" name="weight" placeholder="Peso..." required>
+            <input type="text" id="add-weight" name="weight" placeholder="Peso..." required>
         </div>
         <div class="input-container">
             <label for="date_recorded">Data di registrazione:</label>
-            <input type="date" id="date_recorded" name="date_recorded" required>
+            <input type="date" id="add-date" name="date_recorded" required>
         </div>
     </div>
     <div class="form-group">
@@ -120,38 +165,27 @@
 
 <div>
     <h3>Storico peso</h3>
-    <div>
-        <div class="weight-item">
-            <div class="details">
-                <span class="weight">80 kg</span>
-                <span class="date">2025-02-25</span>
+    <div id="weight-items">
+
+    </div>
+</div>
+
+<div id="edit-popup" class="popup-overlay">
+    <div class="popup">
+        <h3>Modifica Peso</h3>
+        <div class="form-group">
+            <div class="input-container">
+                <label for="edit-weight">Peso:</label>
+                <input type="text" id="edit-weight" required>
             </div>
-            <div class="buttons">
-                <button>Modifica</button>
-                <button>Elimina</button>
+            <div class="input-container">
+                <label for="edit-date">Data di registrazione:</label>
+                <input type="date" id="edit-date" required>
             </div>
         </div>
-
-        <div class="weight-item">
-            <div class="details">
-                <span class="weight">78 kg</span><br>
-                <span class="date">2025-02-22</span>
-            </div>
-            <div class="buttons">
-                <button>Modifica</button>
-                <button>Elimina</button>
-            </div>
-        </div>
-
-        <div class="weight-item">
-            <div class="details">
-                <span class="weight">75 kg</span><br>
-                <span class="date">2025-02-20</span>
-            </div>
-            <div class="buttons">
-                <button>Modifica</button>
-                <button>Elimina</button>
-            </div>
+        <div class="form-group">
+            <button id="save-edit">Salva</button>
+            <button id="cancel-edit">Annulla</button>
         </div>
     </div>
 </div>
@@ -160,8 +194,10 @@
     import { onMount } from "svelte";
     import Chart from "chart.js/auto";
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import { redirect } from "@sveltejs/kit";
 
     let chartCanvas;
+    let selectedId = null;
 
     onMount(async() => {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/me/", {
@@ -173,6 +209,66 @@
         });
 
         const data = await response.json();
+        const container = document.getElementById('weight-items');
+
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.classList.add('weight-item');
+            div.innerHTML = `
+                <div class="details">
+                    <span class="weight">${item.weight_value} kg</span>
+                    <span class="date">${item.date_recorded}</span>
+                </div>
+                <div class="buttons">
+                    <button class="edit-btn" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${item.date_recorded}">Modifica</button>
+                    <button class="delete-btn">Elimina</button>
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+
+        // Event listener per aprire il popup
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", (event) => {
+                selectedId = event.target.getAttribute("data-id");
+                document.getElementById("edit-weight").value = event.target.getAttribute("data-weight");
+                document.getElementById("edit-date").value = event.target.getAttribute("data-date");
+
+                document.getElementById("edit-popup").style.display = "flex";
+            });
+        });
+
+        // Event listener per chiudere il popup
+        document.getElementById("cancel-edit").addEventListener("click", () => {
+            document.getElementById("edit-popup").style.display = "none";
+        });
+
+        // Event listener per salvare le modifiche
+        document.getElementById("save-edit").addEventListener("click", async () => {
+            const newWeight = document.getElementById("edit-weight").value;
+            const newDate = document.getElementById("edit-date").value;
+
+            const updateResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/update/${selectedId}/`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    id_user: getCookie("pk"),
+                    weight_value: newWeight,
+                    date_recorded: newDate
+                })
+            });
+
+            const test = await updateResponse.json();
+
+            if (updateResponse.ok) {
+                location.reload();
+            }
+        });
+
         data.sort((a, b) => new Date(a.date_recorded) - new Date(b.date_recorded));
 
         let labels_response = [];
@@ -221,4 +317,34 @@
             }
         });
     });
+
+    async function addWeight() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/create/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                id_user: getCookie("pk"),
+                weight_value: document.getElementById("add-weight").value,
+                date_recorded: document.getElementById("add-date").value
+            })
+        });
+
+        const data = await response.json();
+
+        if(response.ok) {
+            location.reload();
+        } else {
+            document.getElementById("error1").style.display = "block";
+            if(data.weight_value.length != 0) {
+                document.getElementById("error1").firstChild.textContent = data.weight_value[0];
+            } else if(data.date_recorded.length != 0) {
+                document.getElementById("error1").firstChild.textContent = data.date_recorded[0];
+            } 
+        }
+
+        console.log(data);
+    }
 </script>

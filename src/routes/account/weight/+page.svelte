@@ -40,7 +40,7 @@
             display: flex;
             flex-direction: column;
         }
-        .weight-item {
+        .body-measurements-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -48,42 +48,42 @@
             border-bottom: 1px solid #ddd;
             transition: transform 0.2s;
         }
-        .weight-item:first-child {
+        .body-measurements-item:first-child {
             font-size: 50px !important;
         }
-        .weight-item:first-child .details .date {
+        .body-measurements-item:first-child .details .date {
             font-size: 16px;
         }
-        .weight-item .details {
+        .body-measurements-item .details {
             display: block;
             justify-content: flex-start;
             align-items: center;
         }
-        .weight-item .details .weight {
+        .body-measurements-item .details .weight {
             margin-right: 10px;
             font-weight: bold;
         }
-        .weight-item .details .date {
+        .body-measurements-item .details .date {
             color: #777;
         }
-        .weight-item .buttons {
+        .body-measurements-item .buttons {
             display: flex;
             gap: 10px;
         }
-        .weight-item .buttons button {
+        .body-measurements-item .buttons button {
             padding: 10px 15px;
             color: white;
             cursor: pointer;
             height: 100%;
             margin: 0
         }
-        .weight-item .buttons .delete-btn {
+        .body-measurements-item .buttons .delete-btn {
             background: red;
         }
-        .weight-item .buttons .delete-btn:hover {
+        .body-measurements-item .buttons .delete-btn:hover {
             background: #a62f28;
         }
-        .weight-item:last-child {
+        .body-measurements-item:last-child {
             border-bottom: none;
         }
 

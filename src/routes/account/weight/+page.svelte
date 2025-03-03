@@ -105,7 +105,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-            width: 500px;
+            width: 400px;
         }
 
         .popup h3 {
@@ -159,7 +159,7 @@
     </div>
 </form>
 
-<div class="areaChartZone">
+<div id="chartWeights" class="areaChartZone">
     <canvas bind:this={chartCanvas} style="width:100%; height:100%;"></canvas>
 </div>
 
@@ -173,6 +173,9 @@
 <div id="edit-popup" class="popup-overlay">
     <div class="popup">
         <h3>Modifica Peso</h3>
+        <div class="error" id="error2">
+            <p></p>
+        </div>
         <div class="form-group">
             <div class="input-container">
                 <label for="edit-weight">Peso:</label>
@@ -211,22 +214,31 @@
         const data = await response.json();
         const container = document.getElementById('weight-items');
 
-        data.forEach(item => {
-            const div = document.createElement('div');
-            div.classList.add('weight-item');
-            div.innerHTML = `
+        if(data.length > 0) {
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('weight-item');
+                div.innerHTML = `
                 <div class="details">
                     <span class="weight">${item.weight_value} kg</span>
                     <span class="date">${item.date_recorded}</span>
                 </div>
                 <div class="buttons">
                     <button class="edit-btn" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${item.date_recorded}">Modifica</button>
-                    <button class="delete-btn">Elimina</button>
+                    <button class="delete-btn" data-id="${item.id}">Elimina</button>
                 </div>
             `;
 
-            container.appendChild(div);
-        });
+                container.appendChild(div);
+            });
+        } else {
+            document.getElementById("chartWeights").style.display = "none";
+
+            const p = document.createElement('p');
+            p.style = "margin: 10px 0;";
+            p.innerHTML = "Nessun peso presente!";
+            container.appendChild(p);
+        }
 
         // Event listener per aprire il popup
         document.querySelectorAll(".edit-btn").forEach(button => {
@@ -236,6 +248,24 @@
                 document.getElementById("edit-date").value = event.target.getAttribute("data-date");
 
                 document.getElementById("edit-popup").style.display = "flex";
+            });
+        });
+
+        // Event listener per eliminare il peso
+        document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", async (event) => {
+                selectedId = event.target.getAttribute("data-id");
+                const deleteResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/delete/${selectedId}/`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Token " + getCookie('csrftoken'),
+                    }
+                });
+
+                if(deleteResponse.ok) {
+                    location.reload();
+                }
             });
         });
 
@@ -262,10 +292,17 @@
                 })
             });
 
-            const test = await updateResponse.json();
+            const data = await updateResponse.json();
 
-            if (updateResponse.ok) {
+            if(updateResponse.ok) {
                 location.reload();
+            } else {
+                document.getElementById("error2").style.display = "block";
+                if(data.weight_value.length != 0) {
+                    document.getElementById("error2").firstChild.textContent = data.weight_value[0];
+                } else if(data.date_recorded.length != 0) {
+                    document.getElementById("error2").firstChild.textContent = data.date_recorded[0];
+                }
             }
         });
 
@@ -318,6 +355,7 @@
         });
     });
 
+    // Funzione per aggiungere un record del peso
     async function addWeight() {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/create/", {
             method: "POST",

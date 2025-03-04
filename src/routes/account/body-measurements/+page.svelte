@@ -68,7 +68,7 @@
 <h2 class="titlePage">Misure corporee</h2>
 
 <div class="form-container">
-    <button>Aggiungi misurazione</button>
+    <button on:click={addBodyMeasurement}>Aggiungi misurazione</button>
 </div>
 
 <div class="form-container">
@@ -106,7 +106,7 @@
                 div.innerHTML = `
                 <div class="details">
                     <span class="average">${item.average_measurement} cm</span>
-                    <span class="date">${item.date}</span>
+                    <span class="date">${item.date_recorded}</span>
                 </div>
                 <div class="buttons">
                     <button class="edit-btn" data-id="${item.id}">Modifica</button>
@@ -116,6 +116,31 @@
 
                 container.appendChild(div);
             });
+
+            document.querySelectorAll(".edit-btn").forEach(button => {
+                button.addEventListener("click", async (event) => {
+                    selectedId = event.target.getAttribute("data-id");
+                    window.location.href = `/account/body-measurements/edit/${selectedId}`;
+                });
+            });
+
+            // Event listener per eliminare il peso
+            document.querySelectorAll(".delete-btn").forEach(button => {
+                button.addEventListener("click", async (event) => {
+                    selectedId = event.target.getAttribute("data-id");
+                    const deleteResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/body-measurement/delete/${selectedId}/`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
+                        }
+                    });
+
+                    if(deleteResponse.ok) {
+                        location.reload();
+                    }
+                });
+            });
         } else {
             const p = document.createElement('p');
             p.style = "margin: 10px 0;";
@@ -123,4 +148,8 @@
             container.appendChild(p);
         }
     });
+
+    function addBodyMeasurement() {
+        window.location.href = "/account/body-measurements/add";
+    }
 </script>

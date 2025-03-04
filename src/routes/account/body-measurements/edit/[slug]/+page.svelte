@@ -1,0 +1,183 @@
+<head>
+    <style>
+        .icon-sidebar {
+            display: flex;
+        }
+        .sidebar {
+            display: none;
+        }
+        .main-content {
+            min-width: 800px;
+            max-width: 800px;
+        }
+        /* Stile per il form */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .form-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .input-container {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                width: 100%;
+                min-width: 100%;
+            }
+            .form-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<h2 class="titlePage">Misure corporee</h2>
+
+<form class="form-container" on:submit={editBodyMeasurement}>
+    <h3>Modifica misurazione</h3>
+    <div class="error" id="error1">
+        <p></p>
+    </div>
+    <div class="form-group">
+        <div class="input-container">
+            <label for="chest">Circonferenza torace (in centimetri):</label>
+            <input type="text" id="chest" name="chest" placeholder="Torace...">
+        </div>
+        <div class="input-container">
+            <label for="bicep">Circonferenza avambraccio (in centimetri):</label>
+            <input type="text" id="bicep" name="bicep" placeholder="Bicipite...">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-container">
+            <label for="thigh">Circonferenza coscia (in centimetri):</label>
+            <input type="text" id="thigh" name="thigh" placeholder="Coscia...">
+        </div>
+        <div class="input-container">
+            <label for="waist">Circonferenza vita (in centimetri):</label>
+            <input type="text" id="waist" name="waist" placeholder="Vita...">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-container">
+            <label for="hips">Circonferenza fianchi (in centimetri):</label>
+            <input type="text" id="hips" name="hips" placeholder="Fianchi...">
+        </div>
+        <div class="input-container">
+            <label for="abdomen">Circonferenza addome (in centimetri):</label>
+            <input type="text" id="abdomen" name="abdomen" placeholder="Addome...">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="input-container">
+            <label for="calf">Circonferenza polpaccio (in centimetri):</label>
+            <input type="text" id="calf" name="calf" placeholder="Polpaccio...">
+        </div>
+        <div class="input-container">
+            <label for="neck">Circonferenza collo (in centimetri):</label>
+            <input type="text" id="neck" name="neck" placeholder="Collo...">
+        </div>
+    </div>
+    <div class="input-container">
+        <label for="shoulders">Lunghezza spalla (in centimetri):</label>
+        <input type="text" id="shoulders" name="shoulders" placeholder="Spalle...">
+    </div>
+
+    <div class="input-container" style="margin-top: 30px;">
+        <label for="date_recorded">Data di registrazione:</label>
+        <input type="date" id="date_recorded" name="date_recorded"  bind:value={selectedDate} required>
+    </div>
+    <button type="submit">Modifica</button>
+</form>
+
+<script>
+    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import {onMount} from "svelte";
+
+    export let data;
+    let idBodyMeasurement;
+    let today = new Date().toISOString().split('T')[0];
+    let selectedDate = today;
+
+    onMount(async() => {
+        idBodyMeasurement = data.id;
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/" + idBodyMeasurement + "/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+
+        const body_measurement_id = await response.json();
+
+        document.getElementById("chest").value = body_measurement_id.chest;
+        document.getElementById("bicep").value = body_measurement_id.bicep;
+        document.getElementById("thigh").value = body_measurement_id.thigh;
+        document.getElementById("waist").value = body_measurement_id.waist;
+        document.getElementById("hips").value = body_measurement_id.hips;
+        document.getElementById("abdomen").value = body_measurement_id.abdomen;
+        document.getElementById("calf").value = body_measurement_id.calf;
+        document.getElementById("neck").value = body_measurement_id.neck;
+        document.getElementById("shoulders").value = body_measurement_id.shoulders;
+        document.getElementById("date_recorded").value = body_measurement_id.date_recorded;
+    });
+
+    async function editBodyMeasurement() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/update/" + idBodyMeasurement + "/", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                chest: document.getElementById("chest").value,
+                bicep: document.getElementById("bicep").value,
+                thigh: document.getElementById("thigh").value,
+                waist: document.getElementById("waist").value,
+                hips: document.getElementById("hips").value,
+                abdomen: document.getElementById("abdomen").value,
+                calf: document.getElementById("calf").value,
+                neck: document.getElementById("neck").value,
+                shoulders: document.getElementById("shoulders").value,
+                date_recorded: document.getElementById("date_recorded").value,
+                user: getCookie("pk")
+            })
+        });
+
+        const data = await response.json();
+
+        if(response.ok) {
+            window.location.href = "/account/body-measurements/";
+        } else {
+            document.getElementById("error1").style.display = "block";
+            if(data.chest.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Torace: " + data.chest[0];
+            } else if(data.bicep.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Bicipite: " + data.bicep[0];
+            } else if(data.thigh.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Coscia: " + data.thigh[0];
+            } else if(data.waist.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Vita: " + data.waist[0];
+            } else if(data.hips.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Fianchi: " + data.hips[0];
+            } else if(data.abdomen.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Addome: " + data.abdomen[0];
+            } else if(data.calf.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Polpaccio: " + data.calf[0];
+            } else if(data.neck.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Collo: " + data.neck[0];
+            } else if(data.shoulders.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Spalle: " + data.shoulders[0];
+            }
+        }
+    }
+</script>

@@ -40,7 +40,7 @@
             display: flex;
             flex-direction: column;
         }
-        .body-measurements-item {
+        .weight-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -48,42 +48,42 @@
             border-bottom: 1px solid #ddd;
             transition: transform 0.2s;
         }
-        .body-measurements-item:first-child {
+        .weight-item:first-child {
             font-size: 50px !important;
         }
-        .body-measurements-item:first-child .details .date {
+        .weight-item:first-child .details .date {
             font-size: 16px;
         }
-        .body-measurements-item .details {
+        .weight-item .details {
             display: block;
             justify-content: flex-start;
             align-items: center;
         }
-        .body-measurements-item .details .weight {
+        .weight-item .details .weight {
             margin-right: 10px;
             font-weight: bold;
         }
-        .body-measurements-item .details .date {
+        .weight-item .details .date {
             color: #777;
         }
-        .body-measurements-item .buttons {
+        .weight-item .buttons {
             display: flex;
             gap: 10px;
         }
-        .body-measurements-item .buttons button {
+        .weight-item .buttons button {
             padding: 10px 15px;
             color: white;
             cursor: pointer;
             height: 100%;
             margin: 0
         }
-        .body-measurements-item .buttons .delete-btn {
+        .weight-item .buttons .delete-btn {
             background: red;
         }
-        .body-measurements-item .buttons .delete-btn:hover {
+        .weight-item .buttons .delete-btn:hover {
             background: #a62f28;
         }
-        .body-measurements-item:last-child {
+        .weight-item:last-child {
             border-bottom: none;
         }
 
@@ -382,7 +382,5 @@
                 document.getElementById("error1").firstChild.textContent = data.date_recorded[0];
             } 
         }
-
-        console.log(data);
     }
 </script>

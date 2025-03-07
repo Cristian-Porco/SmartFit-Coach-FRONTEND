@@ -10,6 +10,52 @@
             min-width: 800px;
             max-width: 800px;
         }
+        .body-measurements-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.2s;
+        }
+        .body-measurements-item:first-child {
+            font-size: 50px !important;
+        }
+        .body-measurements-item:first-child .details .date {
+            font-size: 16px;
+        }
+        .body-measurements-item .details {
+            display: block;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .body-measurements-item .details .average {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .body-measurements-item .details .date {
+            color: #777;
+        }
+        .body-measurements-item .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .body-measurements-item .buttons button {
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            height: 100%;
+            margin: 0
+        }
+        .body-measurements-item .buttons .delete-btn {
+            background: red;
+        }
+        .body-measurements-item .buttons .delete-btn:hover {
+            background: #a62f28;
+        }
+        .body-measurements-item:last-child {
+            border-bottom: none;
+        }
         @media (max-width: 768px) {
             .main-content {
                 width: 100%;
@@ -20,3 +66,14 @@
 </head>
 
 <h2 class="titlePage">Schede alimentari</h2>
+
+<div class="form-container">
+    <button>Aggiungi scheda</button>
+</div>
+
+<div class="form-container">
+    <h3>Storico schede</h3>
+    <div id="body-measurements-items">
+
+    </div>
+</div>

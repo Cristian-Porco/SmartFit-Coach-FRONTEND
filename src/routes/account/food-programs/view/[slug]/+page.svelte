@@ -34,10 +34,26 @@
         th, td {
             padding: 8px;
             text-align: center;
+            border-top: 1px solid #cfcfcf;
+            border-bottom: 1px solid #cfcfcf;
+        }
+        th {
             border: 1px solid #cfcfcf;
         }
-        th, .total-name{
+        td:first-child {
+            border-left: 1px solid #cfcfcf;
+        }
+
+        /* Imposta il bordo destro solo sull'ultima colonna */
+        td:last-child {
+            border-right: 1px solid #cfcfcf;
+        }
+        th, .total-name {
             background-color: #e8e8e8;
+        }
+        #detailsFoodPlanMobile {
+            background-color: #e8e8e8;
+            display: none;
         }
         .header-title {
             font-size: 18px;
@@ -52,7 +68,6 @@
         .meal-name {
             font-size: 18px;
             font-weight: bold;
-            text-align: left;
             background-color: #f4f4f4;
         }
         .name-column {
@@ -72,29 +87,65 @@
         .separator-row {
             height: 20px;
         }
-        @media (max-width: 768px) {
-            th, td {
-                padding: 5px;
-            }
-            th:nth-child(n+4), td:nth-child(n+4), .header-limits {
-                display: none;
-            }
+        .responsive-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        @media screen and (max-width: 768px) {
             .container  {
                 flex-direction: column;
                 align-items: center;
             }
-            #totalValueRow {
+
+            .responsive-table thead {
+                display: none; /* Nasconde l'intestazione originale */
+            }
+
+            .responsive-table tbody,
+            .responsive-table tr,
+            .responsive-table td {
+                display: block;
+                width: 100%;
+                border: 0px;
+            }
+
+            .responsive-table tr {
+                margin-bottom: 10px;
+                border: 1px solid #ddd;
+            }
+
+            .responsive-table .separator-row {
                 display: none;
             }
-            .container div:nth-child(2) {
-                text-align: center;
+
+            .responsive-table td {
+                text-align: left;
+                position: relative;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .responsive-table td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                flex: 1;
+                padding-right: 10px;
+            }
+            .name-column {
+                display: none !important;
+            }
+            .grams-column {
+                font-size: 30px;
+            }
+            #detailsFoodPlanMobile {
+                display: block;
             }
         }
     </style>
 </head>
 
 <div class="container">
-    <div><h1 class="titlePage">Scheda alimentare</h1></div>
+    <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda alimentare</h1></div>
     <div>
         <p><b>Data inizio:</b> <span id="start_date">--/--/----</span></p>
         <p><b>Data fine:</b> <span id="end_date">--/--/----</span></p>
@@ -102,7 +153,7 @@
 </div>
 
 <div class="form-container">
-    <table>
+    <table class="responsive-table">
         <thead>
         <tr>
             <th rowspan="2" class="header-title">✓</th>
@@ -185,6 +236,27 @@
         document.getElementById("max_carbs").innerText = food_plan.max_carbs + "g";
         document.getElementById("max_fats").innerText = food_plan.max_fats + "g";
 
+        const table = document.getElementById("containerFoodPlan");
+
+        const detailsFoodPlan = table.insertRow();
+        detailsFoodPlan.id = "detailsFoodPlanMobile";
+
+        const details1 = detailsFoodPlan.insertCell(0);
+        details1.setAttribute("data-label", "Max Kcal:");
+        details1.textContent = food_plan.max_kcal;
+
+        const details2 = detailsFoodPlan.insertCell(1);
+        details2.setAttribute("data-label", "Max Proteine:");
+        details2.textContent = food_plan.max_protein + "g";
+
+        const details3 = detailsFoodPlan.insertCell(2);
+        details3.setAttribute("data-label", "Max Carboidrati:");
+        details3.textContent = food_plan.max_carbs + "g";
+
+        const details4 = detailsFoodPlan.insertCell(3);
+        details4.setAttribute("data-label", "Max Grassi:");
+        details4.textContent = food_plan.max_fats + "g";
+
         // Raggruppiamo gli alimenti per sezione
         const groupedByFoodSection = food_items.reduce((acc, item) => {
             if (!acc[item.food_section]) {
@@ -246,8 +318,6 @@
 
         await Promise.all(foodRequests);
 
-        // Ora content è popolato, possiamo renderizzarlo
-        const table = document.getElementById("containerFoodPlan");
         let total_grams = {
             "kcal": 0,
             "protein": 0,
@@ -322,25 +392,44 @@
 
                 const cell3 = newFoodItem.insertCell(2);
                 cell3.classList.add("grams-column");
+                cell3.setAttribute("data-label", item.food_item.name)
                 cell3.textContent = item.food_plan_item.quantity_in_grams + "g";
 
-                const cell4 = newFoodItem.insertCell(3);
                 const moltiplicatore = item.food_plan_item.quantity_in_grams / 100;
                 total_grams.kcal += item.food_item.kcal_per_100g * moltiplicatore;
+                const cell4 = newFoodItem.insertCell(3);
+                cell4.setAttribute("data-label", "Kcal:")
                 cell4.textContent = item.food_item.kcal_per_100g * moltiplicatore;
 
                 total_grams.protein += item.food_item.protein_per_100g * moltiplicatore;
-                newFoodItem.insertCell(4).textContent = (item.food_item.protein_per_100g * moltiplicatore).toFixed(1) + "g";
+                const cell5 = newFoodItem.insertCell(4);
+                cell5.setAttribute("data-label", "Proteine:")
+                cell5.textContent = (item.food_item.protein_per_100g * moltiplicatore).toFixed(1) + "g";
+
                 total_grams.carboids += item.food_item.carbs_per_100g * moltiplicatore;
-                newFoodItem.insertCell(5).textContent = (item.food_item.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
+                const cell6 = newFoodItem.insertCell(5);
+                cell6.setAttribute("data-label", "Carboidrati:")
+                cell6.textContent = (item.food_item.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
+
                 total_grams.sugar += item.food_item.sugars_per_100g * moltiplicatore;
-                newFoodItem.insertCell(6).textContent = (item.food_item.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
+                const cell7 = newFoodItem.insertCell(6)
+                cell7.setAttribute("data-label", "Zuccheri:")
+                cell7.textContent = (item.food_item.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
+
                 total_grams.fats += item.food_item.fats_per_100g * moltiplicatore;
-                newFoodItem.insertCell(7).textContent = (item.food_item.fats_per_100g * moltiplicatore).toFixed(1) + "g";
+                const cell8 = newFoodItem.insertCell(7);
+                cell8.setAttribute("data-label", "Grassi:");
+                cell8.textContent = (item.food_item.fats_per_100g * moltiplicatore).toFixed(1) + "g";
+
                 total_grams.satured_fats += item.food_item.saturated_fats_per_100g * moltiplicatore;
-                newFoodItem.insertCell(8).textContent = (item.food_item.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
+                const cell9 = newFoodItem.insertCell(8);
+                cell9.setAttribute("data-label", "Grassi Saturi:");
+                cell9.textContent = (item.food_item.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
+
                 total_grams.fiber += item.food_item.fiber_per_100g * moltiplicatore;
-                newFoodItem.insertCell(9).textContent = (item.food_item.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
+                const cell10 = newFoodItem.insertCell(9);
+                cell10.setAttribute("data-label", "Fibre:");
+                cell10.textContent = (item.food_item.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
             }
         });
 
@@ -352,28 +441,35 @@
         totalValueRow.id = "totalValueRow";
 
         const cell1 = totalValueRow.insertCell(0);
-        cell1.textContent = "Somma dei valori degli alimenti";
+        cell1.innerHTML = "<b>Somma dei valori degli alimenti</b>";
         cell1.colSpan = 3;
 
         const cell2 = totalValueRow.insertCell(1);
+        cell2.setAttribute("data-label", "Kcal:")
         cell2.textContent = total_grams.kcal;
 
         const cell3 = totalValueRow.insertCell(2);
+        cell3.setAttribute("data-label", "Proteine:")
         cell3.textContent = total_grams.protein.toFixed(1) + "g";
 
         const cell4 = totalValueRow.insertCell(3);
+        cell4.setAttribute("data-label", "Carboidrati:")
         cell4.textContent = total_grams.carboids.toFixed(1) + "g";
 
         const cell5 = totalValueRow.insertCell(4);
+        cell5.setAttribute("data-label", "Zuccheri:")
         cell5.textContent = total_grams.sugar.toFixed(1) + "g";
 
         const cell6 = totalValueRow.insertCell(5);
+        cell6.setAttribute("data-label", "Grassi:")
         cell6.textContent = total_grams.fats.toFixed(1) + "g";
 
         const cell7 = totalValueRow.insertCell(6);
+        cell7.setAttribute("data-label", "Grassi Saturi:")
         cell7.textContent = total_grams.satured_fats.toFixed(1) + "g";
 
         const cell8 = totalValueRow.insertCell(7);
+        cell8.setAttribute("data-label", "Fibre:")
         cell8.textContent = total_grams.fiber.toFixed(1) + "g";
     });
 </script>

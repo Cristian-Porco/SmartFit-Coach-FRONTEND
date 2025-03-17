@@ -54,7 +54,7 @@
 <h2 class="titlePage">Schede alimentari</h2>
 
 <div class="form-container">
-    <button>Aggiungi scheda</button>
+    <button on:click={addFoodPrograms}>Aggiungi scheda</button>
 </div>
 
 <div class="form-container">
@@ -142,7 +142,7 @@
         }
     });
 
-    function addBodyMeasurement() {
+    function addFoodPrograms() {
         window.location.href = "/account/food-programs/add";
     }
 </script>

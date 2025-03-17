@@ -50,6 +50,7 @@
             border: 1px solid #fff !important;
         }
         .meal-name {
+            font-size: 18px;
             font-weight: bold;
             text-align: left;
             background-color: #f4f4f4;
@@ -57,14 +58,19 @@
         .name-column {
             width: 200px;
             text-align: left;
+            font-weight: bold;
         }
         .grams-column {
-            font-style: italic;
+            font-weight: bold;
+            font-size: 18px;
         }
         input[type="checkbox"] {
             transform: scale(1.5);
             display: block;
             margin: auto;
+        }
+        .separator-row {
+            height: 20px;
         }
         @media (max-width: 768px) {
             th, td {
@@ -254,6 +260,9 @@
 
         content.forEach(item => {
             if (item.type === "section") {
+                const rowSeparator = table.insertRow();
+                rowSeparator.classList.add("separator-row");
+
                 const newFoodPlanSection = table.insertRow();
                 newFoodPlanSection.classList.add("meal-name");
 
@@ -334,6 +343,9 @@
                 newFoodItem.insertCell(9).textContent = (item.food_item.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
             }
         });
+
+        const rowSeparator = table.insertRow();
+        rowSeparator.classList.add("separator-row");
 
         const totalValueRow = table.insertRow();
         totalValueRow.classList.add("total-name");

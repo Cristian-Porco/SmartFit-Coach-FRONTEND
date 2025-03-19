@@ -145,7 +145,7 @@
 </head>
 
 <div class="container">
-    <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda alimentare</h1></div>
+    <div><p><b>Visualizza</b></p><h1 class="titlePage">Scheda alimentare</h1></div>
     <div>
         <p><b>Data inizio:</b> <span id="start_date">--/--/----</span></p>
         <p><b>Data fine:</b> <span id="end_date">--/--/----</span></p>

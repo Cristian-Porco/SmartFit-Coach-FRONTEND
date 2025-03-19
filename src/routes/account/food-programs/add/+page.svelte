@@ -7,203 +7,152 @@
             display: none;
         }
         .main-content {
-            width: 100%;
-            min-width: 100%;
+            min-width: 800px;
+            max-width: 800px;
         }
-        .container {
+        /* Stile per il form */
+        .form-container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            padding: 10px;
+            flex-direction: column;
+            gap: 15px;
         }
-        .container div {
+        .form-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .input-container {
             flex: 1;
-            text-align: center;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
         }
-        .container div:nth-child(1) {
-            text-align: left;
-        }
-        .container div:nth-child(2) {
-            text-align: right;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-            border-top: 1px solid #cfcfcf;
-            border-bottom: 1px solid #cfcfcf;
-        }
-        th {
-            border: 1px solid #cfcfcf;
-        }
-        td:first-child {
-            border-left: 1px solid #cfcfcf;
-        }
-
-        /* Imposta il bordo destro solo sull'ultima colonna */
-        td:last-child {
-            border-right: 1px solid #cfcfcf;
-        }
-        th, .total-name {
-            background-color: #e8e8e8;
-        }
-        #detailsFoodPlanMobile {
-            background-color: #e8e8e8;
-            display: none;
-        }
-        .header-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .header-limits {
-            font-size: 14px;
-        }
-        .separator {
-            border: 1px solid #fff !important;
-        }
-        .meal-name {
-            font-size: 18px;
-            font-weight: bold;
-            background-color: #f4f4f4;
-        }
-        .name-column {
-            width: 200px;
-            text-align: left;
-            font-weight: bold;
-        }
-        .grams-column {
-            font-weight: bold;
-            font-size: 18px;
-        }
-        input[type="checkbox"] {
-            transform: scale(1.5);
-            display: block;
-            margin: auto;
-        }
-        .separator-row {
-            height: 20px;
-        }
-        .responsive-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table input {
-            padding: 8px;
-            margin-bottom: 0;
-            border-radius: 0;
-            background: #fff;
-        }
-        #max_kcal, #max_protein, #max_carbs, #max_fats {
-            padding: 0px;
-        }
-        #section_date input {
-            display: inline;
-            width: auto;
-        }
-        @media screen and (max-width: 768px) {
-            .container  {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .responsive-table thead {
-                display: none; /* Nasconde l'intestazione originale */
-            }
-
-            .responsive-table tbody,
-            .responsive-table tr,
-            .responsive-table td {
-                display: block;
+        @media (max-width: 768px) {
+            .main-content {
                 width: 100%;
-                border: 0px;
+                min-width: 100%;
             }
+            .form-group {
+                flex-direction: column;
+            }
+        }
+        @keyframes glow {
+            0% { background-color: #007bff; }
+            50% { background-color: #80bfff; }
+            100% { background-color: #f1f5f9; }
+        }
 
-            .responsive-table tr {
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-            }
-
-            .responsive-table .separator-row {
-                display: none;
-            }
-
-            .responsive-table td {
-                text-align: left;
-                position: relative;
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .responsive-table td::before {
-                content: attr(data-label);
-                font-weight: bold;
-                flex: 1;
-                padding-right: 10px;
-            }
-            .name-column {
-                display: none !important;
-            }
-            .grams-column {
-                font-size: 30px;
-            }
-            #detailsFoodPlanMobile {
-                display: block;
-            }
-            #detailsFoodPlanMobile input {
-                justify-content: space-between;
-                align-items: center;
-                width: auto;
-            }
+        .highlight {
+            animation: glow 1s ease-in-out;
         }
     </style>
 </head>
 
-<div class="container">
-    <div><p><b>Nuova</b></p><h1 class="titlePage">Scheda alimentare</h1></div>
-    <div id="section_date">
-        <p><b>Data inizio:</b> <input type="date" required></p>
-        <p><b>Data fine:</b> <input type="date" required></p>
+<p><b>Aggiungi</b></p>
+<h2 class="titlePage">Scheda alimentare</h2>
+
+<form class="form-container" on:submit={addFoodPrograms}>
+    <div class="error" id="error1">
+        <p></p>
     </div>
-</div>
+    <div class="form-group">
+        <div class="input-container">
+            <label for="start_date">Data di inizio:</label>
+            <input type="date" id="start_date">
+        </div>
+        <div class="input-container">
+            <label for="end_date">Data di fine:</label>
+            <input type="date" id="end_date">
+        </div>
+    </div>
+    <div class="input-container">
+        <label for="kcal">Max Kcal:</label>
+        <input type="number" id="max_kcal" placeholder="Aggiungi max kcal...">
+    </div>
+    <div class="input-container">
+        <label for="protein">Max Proteine:</label>
+        <input type="number" id="max_protein" on:blur={autoCalculationKCal} placeholder="Aggiungi max proteine...">
+    </div>
+    <div class="input-container">
+        <label for="carbs">Max Carboidrati:</label>
+        <input type="number" id="max_carbs" on:blur={autoCalculationKCal} placeholder="Aggiungi max carboidrati...">
+    </div>
+    <div class="input-container">
+        <label for="fat">Max Grassi:</label>
+        <input type="number" id="max_fats" on:blur={autoCalculationKCal} placeholder="Aggiungi max grassi...">
+    </div>
+    <button type="submit">Aggiungi</button>
+</form>
 
-<div class="form-container">
-    <table  class="responsive-table">
-        <thead>
-            <tr>
-                <th rowspan="2" class="header-title name-column">Nome</th>
-                <th rowspan="2" class="header-title">Grammi</th>
-                <th class="header-title">Kcal</th>
-                <th class="header-title">Proteine</th>
-                <th class="header-title">Carboidrati</th>
-                <th class="header-title">Zuccheri</th>
-                <th class="header-title">Grassi</th>
-                <th class="header-title">Grassi Saturi</th>
-                <th class="header-title">Fibre</th>
-            </tr>
-            <tr>
-                <th class="header-limits" id="max_kcal"><input type="number" placeholder="Max Kcal..." required></th>
-                <th class="header-limits" id="max_protein"><input type="number" placeholder="Max Proteine..."required></th>
-                <th class="header-limits" id="max_carbs"><input type="number" placeholder="Max Carboidrati..."required></th>
-                <th class="header-limits"></th>
-                <th class="header-limits" id="max_fats"><input type="number" placeholder="Max Grassi..."required></th>
-                <th class="header-limits"></th>
-                <th class="header-limits"></th>
-            </tr>
-        </thead>
-        <tbody id="containerFoodPlan">
-            <tr id="detailsFoodPlanMobile">
-                <td data-label="Max Kcal:"><input type="number" placeholder="Max Kcal..." required></td>
-                <td data-label="Max Proteine:"><input type="number" placeholder="Max Proteine..." required></td>
-                <td data-label="Max Carboidrati:"><input type="number" placeholder="Max Carboidrati..." required></td>
-                <td data-label="Max Grassi:"><input type="number" placeholder="Max Grassi..." required></td>
-            </tr>
-        </tbody>
-    </table>
-    <button>Aggiungi pasto</button>
-</div>
+<script>
+    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
 
-<button>Aggiungi scheda alimentare</button>
+    let today = new Date().toISOString().split('T')[0];
+    let selectedDate = today;
+
+    async function addFoodPrograms() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/create/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                start_date: document.getElementById("start_date").value,
+                end_date: document.getElementById("end_date").value,
+                max_kcal: document.getElementById("max_kcal").value,
+                max_protein: document.getElementById("max_protein").value,
+                max_carbs: document.getElementById("max_carbs").value,
+                max_fats: document.getElementById("max_fats").value,
+                food_items: [],
+                author: getCookie("pk")
+            })
+        });
+
+        const data = await response.json();
+
+        if(response.ok) {
+            window.location.href = "/account/food-programs/edit/" + data.id;
+        } else {
+            document.getElementById("error1").style.display = "block";
+            if(data.start_date.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Data di inizio: " + data.start_date[0];
+            } else if(data.end_date.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Data di fine: " + data.end_date[0];
+            } else if(data.max_kcal.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Max Kcal: " + data.max_kcal[0];
+            } else if(data.max_protein.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Max Proteine: " + data.max_protein[0];
+            } else if(data.max_carbs.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Max Carboidrati: " + data.max_carbs[0];
+            } else if(data.max_fats.length != 0) {
+                document.getElementById("error1").firstChild.textContent = "Max Grassi: " + data.max_fats[0];
+            }
+        }
+    }
+
+    function autoCalculationKCal() {
+        if(document.getElementById("max_protein").value !== "" &&
+            document.getElementById("max_carbs").value !== "" &&
+            document.getElementById("max_fats").value !== "") {
+
+            let kcalInput = document.getElementById("max_kcal");
+
+            let kcal_previste = (
+                (document.getElementById("max_protein").value * 4) +
+                (document.getElementById("max_carbs").value * 4) +
+                (document.getElementById("max_fats").value * 9)
+            );
+
+            kcalInput.value = kcal_previste;
+
+            // Aggiungi la classe animata
+            kcalInput.classList.add("highlight");
+
+            // Rimuovi la classe dopo l'animazione
+            setTimeout(() => {
+                kcalInput.classList.remove("highlight");
+            }, 1000); // 1 secondo
+        }
+    }
+</script>

@@ -162,6 +162,16 @@ input, select, textarea, button {
 input:disabled, select:disabled, textarea:disabled {
     background: #d5dde5;
 }
+/* Per Webkit (Chrome, Safari, Edge) */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+/* Per Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
 button {
     background: #007bff;
     color: white;

@@ -71,11 +71,12 @@
             background-color: #f4f4f4;
         }
         .name-column {
-            width: 200px;
+            width: 20%;
             text-align: left;
             font-weight: bold;
         }
         .grams-column {
+            width: 120px;
             padding: 0px;
             font-weight: bold;
             font-size: 18px;
@@ -164,6 +165,10 @@
                 justify-content: space-between;
                 align-items: center;
                 width: auto;
+            }
+            table input {
+
+                width: 120px;
             }
         }
         .modal {
@@ -314,7 +319,7 @@
 </div>
 <button on:click={() => showModal = true}>Aggiungi pasto</button>
 <div class="separator-row"></div>
-<button>Aggiungi scheda alimentare</button>
+<button>Modifica scheda alimentare</button>
 
 <script>
     import { onMount } from "svelte";
@@ -593,7 +598,6 @@
                 const inputGrams = document.createElement("input");
                 inputGrams.type = "number";
                 inputGrams.value = item.food_plan_item.quantity_in_grams;
-                inputGrams.style.width = "120px";
                 inputGrams.style.textAlign = "center";
                 inputGrams.style.border = "1px solid #ccc";
                 inputGrams.style.borderRadius = "4px";
@@ -601,32 +605,101 @@
                 inputGrams.style.fontSize = "18px";
 
                 // Evento per aggiornare il valore quando l'utente preme Invio
-                inputGrams.addEventListener("keypress", async function (event) {/*
-                    if (event.key === "Enter") {
-                        const newQuantity = parseInt(inputGrams.value, 10);
+                inputGrams.addEventListener("input", async function (event) {
+                    const newQuantity = parseInt(inputGrams.value, 10);
 
-                        if (!isNaN(newQuantity) && newQuantity > 0) {
-                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan-item/update/${item.food_plan_item.id}/`, {
-                                method: "PATCH",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "Authorization": "Token " + getCookie('csrftoken'),
-                                },
-                                body: JSON.stringify({
-                                    quantity_in_grams: newQuantity,
-                                })
-                            });
+                    let response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan-item/update/${item.food_plan_item.id}/`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
+                        },
+                        body: JSON.stringify({
+                            id: item.food_plan_item.id,
+                            quantity_in_grams: newQuantity,
+                        })
+                    });
 
-                            if (response.ok) {
-                                item.food_plan_item.quantity_in_grams = newQuantity;
-                            } else {
-                                console.error("Errore nell'aggiornamento dei grammi.");
-                            }
-                        } else {
-                            alert("Inserisci un valore valido!");
+                    let response_inputGrams = await response.json();
+                    
+                    response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-item/${response_inputGrams.food_item}/`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
                         }
-                    }
-                */});
+                    });
+
+                    response_inputGrams = await response.json();
+
+                    const riga = document.getElementById(item.food_plan_item.id);
+                    const celle = riga.getElementsByTagName("td");
+                    
+                    const moltiplicatore = newQuantity / 100;
+                    celle[3].textContent = (response_inputGrams.kcal_per_100g * moltiplicatore).toFixed(1);
+                    celle[4].textContent = (response_inputGrams.protein_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[5].textContent = (response_inputGrams.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[6].textContent = (response_inputGrams.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[7].textContent = (response_inputGrams.fats_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[8].textContent = (response_inputGrams.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[9].textContent = (response_inputGrams.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
+
+                    let el1 = document.getElementById(item.food_plan_item.id);
+                    el1.classList.add("highlight");
+                    setTimeout(() => {
+                        el1.classList.remove("highlight");
+                    }, 1000);
+
+                    let el2 = document.getElementById("totalValueRow");
+                    el2.classList.add("highlight");
+                    setTimeout(() => {
+                        el2.classList.remove("highlight");
+                    }, 1000);
+
+                    const righeValide = document.querySelectorAll(
+                        "tr:not(.meal-name):not(.separator-row):not(#detailsFoodPlanMobile):not(#totalValueRow)"
+                    );
+
+                    const totalRiga = document.getElementById("totalValueRow");
+                    const totalCelle = totalRiga.getElementsByTagName("td");
+                    
+                    totalCelle[1].textContent = 0;
+                    totalCelle[2].textContent = 0;
+                    totalCelle[3].textContent = 0;
+                    totalCelle[4].textContent = 0;
+                    totalCelle[5].textContent = 0;
+                    totalCelle[6].textContent = 0;
+                    totalCelle[7].textContent = 0;
+
+                    righeValide.forEach(riga => {
+                        const celle = [...riga.querySelectorAll("td")];
+                        celle.forEach((cella, index) => {
+                            if(index == 3) {
+                                totalCelle[1].textContent = parseFloat(totalCelle[1].textContent) + parseFloat(cella.textContent);
+                            } else if(index == 4) {
+                                totalCelle[2].textContent = parseFloat(totalCelle[2].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                            } else if(index == 5) {
+                                totalCelle[3].textContent = parseFloat(totalCelle[3].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                            } else if(index == 6) {
+                                totalCelle[4].textContent = parseFloat(totalCelle[4].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                            } else if(index == 7) {
+                                totalCelle[5].textContent = parseFloat(totalCelle[5].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                            } else if(index == 8) {
+                                totalCelle[6].textContent = parseFloat(totalCelle[6].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                            } else if(index == 9) {
+                                totalCelle[7].textContent = parseFloat(totalCelle[7].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                            }
+                        });
+                    });
+
+                    totalCelle[1].textContent = parseFloat(totalCelle[1].textContent).toFixed(1);
+                    totalCelle[2].textContent = parseFloat(totalCelle[2].textContent).toFixed(1) + "g";
+                    totalCelle[3].textContent = parseFloat(totalCelle[3].textContent).toFixed(1) + "g";
+                    totalCelle[4].textContent = parseFloat(totalCelle[4].textContent).toFixed(1) + "g";
+                    totalCelle[5].textContent = parseFloat(totalCelle[5].textContent).toFixed(1) + "g";
+                    totalCelle[6].textContent = parseFloat(totalCelle[6].textContent).toFixed(1) + "g";
+                    totalCelle[7].textContent = parseFloat(totalCelle[7].textContent).toFixed(1) + "g";
+                });
 
                 // Aggiunge il campo di input alla cella
                 cell3.appendChild(inputGrams);
@@ -635,7 +708,7 @@
                 total_grams.kcal += item.food_item.kcal_per_100g * moltiplicatore;
                 const cell4 = newFoodItem.insertCell(3);
                 cell4.setAttribute("data-label", "Kcal:")
-                cell4.textContent = item.food_item.kcal_per_100g * moltiplicatore;
+                cell4.textContent = (item.food_item.kcal_per_100g * moltiplicatore).toFixed(1);
 
                 total_grams.protein += item.food_item.protein_per_100g * moltiplicatore;
                 const cell5 = newFoodItem.insertCell(4);
@@ -682,7 +755,7 @@
 
         const cell2 = totalValueRow.insertCell(1);
         cell2.setAttribute("data-label", "Kcal:")
-        cell2.textContent = total_grams.kcal;
+        cell2.textContent = total_grams.kcal.toFixed(1);
 
         const cell3 = totalValueRow.insertCell(2);
         cell3.setAttribute("data-label", "Proteine:")

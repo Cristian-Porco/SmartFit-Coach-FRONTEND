@@ -71,11 +71,12 @@
             background-color: #f4f4f4;
         }
         .name-column {
-            width: 200px;
+            width: 20%;
             text-align: left;
             font-weight: bold;
         }
         .grams-column {
+            width: 120px;
             font-weight: bold;
             font-size: 18px;
         }

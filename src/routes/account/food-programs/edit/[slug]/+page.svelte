@@ -150,7 +150,7 @@
                 padding-right: 10px;
             }
             .delete-column {
-                text-align: center:
+                text-align: center;
             }
             .name-column {
                 display: none !important;
@@ -289,22 +289,22 @@
             <tr>
                 <th rowspan="2" colspan="2" class="header-title name-column">Nome</th>
                 <th rowspan="2" class="header-title">Grammi</th>
-                <th class="header-title">Kcal</th>
-                <th class="header-title">Proteine</th>
-                <th class="header-title">Carboidrati</th>
-                <th class="header-title">Zuccheri</th>
-                <th class="header-title">Grassi</th>
-                <th class="header-title">Grassi Saturi</th>
-                <th class="header-title">Fibre</th>
+                <th class="header-title kcal_column">Kcal</th>
+                <th class="header-title protein_column">Proteine</th>
+                <th class="header-title carbs_column">Carboidrati</th>
+                <th class="header-title sugars_column">Zuccheri</th>
+                <th class="header-title fats_column">Grassi</th>
+                <th class="header-title satured_fats_column">Grassi Saturi</th>
+                <th class="header-title fiber_column">Fibre</th>
             </tr>
             <tr>
-                <th class="header-limits" id="max_kcal"><input type="number" placeholder="Max Kcal..." class="max_kcal_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits" id="max_protein"><input type="number" placeholder="Max Proteine..." class="max_protein_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits" id="max_carbs"><input type="number" placeholder="Max Carboidrati..." class="max_carbs_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits"></th>
-                <th class="header-limits" id="max_fats"><input type="number" placeholder="Max Grassi..." class="max_fats_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits"></th>
-                <th class="header-limits"></th>
+                <th class="header-limits kcal_column" id="max_kcal"><input type="number" placeholder="Max Kcal..." class="max_kcal_value" on:blur={autoCalculationKCal} ></th>
+                <th class="header-limits protein_column" id="max_protein"><input type="number" placeholder="Max Proteine..." class="max_protein_value" on:blur={autoCalculationKCal} ></th>
+                <th class="header-limits carbs_column" id="max_carbs"><input type="number" placeholder="Max Carboidrati..." class="max_carbs_value" on:blur={autoCalculationKCal} ></th>
+                <th class="header-limits sugars_column" id="max_sugars"></th>
+                <th class="header-limits fats_column" id="max_fats"><input type="number" placeholder="Max Grassi..." class="max_fats_value" on:blur={autoCalculationKCal} ></th>
+                <th class="header-limits satured_fats_column" id="max_saturated_sugars"></th>
+                <th class="header-limits fiber_column" id="max_fiber"></th>
             </tr>
         </thead>
         <tbody id="containerFoodPlan">
@@ -319,7 +319,7 @@
 </div>
 <button on:click={() => showModal = true}>Aggiungi pasto</button>
 <div class="separator-row"></div>
-<button>Modifica scheda alimentare</button>
+<button on:click={saveFoodPlan}>Modifica scheda alimentare</button>
 
 <script>
     import { onMount } from "svelte";
@@ -334,6 +334,27 @@
     let foodSections = [];
     let selectedSection = "";
     let selectedQuantity = null;
+
+    let total_grams = {
+        "kcal": 0,
+        "protein": 0,
+        "carboids": 0,
+        "sugar": 0,
+        "fats": 0,
+        "satured_fats": 0,
+        "fiber": 0
+    }
+
+    let limit_grams = {
+        "max_kcal": 0,
+        "max_protein": 0,
+        "max_carboids": 0,
+        "min_sugar": 0,
+        "max_sugar": 0,
+        "max_fats": 0,
+        "max_satured_fats": 0,
+        "min_fiber": 0
+    }
 
     // Carica gli alimenti dall'API
     async function fetchFoodItems() {
@@ -383,22 +404,50 @@
     }
 
     // Aggiunge il pasto alla tabella
-    function addMeal() {
+    async function addMeal() {
         if (!selectedFood || !selectedSection || selectedQuantity == null) return;
-        console.log("Pasto aggiunto:", selectedFood, selectedSection, selectedQuantity);
-        showModal = false;
+
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/food-plan-item/create/', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                eaten: false,
+                quantity_in_grams: selectedQuantity,
+                food_plan: data.id,
+                food_item: selectedFood.id,
+                food_section: selectedSection
+            })
+        });
+
+        if(response.ok) {
+            location.reload();
+        } else {
+            /* Eventuale errore */
+        }
     }
 
     function autoCalculationKCal() {
-        let maxProtein = document.querySelector(".max_protein_value")?.value || 0;
-        let maxCarbs = document.querySelector(".max_carbs_value")?.value || 0;
-        let maxFats = document.querySelector(".max_fats_value")?.value || 0;
+        limit_grams.max_protein = parseFloat(document.querySelector(".max_protein_value")?.value || 0);
+        limit_grams.max_carboids = parseFloat(document.querySelector(".max_carbs_value")?.value || 0);
+        limit_grams.max_fats = parseFloat(document.querySelector(".max_fats_value")?.value || 0);
 
-        let kcal_previste = (maxProtein * 4) + (maxCarbs * 4) + (maxFats * 9);
+        limit_grams.max_kcal = (limit_grams.max_protein * 4) + (limit_grams.max_carboids * 4) + (limit_grams.max_fats * 9);
+
+        limit_grams.min_sugar = parseFloat(((limit_grams.max_kcal*0.05)/4).toFixed(1));
+        limit_grams.max_sugar = parseFloat(((limit_grams.max_kcal*0.1)/4).toFixed(1));
+        limit_grams.max_satured_fats = parseFloat(((limit_grams.max_kcal*0.1)/9).toFixed(1));
+        limit_grams.min_fiber = parseFloat(((limit_grams.max_kcal/1000)*14).toFixed(1));
+
+        document.getElementById("max_sugars").innerText = limit_grams.min_sugar + "-" + limit_grams.max_sugar + "g";
+        document.getElementById("max_saturated_sugars").innerText = limit_grams.max_satured_fats + "g";
+        document.getElementById("max_fiber").innerText = "almeno " + limit_grams.min_fiber + "g";
 
         // Aggiorna tutti gli elementi con la classe .max_kcal_value
         document.querySelectorAll(".max_kcal_value").forEach(el => {
-            el.value = kcal_previste;
+            el.value = limit_grams.max_kcal;
 
             // Aggiungi l'animazione
             el.classList.add("highlight");
@@ -408,6 +457,118 @@
                 el.classList.remove("highlight");
             }, 1000);
         });
+
+        updateGraphicsLimits()
+    }
+
+    function saveFoodPlan() {
+        location.href = "/account/food-programs/"
+    }
+
+    function updateGraphicsLimits() {
+        console.log(limit_grams);
+        console.log(total_grams);
+
+        if(limit_grams.max_kcal < total_grams.kcal) {
+            document.querySelectorAll(".kcal_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".kcal_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.max_protein < total_grams.protein) {
+            document.querySelectorAll(".protein_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".protein_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.max_carboids < total_grams.carboids) {
+            document.querySelectorAll(".carbs_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".carbs_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.max_carboids < total_grams.carboids) {
+            document.querySelectorAll(".carbs_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".carbs_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.max_sugar < total_grams.sugar) {
+            document.querySelectorAll(".sugars_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else if(limit_grams.min_sugar < total_grams.sugar
+            && total_grams.sugar < limit_grams.max_sugar) {
+            document.querySelectorAll(".sugars_column").forEach(el => {
+                el.style.background = "#ffe959";
+            });
+        } else {
+            document.querySelectorAll(".sugars_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.max_fats < total_grams.fats) {
+            document.querySelectorAll(".fats_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".fats_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.max_satured_fats < total_grams.satured_fats) {
+            document.querySelectorAll(".satured_fats_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".satured_fats_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
+
+        if(limit_grams.min_fiber > total_grams.fiber) {
+            document.querySelectorAll(".fiber_column").forEach(el => {
+                el.style.background = "#ff5959";
+            });
+        } else {
+            document.querySelectorAll(".fiber_column").forEach(el => {
+                if(el.tagName === "TH") el.style.background = "#e8e8e8";
+                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                else el.style.background = "none";
+            });
+        }
     }
 
     let content = [];
@@ -466,8 +627,18 @@
             });
         });
 
+        limit_grams.max_kcal = parseFloat(food_plan.max_kcal);
+        limit_grams.max_protein = parseFloat(food_plan.max_protein);
+        limit_grams.max_carboids = parseFloat(food_plan.max_carbs);
+        limit_grams.min_sugar = parseFloat(((food_plan.max_kcal*0.05)/4).toFixed(1));
+        limit_grams.max_sugar = parseFloat(((food_plan.max_kcal*0.1)/4).toFixed(1));
+        limit_grams.max_fats = parseFloat(food_plan.max_fats);
+        limit_grams.max_satured_fats = parseFloat(((food_plan.max_kcal*0.1)/9).toFixed(1));
+        limit_grams.min_fiber = parseFloat(((food_plan.max_kcal/1000)*14).toFixed(1));
 
-
+        document.getElementById("max_sugars").innerText = limit_grams.min_sugar + "-" + limit_grams.max_sugar + "g";
+        document.getElementById("max_saturated_sugars").innerText = limit_grams.max_satured_fats + "g";
+        document.getElementById("max_fiber").innerText = "almeno " + limit_grams.min_fiber + "g";
 
         let food_items = food_plan.food_items;
         const table = document.getElementById("containerFoodPlan");
@@ -533,16 +704,6 @@
 
         await Promise.all(foodRequests);
 
-        let total_grams = {
-            "kcal": 0,
-            "protein": 0,
-            "carboids": 0,
-            "sugar": 0,
-            "fats": 0,
-            "satured_fats": 0,
-            "fiber": 0
-        }
-
         content.forEach(item => {
             if (item.type === "section") {
                 const rowSeparator = table.insertRow();
@@ -569,7 +730,7 @@
                 trashIcon.style.color = "red"; // Colore dell'icona
 
                 // Evento di click per eliminare l'elemento
-                trashIcon.addEventListener("click", async function () {/*
+                trashIcon.addEventListener("click", async function () {
                     const response = await fetch('http://127.0.0.1:8000/api/v1/data/food-plan-item/delete/' + item.food_plan_item.id + '/', {
                         method: "DELETE",
                         headers: {
@@ -579,11 +740,71 @@
                     });
 
                     if (response.ok) {
-                        newFoodItem.remove(); // Rimuove la riga dalla tabella
+                        newFoodItem.remove();
+
+                        let el2 = document.getElementById("totalValueRow");
+                        el2.classList.add("highlight");
+                        setTimeout(() => {
+                            el2.classList.remove("highlight");
+                        }, 1000);
+
+                        const righeValide = document.querySelectorAll(
+                            "tr:not(.meal-name):not(.separator-row):not(#detailsFoodPlanMobile):not(#totalValueRow)"
+                        );
+
+                        const totalRiga = document.getElementById("totalValueRow");
+                        const totalCelle = totalRiga.getElementsByTagName("td");
+
+                        totalCelle[1].textContent = 0;
+                        totalCelle[2].textContent = 0;
+                        totalCelle[3].textContent = 0;
+                        totalCelle[4].textContent = 0;
+                        totalCelle[5].textContent = 0;
+                        totalCelle[6].textContent = 0;
+                        totalCelle[7].textContent = 0;
+
+                        righeValide.forEach(riga => {
+                            const celle = [...riga.querySelectorAll("td")];
+                            celle.forEach((cella, index) => {
+                                if(index == 3) {
+                                    totalCelle[1].textContent = parseFloat(totalCelle[1].textContent) + parseFloat(cella.textContent);
+                                } else if(index == 4) {
+                                    totalCelle[2].textContent = parseFloat(totalCelle[2].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                                } else if(index == 5) {
+                                    totalCelle[3].textContent = parseFloat(totalCelle[3].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                                } else if(index == 6) {
+                                    totalCelle[4].textContent = parseFloat(totalCelle[4].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                                } else if(index == 7) {
+                                    totalCelle[5].textContent = parseFloat(totalCelle[5].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                                } else if(index == 8) {
+                                    totalCelle[6].textContent = parseFloat(totalCelle[6].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                                } else if(index == 9) {
+                                    totalCelle[7].textContent = parseFloat(totalCelle[7].textContent) + parseFloat(cella.textContent.slice(0, -1));
+                                }
+                            });
+                        });
+
+                        totalCelle[1].textContent = parseFloat(totalCelle[1].textContent).toFixed(1);
+                        totalCelle[2].textContent = parseFloat(totalCelle[2].textContent).toFixed(1) + "g";
+                        totalCelle[3].textContent = parseFloat(totalCelle[3].textContent).toFixed(1) + "g";
+                        totalCelle[4].textContent = parseFloat(totalCelle[4].textContent).toFixed(1) + "g";
+                        totalCelle[5].textContent = parseFloat(totalCelle[5].textContent).toFixed(1) + "g";
+                        totalCelle[6].textContent = parseFloat(totalCelle[6].textContent).toFixed(1) + "g";
+                        totalCelle[7].textContent = parseFloat(totalCelle[7].textContent).toFixed(1) + "g";
+
+                        total_grams.kcal = totalCelle[1].textContent;
+                        total_grams.protein = totalCelle[2].textContent;
+                        total_grams.carboids = totalCelle[3].textContent;
+                        total_grams.sugar = totalCelle[4].textContent;
+                        total_grams.fats = totalCelle[5].textContent;
+                        total_grams.satured_fats = totalCelle[6].textContent;
+                        total_grams.fiber = totalCelle[7].textContent;
+
+                        console.log(total_grams);
                     } else {
-                        console.error("Errore nella cancellazione dell'elemento.");
+                        /* Inserire popup di errore */
                     }
-                */});
+                });
 
                 cell1.appendChild(trashIcon);
                 const cell2 = newFoodItem.insertCell(1);
@@ -699,6 +920,16 @@
                     totalCelle[5].textContent = parseFloat(totalCelle[5].textContent).toFixed(1) + "g";
                     totalCelle[6].textContent = parseFloat(totalCelle[6].textContent).toFixed(1) + "g";
                     totalCelle[7].textContent = parseFloat(totalCelle[7].textContent).toFixed(1) + "g";
+
+                    total_grams.kcal = parseFloat(totalCelle[1].textContent);
+                    total_grams.protein = parseFloat(totalCelle[2].textContent);
+                    total_grams.carboids = parseFloat(totalCelle[3].textContent);
+                    total_grams.sugar = parseFloat(totalCelle[4].textContent);
+                    total_grams.fats = parseFloat(totalCelle[5].textContent);
+                    total_grams.satured_fats = parseFloat(totalCelle[6].textContent);
+                    total_grams.fiber = parseFloat(totalCelle[7].textContent);
+
+                    updateGraphicsLimits()
                 });
 
                 // Aggiunge il campo di input alla cella
@@ -707,36 +938,43 @@
                 const moltiplicatore = item.food_plan_item.quantity_in_grams / 100;
                 total_grams.kcal += item.food_item.kcal_per_100g * moltiplicatore;
                 const cell4 = newFoodItem.insertCell(3);
+                cell4.classList.add("kcal_column");
                 cell4.setAttribute("data-label", "Kcal:")
                 cell4.textContent = (item.food_item.kcal_per_100g * moltiplicatore).toFixed(1);
 
                 total_grams.protein += item.food_item.protein_per_100g * moltiplicatore;
                 const cell5 = newFoodItem.insertCell(4);
+                cell5.classList.add("protein_column");
                 cell5.setAttribute("data-label", "Proteine:")
                 cell5.textContent = (item.food_item.protein_per_100g * moltiplicatore).toFixed(1) + "g";
 
                 total_grams.carboids += item.food_item.carbs_per_100g * moltiplicatore;
                 const cell6 = newFoodItem.insertCell(5);
+                cell6.classList.add("carbs_column");
                 cell6.setAttribute("data-label", "Carboidrati:")
                 cell6.textContent = (item.food_item.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
 
                 total_grams.sugar += item.food_item.sugars_per_100g * moltiplicatore;
-                const cell7 = newFoodItem.insertCell(6)
+                const cell7 = newFoodItem.insertCell(6);
+                cell7.classList.add("sugars_column");
                 cell7.setAttribute("data-label", "Zuccheri:")
                 cell7.textContent = (item.food_item.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
 
                 total_grams.fats += item.food_item.fats_per_100g * moltiplicatore;
                 const cell8 = newFoodItem.insertCell(7);
+                cell8.classList.add("fats_column");
                 cell8.setAttribute("data-label", "Grassi:");
                 cell8.textContent = (item.food_item.fats_per_100g * moltiplicatore).toFixed(1) + "g";
 
                 total_grams.satured_fats += item.food_item.saturated_fats_per_100g * moltiplicatore;
                 const cell9 = newFoodItem.insertCell(8);
+                cell9.classList.add("satured_fats_column");
                 cell9.setAttribute("data-label", "Grassi Saturi:");
                 cell9.textContent = (item.food_item.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
 
                 total_grams.fiber += item.food_item.fiber_per_100g * moltiplicatore;
                 const cell10 = newFoodItem.insertCell(9);
+                cell10.classList.add("fiber_column");
                 cell10.setAttribute("data-label", "Fibre:");
                 cell10.textContent = (item.food_item.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
             }
@@ -754,37 +992,41 @@
         cell1.colSpan = 3;
 
         const cell2 = totalValueRow.insertCell(1);
+        cell2.classList.add("kcal_column");
         cell2.setAttribute("data-label", "Kcal:")
         cell2.textContent = total_grams.kcal.toFixed(1);
 
         const cell3 = totalValueRow.insertCell(2);
+        cell3.classList.add("protein_column");
         cell3.setAttribute("data-label", "Proteine:")
         cell3.textContent = total_grams.protein.toFixed(1) + "g";
 
         const cell4 = totalValueRow.insertCell(3);
+        cell4.classList.add("carbs_column");
         cell4.setAttribute("data-label", "Carboidrati:")
         cell4.textContent = total_grams.carboids.toFixed(1) + "g";
 
         const cell5 = totalValueRow.insertCell(4);
+        cell5.classList.add("sugars_column");
         cell5.setAttribute("data-label", "Zuccheri:")
         cell5.textContent = total_grams.sugar.toFixed(1) + "g";
 
         const cell6 = totalValueRow.insertCell(5);
+        cell6.classList.add("fats_column");
         cell6.setAttribute("data-label", "Grassi:")
         cell6.textContent = total_grams.fats.toFixed(1) + "g";
 
         const cell7 = totalValueRow.insertCell(6);
+        cell7.classList.add("satured_fats_column");
         cell7.setAttribute("data-label", "Grassi Saturi:")
         cell7.textContent = total_grams.satured_fats.toFixed(1) + "g";
 
         const cell8 = totalValueRow.insertCell(7);
+        cell8.classList.add("fiber_column");
         cell8.setAttribute("data-label", "Fibre:")
         cell8.textContent = total_grams.fiber.toFixed(1) + "g";
 
-
-
-
-
+        updateGraphicsLimits()
 
         fetchFoodItems();
         fetchFoodSections();
@@ -804,6 +1046,9 @@
                             <li on:click={() => selectFood(food)}>{food.name}</li>
                         {/each}
                     </ul>
+                    <button style="margin-top: 10px; width: 100%;" on:click={() => alert('Azione per creare un nuovo alimento')}>
+                        Crea nuovo alimento
+                    </button>
                 </div>
                 <div class="food-details">
                     {#if selectedFood}
@@ -811,44 +1056,49 @@
                         <p style="text-align: center">Valori nutrizionali per 100g</p>
                         <div>
                             <p><b>Kcal:</b></p>
-                            <p>{selectedFood.kcal_per_100g}</p>
+                            <p>{selectedFood.kcal_per_100g.toFixed(1)}</p>
                         </div>
                         <div>
                             <p><b>Proteine:</b></p>
-                            <p>{selectedFood.protein_per_100g}g</p>
+                            <p>{selectedFood.protein_per_100g.toFixed(1)}g</p>
                         </div>
                         <div>
                             <p><b>Carboidrati:</b></p>
-                            <p>{selectedFood.carbs_per_100g}g</p>
+                            <p>{selectedFood.carbs_per_100g.toFixed(1)}g</p>
                         </div>
                         <div>
                             <p><b>Zuccheri:</b></p>
-                            <p>{selectedFood.sugars_per_100g}g</p>
+                            <p>{selectedFood.sugars_per_100g.toFixed(1)}g</p>
                         </div>
                         <div>
                             <p><b>Grassi:</b></p>
-                            <p>{selectedFood.fats_per_100g}g</p>
+                            <p>{selectedFood.fats_per_100g.toFixed(1)}g</p>
                         </div>
                         <div>
                             <p><b>Grassi Saturi:</b></p>
-                            <p>{selectedFood.saturated_fats_per_100g}g</p>
+                            <p>{selectedFood.saturated_fats_per_100g.toFixed(1)}g</p>
                         </div>
                         <div>
                             <p><b>Fibre:</b></p>
-                            <p>{selectedFood.fiber_per_100g}g</p>
+                            <p>{selectedFood.fiber_per_100g.toFixed(1)}g</p>
                         </div>
                     {/if}
                 </div>
             </div>
-            <label for="quantity">Quantità alimento:</label>
+            <div class="separator-row"></div>
+            <label for="quantity">Quantità alimento (in grammi):</label>
             <input type="number" id="quantity" bind:value={selectedQuantity} placeholder="Quantità alimento...">
             <label for="section">Sezione alimento:</label>
-            <select id="section" bind:value={selectedSection}>
-                <option value="">Seleziona sezione</option>
-                {#each foodSections as section}
-                    <option value={section.id}>{section.name}</option>
-                {/each}
-            </select>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <select id="section" bind:value={selectedSection}>
+                    <option value="">Seleziona sezione</option>
+                    {#each foodSections as section}
+                        <option value={section.id}>{section.name}</option>
+                    {/each}
+                </select>
+                <button on:click={() => alert("Azione per aggiungere una nuova sezione")} title="Aggiungi nuova sezione">Aggiungi nuova sezione</button>
+            </div>
+            <div class="separator-row"></div>
             <button on:click={addMeal}>Aggiungi</button>
             <button class="close-button" on:click={() => showModal = false}>Annulla</button>
         </div>

@@ -283,6 +283,10 @@
     </div>
 </div>
 
+<div class="error" id="error1">
+    <p></p>
+</div>
+
 <div class="form-container">
     <table  class="responsive-table">
         <thead>
@@ -370,7 +374,7 @@
             foodItems = await response.json();
             filteredFoodItems = foodItems;
         } catch (error) {
-            console.error(error);
+            // TODO: visualizzare errori
         }
     }
 
@@ -384,10 +388,12 @@
                     "Authorization": "Token " + getCookie('csrftoken'),
                 }
             });
-            if (!response.ok) throw new Error("Errore nel caricamento delle sezioni");
+            if (!response.ok) {
+                // TODO: visualizzare errori
+            }
             foodSections = await response.json();
         } catch (error) {
-            console.error(error);
+            // TODO: visualizzare errori
         }
     }
 
@@ -425,7 +431,7 @@
         if(response.ok) {
             location.reload();
         } else {
-            /* Eventuale errore */
+            // TODO: visualizzare errori
         }
     }
 
@@ -461,14 +467,31 @@
         updateGraphicsLimits()
     }
 
-    function saveFoodPlan() {
-        location.href = "/account/food-programs/"
+    async function saveFoodPlan() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/update/" + data.id + "/", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                start_date: document.getElementById("start_date").value,
+                end_date: document.getElementById("end_date").value,
+                max_kcal: document.querySelector(".max_kcal_value")?.value,
+                max_protein: document.querySelector(".max_protein_value")?.value,
+                max_carbs: document.querySelector(".max_carbs_value")?.value,
+                max_fats: document.querySelector(".max_fats_value")?.value,
+            })
+        });
+
+        if(response.ok) {
+            location.href = "/account/food-programs/";
+        } else {
+            // TODO: visualizzare errori
+        }
     }
 
     function updateGraphicsLimits() {
-        console.log(limit_grams);
-        console.log(total_grams);
-
         if(limit_grams.max_kcal < total_grams.kcal) {
             document.querySelectorAll(".kcal_column").forEach(el => {
                 el.style.background = "#ff5959";
@@ -569,6 +592,16 @@
                 else el.style.background = "none";
             });
         }
+    }
+
+    function createFoodItem() {
+        // TODO: creazione Food Item
+        alert('Azione per creare un nuovo alimento');
+    }
+
+    function createFoodItemSection() {
+        // TODO: creazione Food Item Section
+        alert("Azione per aggiungere una nuova sezione");
     }
 
     let content = [];
@@ -799,10 +832,8 @@
                         total_grams.fats = totalCelle[5].textContent;
                         total_grams.satured_fats = totalCelle[6].textContent;
                         total_grams.fiber = totalCelle[7].textContent;
-
-                        console.log(total_grams);
                     } else {
-                        /* Inserire popup di errore */
+                        // TODO: visualizzare errori
                     }
                 });
 
@@ -1046,7 +1077,7 @@
                             <li on:click={() => selectFood(food)}>{food.name}</li>
                         {/each}
                     </ul>
-                    <button style="margin-top: 10px; width: 100%;" on:click={() => alert('Azione per creare un nuovo alimento')}>
+                    <button style="margin-top: 10px; width: 100%;" on:click={createFoodItem}>
                         Crea nuovo alimento
                     </button>
                 </div>
@@ -1096,7 +1127,7 @@
                         <option value={section.id}>{section.name}</option>
                     {/each}
                 </select>
-                <button on:click={() => alert("Azione per aggiungere una nuova sezione")} title="Aggiungi nuova sezione">Aggiungi nuova sezione</button>
+                <button on:click={createFoodItemSection}>Crea nuova sezione</button>
             </div>
             <div class="separator-row"></div>
             <button on:click={addMeal}>Aggiungi</button>

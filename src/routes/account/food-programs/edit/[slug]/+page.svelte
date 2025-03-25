@@ -272,6 +272,24 @@
         .grams-column::after {
             font-size: 18px;
         }
+        .food-item-add {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .input-container {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+        video, #qr-shaded-region {
+            border-radius: 40px;
+        }
     </style>
 </head>
 
@@ -327,7 +345,9 @@
 
 <script>
     import { onMount } from "svelte";
-    import {getCookie} from "svelte-cookie";
+    import { getCookie } from "svelte-cookie";
+    import { Html5Qrcode } from 'html5-qrcode';
+    import { tick } from 'svelte';
 
     export let data;
     let showModal = false;
@@ -338,6 +358,15 @@
     let foodSections = [];
     let selectedSection = "";
     let selectedQuantity = null;
+
+    let showSectionModal = false;
+    let newSectionName = "";
+    let newSectionTime = "";
+
+    let showFoodModal = false;
+    let scanner;
+    let scanning = false;
+    let showScannerModal = false;
 
     let total_grams = {
         "kcal": 0,
@@ -358,6 +387,19 @@
         "max_fats": 0,
         "max_satured_fats": 0,
         "min_fiber": 0
+    }
+
+    let new_food_item = {
+        "name": "",
+        "brand": "",
+        "barcode": "",
+        "kcal": 0,
+        "protein": 0,
+        "carboids": 0,
+        "sugar": 0,
+        "fats": 0,
+        "saturated_fats": 0,
+        "fiber": 0
     }
 
     // Carica gli alimenti dall'API
@@ -464,6 +506,18 @@
             }, 1000);
         });
 
+        document.querySelectorAll("#max_kcal").forEach(el => {
+            el.value = limit_grams.max_kcal;
+
+            // Aggiungi l'animazione
+            el.classList.add("highlight");
+
+            // Rimuovi l'animazione dopo 1 secondo
+            setTimeout(() => {
+                el.classList.remove("highlight");
+            }, 1000);
+        });
+
         updateGraphicsLimits()
     }
 
@@ -498,8 +552,10 @@
             });
         } else {
             document.querySelectorAll(".kcal_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                if(el.tagName === "TH") {
+                    if(el.id === "max_kcal") el.style.background = "#ffffff";
+                    else el.style.background = "#e8e8e8";
+                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
                 else el.style.background = "none";
             });
         }
@@ -510,8 +566,10 @@
             });
         } else {
             document.querySelectorAll(".protein_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                if(el.tagName === "TH") {
+                    if(el.id === "max_protein") el.style.background = "#ffffff";
+                    else el.style.background = "#e8e8e8";
+                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
                 else el.style.background = "none";
             });
         }
@@ -522,20 +580,10 @@
             });
         } else {
             document.querySelectorAll(".carbs_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.max_carboids < total_grams.carboids) {
-            document.querySelectorAll(".carbs_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".carbs_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                if(el.tagName === "TH") {
+                    if(el.id === "max_carbs") el.style.background = "#ffffff";
+                    else el.style.background = "#e8e8e8";
+                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
                 else el.style.background = "none";
             });
         }
@@ -563,8 +611,10 @@
             });
         } else {
             document.querySelectorAll(".fats_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
+                if(el.tagName === "TH") {
+                    if(el.id === "max_fats") el.style.background = "#ffffff";
+                    else el.style.background = "#e8e8e8";
+                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
                 else el.style.background = "none";
             });
         }
@@ -595,14 +645,39 @@
     }
 
     function createFoodItem() {
-        // TODO: creazione Food Item
-        alert('Azione per creare un nuovo alimento');
+        showFoodModal = true;
     }
 
     function createFoodItemSection() {
-        // TODO: creazione Food Item Section
-        alert("Azione per aggiungere una nuova sezione");
+        showSectionModal = true;
     }
+
+    async function submitNewSection() {
+        if (!newSectionName || !newSectionTime) return;
+
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan-section/create/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                name: newSectionName,
+                start_time: newSectionTime,
+                author: getCookie('pk')
+            })
+        });
+
+        if (response.ok) {
+            showSectionModal = false;
+            newSectionName = "";
+            newSectionTime = "";
+            await fetchFoodSections(); // aggiorna l'elenco delle sezioni
+        } else {
+            // TODO: visualizzare errori
+        }
+    }
+
 
     let content = [];
 
@@ -1062,6 +1137,66 @@
         fetchFoodItems();
         fetchFoodSections();
     });
+
+    async function startScanner() {
+        showScannerModal = true;
+        await tick();
+        scanner = new Html5Qrcode("barcode-reader");
+        scanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                new_food_item.barcode = decodedText;
+                stopScanner();
+                showScannerModal = false;
+            },
+            (errorMessage) => {
+                console.warn(errorMessage);
+            }
+        );
+        scanning = true;
+    }
+
+    function stopScanner() {
+        if (scanner && scanning) {
+            scanner.stop().then(() => {
+                scanning = false;
+                scanner.clear();
+            }).catch(err => console.error("Errore arresto scanner", err));
+        }
+    }
+
+    async function saveFoodItem() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-item/create/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                // TODO: aggiustare aggiunta JSON Food Item
+                name,
+                brand,
+                barcode,
+                kcal_per_100g: kcal,
+                protein_per_100g: protein,
+                carbs_per_100g: carbs,
+                sugars_per_100g: sugars,
+                fats_per_100g: fats,
+                saturated_fats_per_100g: saturatedFats,
+                fiber_per_100g: fiber
+            })
+        });
+
+        // TODO: controllare se funziona
+
+        if (response.ok) {
+            alert("Alimento creato con successo");
+            showFoodModal = false;
+        } else {
+            alert("Errore durante la creazione dell'alimento");
+        }
+    }
 </script>
 
 {#if showModal}
@@ -1132,6 +1267,105 @@
             <div class="separator-row"></div>
             <button on:click={addMeal}>Aggiungi</button>
             <button class="close-button" on:click={() => showModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showSectionModal}
+    <div class="modal">
+        <div class="modal-content" style="width: 500px">
+            <h3>Nuova Sezione</h3>
+            <label for="newSectionName">Nome sezione:</label>
+            <input type="text" id="newSectionName" bind:value={newSectionName} placeholder="Nome sezione... (ad esempio, Colazione, Pranzo, ...)" />
+
+            <label for="newSectionTime" style="margin-top: 10px;">Orario previsto (solo ora):</label>
+            <input type="number" id="newSectionTime" min="0" max="24" bind:value={newSectionTime} placeholder="Orario previsto del pasto..." />
+
+            <div class="separator-row"></div>
+            <button on:click={submitNewSection}>Salva</button>
+            <button class="close-button" on:click={() => showSectionModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showFoodModal}
+    <div class="modal">
+        <div class="modal-content food-item-add" style="width: 800px">
+            <h3>Nuovo Alimento</h3>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="name">Nome:</label>
+                    <input bind:value={new_food_item.name} type="text" id="name" placeholder="Nome alimento..." />
+                </div>
+                <div class="input-container">
+                    <label for="brand">Marca:</label>
+                    <input bind:value={new_food_item.brand} type="text" id="brand" placeholder="Marca (opzionale)..." />
+                </div>
+            </div>
+
+            <label>Barcode:</label>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input bind:value={new_food_item.barcode} type="text" placeholder="Inserisci barcode manualmente..." />
+                <button type="button" on:click={startScanner}>
+                    Inserisci barcode tramite fotocamera
+                </button>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="kcal">Chilocalorie (Kcal) per 100g:</label>
+                    <input bind:value={new_food_item.kcal} type="number" id="kcal"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="protein">Proteine per 100g:</label>
+                    <input bind:value={new_food_item.protein} type="number" id="protein"/>
+                </div>
+                <div class="input-container">
+                    <label for="carboids">Carboidrati per 100g:</label>
+                    <input bind:value={new_food_item.carboids} type="number" id="carboids"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="sugar">Zuccheri per 100g:</label>
+                    <input bind:value={new_food_item.sugar} type="number" id="sugar"/>
+                </div>
+                <div class="input-container">
+                    <label for="fats">Grassi per 100g:</label>
+                    <input bind:value={new_food_item.fats} type="number" id="fats"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="saturated_fats">Grassi Saturi per 100g:</label>
+                    <input bind:value={new_food_item.saturated_fats} type="number" id="saturated_fats"/>
+                </div>
+                <div class="input-container">
+                    <label for="fiber">Fibre per 100g:</label>
+                    <input bind:value={new_food_item.fiber} type="number" id="fiber"/>
+                </div>
+            </div>
+
+            <div class="separator-row"></div>
+            <button on:click={saveFoodItem}>Aggiungi</button>
+            <button class="close-button" on:click={() => showFoodModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showScannerModal}
+    <div class="modal">
+        <div class="modal-content" style="width: 90%; max-width: 500px;">
+            <h3>Scansione Barcode</h3>
+            <div id="barcode-reader" style="width: 100%; height: auto;"></div>
+            <div class="separator-row"></div>
+            <button on:click={() => { stopScanner(); showScannerModal = false; }}>Chiudi</button>
         </div>
     </div>
 {/if}

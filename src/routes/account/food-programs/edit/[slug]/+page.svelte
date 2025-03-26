@@ -1,355 +1,15 @@
 <head>
-    <style>
-        .icon-sidebar {
-            display: flex;
-        }
-        .sidebar {
-            display: none;
-        }
-        .main-content {
-            width: 100%;
-            min-width: 100%;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            padding: 10px;
-        }
-        .container div {
-            flex: 1;
-            text-align: center;
-        }
-        .container div:nth-child(1) {
-            text-align: left;
-        }
-        .container div:nth-child(2) {
-            text-align: right;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-            border-top: 1px solid #cfcfcf;
-            border-bottom: 1px solid #cfcfcf;
-        }
-        th {
-            border: 1px solid #cfcfcf;
-        }
-        td:first-child {
-            border-left: 1px solid #cfcfcf;
-        }
-
-        /* Imposta il bordo destro solo sull'ultima colonna */
-        td:last-child {
-            border-right: 1px solid #cfcfcf;
-        }
-        th, .total-name {
-            background-color: #e8e8e8;
-        }
-        #detailsFoodPlanMobile {
-            background-color: #e8e8e8;
-            display: none;
-        }
-        .header-title {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .header-limits {
-            font-size: 14px;
-        }
-        .separator {
-            border: 1px solid #fff !important;
-        }
-        .meal-name {
-            font-size: 18px;
-            font-weight: bold;
-            background-color: #f4f4f4;
-        }
-        .name-column {
-            width: 20%;
-            text-align: left;
-            font-weight: bold;
-        }
-        .grams-column {
-            width: 120px;
-            padding: 0px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        input[type="checkbox"] {
-            transform: scale(1.5);
-            display: block;
-            margin: auto;
-        }
-        .separator-row {
-            height: 20px;
-        }
-        .responsive-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        table input {
-            padding: 8px;
-            margin-bottom: 0;
-            border-radius: 0;
-            background: #fff;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        #max_kcal, #max_protein, #max_carbs, #max_fats {
-            padding: 0px;
-        }
-        #section_date input {
-            display: inline;
-            width: auto;
-        }
-        @media screen and (max-width: 768px) {
-            .container  {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .responsive-table thead {
-                display: none; /* Nasconde l'intestazione originale */
-            }
-
-            .responsive-table tbody,
-            .responsive-table tr,
-            .responsive-table td {
-                display: block;
-                width: 100%;
-                border: 0px;
-            }
-
-            .responsive-table tr {
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-            }
-
-            .responsive-table .separator-row {
-                display: none;
-            }
-
-            .responsive-table td {
-                text-align: left;
-                position: relative;
-                display: flex;
-                justify-content: space-between;
-            }
-
-            .responsive-table td::before {
-                content: attr(data-label);
-                font-weight: bold;
-                flex: 1;
-                padding-right: 10px;
-            }
-            .delete-column {
-                text-align: center;
-            }
-            .name-column {
-                display: none !important;
-            }
-            .grams-column {
-                font-size: 30px;
-            }
-            #detailsFoodPlanMobile {
-                display: block;
-            }
-            #detailsFoodPlanMobile input {
-                justify-content: space-between;
-                align-items: center;
-                width: auto;
-            }
-            table input {
-
-                width: 120px;
-            }
-        }
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 700px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-        }
-        .modal-content>h3 {
-            margin-bottom: 15px;
-        }
-        .modal-container {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .food-search {
-            width: 50%;
-        }
-        .food-list {
-            list-style: none;
-            height: 300px; /* Altezza limitata */
-            overflow-y: scroll; /* Abilita la barra di scorrimento verticale */
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding: 0;
-            border: 1px solid #ddd;
-            border-radius: 40px;
-        }
-        .food-list::-webkit-scrollbar {
-            display: none;
-        }
-        .food-list li {
-            padding: 10px;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-        .food-list li:first-child {
-            border-top: none;
-        }
-        .food-list li:last-child {
-            border-bottom: none;
-        }
-        .food-details {
-            width: 50%;
-            background: #f1f5f9;
-            border-radius: 40px;
-            padding: 15px;
-        }
-        .food-details h3 {
-            font-size: 1.5em;
-            text-align: center
-        }
-        .food-details div {
-            text-align: left;
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            margin: 5px 0;
-            font-size: 18px;
-        }
-        .close-button {
-            margin-bottom: 0;
-        }
-        @keyframes glow {
-            0% { background-color: #007bff; }
-            50% { background-color: #80bfff; }
-            100% { background-color: #f1f5f9; }
-        }
-        .highlight {
-            animation: glow 1s ease-in-out;
-        }
-        #max_protein, #max_carbs, #max_fats, .grams-column {
-            position: relative;
-        }
-        #max_protein::after, #max_carbs::after, #max_fats::after, .grams-column::after {
-            content: " g";
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            pointer-events: none; /* Impedisce di cliccare sopra */
-            color: gray;
-            font-size: 14px;
-        }
-        .grams-column::after {
-            font-size: 18px;
-        }
-        .food-item-add {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .input-container {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-        video, #qr-shaded-region {
-            border-radius: 40px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/account/food-programs/edit/style_edit_food_programs.css">
 </head>
 
-<div class="container">
-    <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda alimentare</h1></div>
-    <div id="section_date">
-        <p><b>Data inizio:</b> <input type="date" id="start_date" required></p>
-        <p><b>Data fine:</b> <input type="date" id="end_date" required></p>
-    </div>
-</div>
-
-<div class="error" id="error1">
-    <p></p>
-</div>
-
-<div class="form-container">
-    <table  class="responsive-table">
-        <thead>
-            <tr>
-                <th rowspan="2" colspan="2" class="header-title name-column">Nome</th>
-                <th rowspan="2" class="header-title">Grammi</th>
-                <th class="header-title kcal_column">Kcal</th>
-                <th class="header-title protein_column">Proteine</th>
-                <th class="header-title carbs_column">Carboidrati</th>
-                <th class="header-title sugars_column">Zuccheri</th>
-                <th class="header-title fats_column">Grassi</th>
-                <th class="header-title satured_fats_column">Grassi Saturi</th>
-                <th class="header-title fiber_column">Fibre</th>
-            </tr>
-            <tr>
-                <th class="header-limits kcal_column" id="max_kcal"><input type="number" placeholder="Max Kcal..." class="max_kcal_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits protein_column" id="max_protein"><input type="number" placeholder="Max Proteine..." class="max_protein_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits carbs_column" id="max_carbs"><input type="number" placeholder="Max Carboidrati..." class="max_carbs_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits sugars_column" id="max_sugars"></th>
-                <th class="header-limits fats_column" id="max_fats"><input type="number" placeholder="Max Grassi..." class="max_fats_value" on:blur={autoCalculationKCal} ></th>
-                <th class="header-limits satured_fats_column" id="max_saturated_sugars"></th>
-                <th class="header-limits fiber_column" id="max_fiber"></th>
-            </tr>
-        </thead>
-        <tbody id="containerFoodPlan">
-            <tr id="detailsFoodPlanMobile">
-                <td data-label="Max Kcal:"><input type="number" placeholder="Max Kcal..." class="max_kcal_value" on:blur={autoCalculationKCal}></td>
-                <td data-label="Max Proteine:"><input type="number" placeholder="Max Proteine..." class="max_protein_value" on:blur={autoCalculationKCal}></td>
-                <td data-label="Max Carboidrati:"><input type="number" placeholder="Max Carboidrati..." class="max_carbs_value" on:blur={autoCalculationKCal}></td>
-                <td data-label="Max Grassi:"><input type="number" placeholder="Max Grassi..." class="max_fats_value" on:blur={autoCalculationKCal}></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<button on:click={() => showModal = true}>Aggiungi pasto</button>
-<div class="separator-row"></div>
-<button on:click={saveFoodPlan}>Modifica scheda alimentare</button>
-
 <script>
-    import { onMount } from "svelte";
+    import { onMount,tick } from "svelte";
     import { getCookie } from "svelte-cookie";
     import { Html5Qrcode } from 'html5-qrcode';
-    import { tick } from 'svelte';
 
     export let data;
+    let content = [];
+
     let showModal = false;
     let searchQuery = "";
     let foodItems = [];
@@ -369,103 +29,263 @@
     let showScannerModal = false;
 
     let total_grams = {
-        "kcal": 0,
-        "protein": 0,
-        "carboids": 0,
-        "sugar": 0,
-        "fats": 0,
-        "satured_fats": 0,
-        "fiber": 0
+        "kcal": 0, "protein": 0, "carboids": 0, "sugar": 0,
+        "fats": 0, "satured_fats": 0, "fiber": 0
     }
 
     let limit_grams = {
-        "max_kcal": 0,
-        "max_protein": 0,
-        "max_carboids": 0,
-        "min_sugar": 0,
-        "max_sugar": 0,
-        "max_fats": 0,
-        "max_satured_fats": 0,
-        "min_fiber": 0
+        "max_kcal": 0, "max_protein": 0, "max_carboids": 0, "min_sugar": 0,
+        "max_sugar": 0, "max_fats": 0, "max_satured_fats": 0, "min_fiber": 0
     }
 
     let new_food_item = {
-        "name": "",
-        "brand": "",
-        "barcode": "",
-        "kcal": 0,
-        "protein": 0,
-        "carboids": 0,
-        "sugar": 0,
-        "fats": 0,
-        "saturated_fats": 0,
-        "fiber": 0
+        "name": "", "brand": "", "barcode": "", "kcal": 0,
+        "protein": 0, "carboids": 0, "sugar": 0, "fats": 0,
+        "saturated_fats": 0, "fiber": 0
     }
 
-    // Carica gli alimenti dall'API
+
+
+    /**
+     * Mostra un messaggio di errore temporaneo all'interno di un elemento HTML specifico.
+     *
+     * L'elemento di destinazione viene identificato tramite il suo `id` (di default `"error1"`).
+     * Il messaggio viene visualizzato impostando `display: block` sull'elemento e assegnando
+     * il testo al suo primo nodo figlio. Dopo 5 secondi, l'elemento viene nascosto nuovamente
+     * e il testo viene svuotato.
+     *
+     * @param {string} message - Il messaggio di errore da mostrare all'utente.
+     * @param {string} [elementId="error1"] - L'ID dell'elemento HTML in cui mostrare l'errore.
+     */
+    function showError(message, elementId = "error1") {
+        const errorEl = document.getElementById(elementId);
+
+        if (errorEl) {
+            errorEl.style.display = "block";
+            errorEl.firstChild.textContent = message;
+
+            setTimeout(() => {
+                errorEl.style.display = "none";
+                errorEl.firstChild.textContent = "";
+            }, 5000);
+        }
+    }
+
+
+
+    /**
+     * Recupera in modo asincrono l'elenco completo degli alimenti dal backend.
+     *
+     * Effettua una richiesta HTTP `GET` all'endpoint `/food-item/`, utilizzando
+     * il token CSRF per l'autenticazione tramite header `Authorization`.
+     *
+     * Se la risposta è valida (`response.ok`), i dati JSON ricevuti vengono assegnati
+     * alla variabile globale `foodItems` e copiati in `filteredFoodItems` per uso filtrato.
+     *
+     * In caso di errore (es. rete assente o risposta non valida), viene mostrato
+     * un messaggio di errore all'utente tramite la funzione `showError`.
+     *
+     * La funzione presuppone l'esistenza delle funzioni `getCookie()` e `showError()`,
+     * nonché delle variabili `foodItems` e `filteredFoodItems` accessibili nel contesto.
+     */
     async function fetchFoodItems() {
         try {
             const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-item/", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Token " + getCookie('csrftoken'),
+                    "Authorization": "Token " + getCookie('csrftoken'), // Usa il token CSRF come autenticazione
                 }
             });
+
             if (!response.ok) {
-                document.getElementById("error1").style.display = "block";
-                document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento degli alimenti!";
-
-                setTimeout(() => {
-                    document.getElementById("error1").style.display = "none";
-                    document.getElementById("error1").firstChild.textContent = "";
-                }, 5000);
+                // In caso di risposta non valida (es. 500, 404)
+                showError("Errore durante il caricamento degli alimenti!");
+                return;
             }
-            foodItems = await response.json();
-            filteredFoodItems = foodItems;
-        } catch (error) {
-            document.getElementById("error1").style.display = "block";
-            document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento degli alimenti!";
 
-            setTimeout(() => {
-                document.getElementById("error1").style.display = "none";
-                document.getElementById("error1").firstChild.textContent = "";
-            }, 5000);
+            // Parsing della risposta in JSON
+            foodItems = await response.json();
+            filteredFoodItems = foodItems; // Aggiorna la lista filtrata
+        } catch (error) {
+            // In caso di errore di rete o eccezione imprevista
+            showError("Errore durante il caricamento degli alimenti!");
         }
     }
 
-    // Carica le sezioni degli alimenti
+
+
+    /**
+     * Recupera in modo asincrono le sezioni del piano alimentare associate all'utente.
+     *
+     * Esegue una richiesta `GET` all'endpoint `/food-plan-section/me/` del backend,
+     * utilizzando il token CSRF per l'autenticazione.
+     *
+     * Se la richiesta ha successo, assegna la risposta JSON alla variabile `foodSections`.
+     * In caso di errore (es. rete non disponibile o risposta non valida), mostra
+     * un messaggio di errore all'utente tramite la funzione `showError`.
+     *
+     * La funzione presuppone che `getCookie()` e `showError()` siano già definiti
+     * e che `foodSections` sia una variabile accessibile nel contesto globale o locale.
+     */
     async function fetchFoodSections() {
         try {
             const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan-section/me/", {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Token " + getCookie('csrftoken'),
+                    "Authorization": "Token " + getCookie('csrftoken'), // Usa il token CSRF come autenticazione
                 }
             });
-            if (!response.ok) {
-                document.getElementById("error1").style.display = "block";
-                document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento delle sezioni degli alimenti!";
 
-                setTimeout(() => {
-                    document.getElementById("error1").style.display = "none";
-                    document.getElementById("error1").firstChild.textContent = "";
-                }, 5000);
+            if (!response.ok) {
+                // In caso di risposta non valida (es. 500, 404)
+                showError("Errore durante il caricamento delle sezioni degli alimenti!");
+                return;
             }
+
+            // Parsing della risposta in JSON
             foodSections = await response.json();
         } catch (error) {
-            document.getElementById("error1").style.display = "block";
-            document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento delle sezioni degli alimenti!";
-
-            setTimeout(() => {
-                document.getElementById("error1").style.display = "none";
-                document.getElementById("error1").firstChild.textContent = "";
-            }, 5000);
+            // In caso di errore di rete o eccezione imprevista
+            showError("Errore durante il caricamento delle sezioni degli alimenti!");
         }
     }
 
-    // Filtra gli alimenti in base alla ricerca
+
+
+    /**
+     * Applica lo stile di background agli elementi in base ai valori nutrizionali
+     * @param {string} className - Classe degli elementi (es. "kcal_column")
+     * @param {string} idPrefix - Prefisso dell'ID massimo/minimo (es. "kcal" -> "max_kcal")
+     * @param {number} value - Valore corrente totale (es. total_grams.kcal)
+     * @param {number} min - Valore minimo accettabile (opzionale)
+     * @param {number} max - Valore massimo accettabile
+     * @param {string} warnColor - Colore per "warning" (es. giallo per zuccheri)
+     */
+    function applyColumnStyle(className, idPrefix, value, min, max, warnColor = null) {
+        const elements = document.querySelectorAll(`.${className}`);
+
+        let backgroundStyle;
+
+        if (max !== undefined && value > max) {
+            backgroundStyle = "#ff5959"; // rosso: oltre il limite massimo
+        } else if (warnColor && min !== undefined && value > min && value < max) {
+            backgroundStyle = warnColor; // giallo: in range ma da attenzionare
+        }
+
+        elements.forEach(el => {
+            if (backgroundStyle) {
+                el.style.background = backgroundStyle;
+            } else {
+                // Stili default per TH e righe totali
+                if (el.tagName === "TH") {
+                    el.style.background = (el.id === `max_${idPrefix}`) ? "#ffffff" : "#e8e8e8";
+                } else if (el.id === "totalValueRow") {
+                    el.style.background = "#e8e8e8";
+                } else {
+                    el.style.background = "none";
+                }
+            }
+        });
+    }
+
+
+    /**
+     * Aggiorna dinamicamente lo stile grafico delle colonne nutrizionali in base ai limiti impostati.
+     *
+     * Utilizza la funzione helper `applyColumnStyle` per applicare uno stile di evidenziazione
+     * (ad esempio rosso o giallo) alle celle delle tabelle nutrizionali quando i valori totali
+     * superano i limiti massimi, minimi o si trovano in un intervallo da attenzionare.
+     *
+     * La funzione confronta i valori totali di ciascun macronutriente (`total_grams`)
+     * con i rispettivi limiti definiti in `limit_grams`, e aggiorna il colore di sfondo
+     * delle celle HTML corrispondenti (es. `.kcal_column`, `.protein_column`, ecc.).
+     *
+     * Presuppone che `total_grams` e `limit_grams` siano oggetti globali contenenti i dati nutrizionali correnti e i relativi limiti.
+     * Richiede che la funzione `applyColumnStyle()` sia definita e accessibile nello scope.
+     */
+    function updateGraphicsLimits() {
+        applyColumnStyle("kcal_column", "kcal", total_grams.kcal, undefined, limit_grams.max_kcal);
+        applyColumnStyle("protein_column", "protein", total_grams.protein, undefined, limit_grams.max_protein);
+        applyColumnStyle("carbs_column", "carbs", total_grams.carboids, undefined, limit_grams.max_carboids);
+        applyColumnStyle("sugars_column", "sugar", total_grams.sugar, limit_grams.min_sugar, limit_grams.max_sugar, "#ffe959");
+        applyColumnStyle("fats_column", "fats", total_grams.fats, undefined, limit_grams.max_fats);
+        applyColumnStyle("satured_fats_column", "satured_fats", total_grams.satured_fats, undefined, limit_grams.max_satured_fats);
+        applyColumnStyle("fiber_column", "fiber", total_grams.fiber, limit_grams.min_fiber, undefined);
+    }
+
+
+
+    /**
+     * Calcola automaticamente il fabbisogno calorico massimo (kcal) e i relativi limiti nutrizionali,
+     * a partire dai valori di proteine, carboidrati e grassi forniti dall'utente.
+     *
+     * I valori vengono prelevati da input con classi CSS specifiche, utilizzati per calcolare:
+     * - kcal totali (proteine x4, carboidrati x4, grassi x9)
+     * - soglie min/max per zuccheri, grassi saturi e fibre in base a percentuali standard
+     *
+     * I risultati vengono salvati nell’oggetto `limit_grams`, mostrati nel DOM e
+     * riflessi sugli input con classe `.max_kcal_value` e id `#max_kcal`, includendo un'animazione di evidenziazione.
+     *
+     * Infine, richiama `updateGraphicsLimits()` per aggiornare lo stile visivo delle colonne nutrizionali.
+     *
+     * Presuppone che `limit_grams` sia un oggetto globale e che esistano nel DOM:
+     * - input `.max_protein_value`, `.max_carbs_value`, `.max_fats_value`
+     * - span/div con id `max_sugars`, `max_saturated_sugars`, `max_fiber`
+     * - input `.max_kcal_value`, `#max_kcal`
+     */
+    function autoCalculationKCal() {
+        // Estrai i valori dai campi input (se assenti, fallback a 0)
+        limit_grams.max_protein = parseFloat(document.querySelector(".max_protein_value")?.value || 0);
+        limit_grams.max_carboids = parseFloat(document.querySelector(".max_carbs_value")?.value || 0);
+        limit_grams.max_fats = parseFloat(document.querySelector(".max_fats_value")?.value || 0);
+
+        // Calcola il totale delle kcal: 1g proteine/carboidrati = 4 kcal, 1g grassi = 9 kcal
+        limit_grams.max_kcal = (
+            limit_grams.max_protein * 4 +
+            limit_grams.max_carboids * 4 +
+            limit_grams.max_fats * 9
+        );
+
+        // Calcola limiti derivati in base al fabbisogno calorico
+        limit_grams.min_sugar = parseFloat(((limit_grams.max_kcal * 0.05) / 4).toFixed(1));
+        limit_grams.max_sugar = parseFloat(((limit_grams.max_kcal * 0.1) / 4).toFixed(1));
+        limit_grams.max_satured_fats = parseFloat(((limit_grams.max_kcal * 0.1) / 9).toFixed(1));
+        limit_grams.min_fiber = parseFloat(((limit_grams.max_kcal / 1000) * 14).toFixed(1));
+
+        // Aggiorna i testi nel DOM per zuccheri, grassi saturi e fibre
+        document.getElementById("max_sugars").innerText = `${limit_grams.min_sugar}-${limit_grams.max_sugar}g`;
+        document.getElementById("max_saturated_sugars").innerText = `${limit_grams.max_satured_fats}g`;
+        document.getElementById("max_fiber").innerText = `almeno ${limit_grams.min_fiber}g`;
+
+        // Funzione helper per aggiornare input con animazione "highlight"
+        const animateInputs = (selector) => {
+            document.querySelectorAll(selector).forEach(el => {
+                el.value = limit_grams.max_kcal;
+                el.classList.add("highlight");
+                setTimeout(() => el.classList.remove("highlight"), 1000);
+            });
+        };
+
+        // Applica l’animazione a input legati alle kcal
+        animateInputs(".max_kcal_value");
+        animateInputs("#max_kcal");
+
+        // Aggiorna lo stile grafico della tabella nutrizionale
+        updateGraphicsLimits();
+    }
+
+
+
+    /**
+     * Filtra la lista degli alimenti (`foodItems`) in base alla stringa di ricerca (`searchQuery`).
+     *
+     * Il filtro è case-insensitive e considera sia il nome dell'alimento che la marca.
+     * I risultati vengono salvati nella variabile `filteredFoodItems`, usata per la visualizzazione.
+     *
+     * Presuppone l'esistenza delle variabili globali `searchQuery`, `foodItems` e `filteredFoodItems`.
+     */
     function filterFoodItems() {
         const query = searchQuery.toLowerCase();
 
@@ -475,12 +295,35 @@
         );
     }
 
-    // Seleziona un alimento
+
+
+    /**
+     * Imposta un alimento selezionato per l'inserimento nel piano alimentare.
+     *
+     * Il valore selezionato viene assegnato alla variabile globale `selectedFood`,
+     * che sarà poi utilizzata nella funzione `addMeal`.
+     *
+     * @param {Object} food - Oggetto rappresentante l'alimento selezionato.
+     */
     function selectFood(food) {
         selectedFood = food;
     }
 
-    // Aggiunge il pasto alla tabella
+
+
+    /**
+     * Aggiunge un alimento selezionato (`selectedFood`) alla sezione selezionata (`selectedSection`)
+     * del piano alimentare (`data.id`), utilizzando la quantità specificata (`selectedQuantity`).
+     *
+     * Invia una richiesta `POST` all’endpoint `/food-plan-item/create/` con i dati necessari.
+     * Se la richiesta ha successo, ricarica la pagina. Altrimenti, mostra un messaggio di errore.
+     *
+     * Presuppone l’esistenza delle seguenti variabili e funzioni globali:
+     * - `selectedFood`, `selectedSection`, `selectedQuantity`
+     * - `data.id` (ID della scheda alimentare corrente)
+     * - `getCookie()` per ottenere il token CSRF
+     * - `showError()` o gestione diretta dell’elemento `#error1`
+     */
     async function addMeal() {
         if (!selectedFood || !selectedSection || selectedQuantity == null) return;
 
@@ -499,214 +342,52 @@
             })
         });
 
-        if(response.ok) {
+        if (response.ok) {
             location.reload();
         } else {
-            document.getElementById("error1").style.display = "block";
-            document.getElementById("error1").firstChild.textContent = "Errore durante l'aggiunta dell'alimento alla scheda alimentare!";
-
-            setTimeout(() => {
-                document.getElementById("error1").style.display = "none";
-                document.getElementById("error1").firstChild.textContent = "";
-            }, 5000);
+            // Mostra errore temporaneo
+            showError("Errore durante l'aggiunta dell'alimento alla scheda alimentare!");
         }
     }
 
-    function autoCalculationKCal() {
-        limit_grams.max_protein = parseFloat(document.querySelector(".max_protein_value")?.value || 0);
-        limit_grams.max_carboids = parseFloat(document.querySelector(".max_carbs_value")?.value || 0);
-        limit_grams.max_fats = parseFloat(document.querySelector(".max_fats_value")?.value || 0);
 
-        limit_grams.max_kcal = (limit_grams.max_protein * 4) + (limit_grams.max_carboids * 4) + (limit_grams.max_fats * 9);
 
-        limit_grams.min_sugar = parseFloat(((limit_grams.max_kcal*0.05)/4).toFixed(1));
-        limit_grams.max_sugar = parseFloat(((limit_grams.max_kcal*0.1)/4).toFixed(1));
-        limit_grams.max_satured_fats = parseFloat(((limit_grams.max_kcal*0.1)/9).toFixed(1));
-        limit_grams.min_fiber = parseFloat(((limit_grams.max_kcal/1000)*14).toFixed(1));
-
-        document.getElementById("max_sugars").innerText = limit_grams.min_sugar + "-" + limit_grams.max_sugar + "g";
-        document.getElementById("max_saturated_sugars").innerText = limit_grams.max_satured_fats + "g";
-        document.getElementById("max_fiber").innerText = "almeno " + limit_grams.min_fiber + "g";
-
-        // Aggiorna tutti gli elementi con la classe .max_kcal_value
-        document.querySelectorAll(".max_kcal_value").forEach(el => {
-            el.value = limit_grams.max_kcal;
-
-            // Aggiungi l'animazione
-            el.classList.add("highlight");
-
-            // Rimuovi l'animazione dopo 1 secondo
-            setTimeout(() => {
-                el.classList.remove("highlight");
-            }, 1000);
-        });
-
-        document.querySelectorAll("#max_kcal").forEach(el => {
-            el.value = limit_grams.max_kcal;
-
-            // Aggiungi l'animazione
-            el.classList.add("highlight");
-
-            // Rimuovi l'animazione dopo 1 secondo
-            setTimeout(() => {
-                el.classList.remove("highlight");
-            }, 1000);
-        });
-
-        updateGraphicsLimits()
-    }
-
-    async function saveFoodPlan() {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/update/" + data.id + "/", {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token " + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                start_date: document.getElementById("start_date").value,
-                end_date: document.getElementById("end_date").value,
-                max_kcal: document.querySelector(".max_kcal_value")?.value,
-                max_protein: document.querySelector(".max_protein_value")?.value,
-                max_carbs: document.querySelector(".max_carbs_value")?.value,
-                max_fats: document.querySelector(".max_fats_value")?.value,
-            })
-        });
-
-        if(response.ok) {
-            location.href = "/account/food-programs/";
-        } else {
-            document.getElementById("error1").style.display = "block";
-            document.getElementById("error1").firstChild.textContent = "Errore durante il salvataggio della scheda alimentare!";
-
-            setTimeout(() => {
-                document.getElementById("error1").style.display = "none";
-                document.getElementById("error1").firstChild.textContent = "";
-            }, 5000);
-        }
-    }
-
-    function updateGraphicsLimits() {
-        if(limit_grams.max_kcal < total_grams.kcal) {
-            document.querySelectorAll(".kcal_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".kcal_column").forEach(el => {
-                if(el.tagName === "TH") {
-                    if(el.id === "max_kcal") el.style.background = "#ffffff";
-                    else el.style.background = "#e8e8e8";
-                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.max_protein < total_grams.protein) {
-            document.querySelectorAll(".protein_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".protein_column").forEach(el => {
-                if(el.tagName === "TH") {
-                    if(el.id === "max_protein") el.style.background = "#ffffff";
-                    else el.style.background = "#e8e8e8";
-                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.max_carboids < total_grams.carboids) {
-            document.querySelectorAll(".carbs_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".carbs_column").forEach(el => {
-                if(el.tagName === "TH") {
-                    if(el.id === "max_carbs") el.style.background = "#ffffff";
-                    else el.style.background = "#e8e8e8";
-                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.max_sugar < total_grams.sugar) {
-            document.querySelectorAll(".sugars_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else if(limit_grams.min_sugar < total_grams.sugar
-            && total_grams.sugar < limit_grams.max_sugar) {
-            document.querySelectorAll(".sugars_column").forEach(el => {
-                el.style.background = "#ffe959";
-            });
-        } else {
-            document.querySelectorAll(".sugars_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.max_fats < total_grams.fats) {
-            document.querySelectorAll(".fats_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".fats_column").forEach(el => {
-                if(el.tagName === "TH") {
-                    if(el.id === "max_fats") el.style.background = "#ffffff";
-                    else el.style.background = "#e8e8e8";
-                } else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.max_satured_fats < total_grams.satured_fats) {
-            document.querySelectorAll(".satured_fats_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".satured_fats_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-
-        if(limit_grams.min_fiber > total_grams.fiber) {
-            document.querySelectorAll(".fiber_column").forEach(el => {
-                el.style.background = "#ff5959";
-            });
-        } else {
-            document.querySelectorAll(".fiber_column").forEach(el => {
-                if(el.tagName === "TH") el.style.background = "#e8e8e8";
-                else if(el.id === "totalValueRow") el.style.background = "#e8e8e8";
-                else el.style.background = "none";
-            });
-        }
-    }
-
-    function createFoodItem() {
-        showFoodModal = true;
-
-        new_food_item = {
-            "name": "",
-            "brand": "",
-            "barcode": "",
-            "kcal": 0,
-            "protein": 0,
-            "carboids": 0,
-            "sugar": 0,
-            "fats": 0,
-            "saturated_fats": 0,
-            "fiber": 0
-        }
-    }
-
+    /**
+     * Mostra il modal per la creazione di una nuova sezione alimentare.
+     *
+     * Imposta la variabile reattiva `showSectionModal` a `true`, che dovrebbe essere
+     * utilizzata nel template per controllare la visibilità del popup/modal.
+     *
+     * Presuppone che `showSectionModal` sia una variabile reattiva o globale.
+     */
     function createFoodItemSection() {
         showSectionModal = true;
     }
 
-    async function submitNewSection() {
+
+
+    /**
+     * Salva una nuova sezione alimentare tramite richiesta `POST` al backend.
+     *
+     * I dati della sezione includono:
+     * - `name`: nome della sezione (es. "Colazione")
+     * - `start_time`: orario d'inizio della sezione
+     * - `author`: ID dell'utente, prelevato tramite `getCookie('pk')`
+     *
+     * Se la richiesta ha successo:
+     * - chiude il modal (`showSectionModal = false`)
+     * - svuota i campi di input (`newSectionName`, `newSectionTime`)
+     * - aggiorna la lista delle sezioni chiamando `fetchFoodSections()`
+     *
+     * In caso di errore, viene mostrato un messaggio temporaneo all'interno
+     * dell'elemento con id `error1`.
+     *
+     * Presuppone:
+     * - variabili globali o reattive: `newSectionName`, `newSectionTime`, `showSectionModal`
+     * - funzione `getCookie()`
+     * - funzione `fetchFoodSections()`
+     */
+    async function saveFoodItemSection() {
         if (!newSectionName || !newSectionTime) return;
 
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan-section/create/", {
@@ -723,493 +404,53 @@
         });
 
         if (response.ok) {
+            // Reset e aggiornamento sezione
             showSectionModal = false;
             newSectionName = "";
             newSectionTime = "";
-            await fetchFoodSections(); // aggiorna l'elenco delle sezioni
+            await fetchFoodSections();
         } else {
-            document.getElementById("error1").style.display = "block";
-            document.getElementById("error1").firstChild.textContent = "Errore durante la creazione della sezione alimentare!";
-
-            setTimeout(() => {
-                document.getElementById("error1").style.display = "none";
-                document.getElementById("error1").firstChild.textContent = "";
-            }, 5000);
+            // Mostra errore temporaneo
+            showError("Errore durante la creazione della sezione alimentare!");
         }
     }
 
 
-    let content = [];
 
-    onMount(async() => {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/" + data.id + "/", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token " + getCookie('csrftoken'),
-            }
-        });
-
-        const food_plan = await response.json();
-
-        const formattedStartDate = food_plan.start_date.split('/').reverse().join('-');
-        document.getElementById("start_date").value = formattedStartDate;
-        const formattedEndDate = food_plan.end_date.split('/').reverse().join('-');
-        document.getElementById("end_date").value = formattedEndDate;
-
-        function syncInputs(className) {
-            document.querySelectorAll(`.${className}`).forEach(input => {
-                input.addEventListener("input", (event) => {
-                    document.querySelectorAll(`.${className}`).forEach(el => {
-                        if (el !== event.target) { // Evita di riassegnare il valore a chi ha attivato l'evento
-                            el.value = event.target.value;
-                        }
-                    });
-                });
-            });
-        }
-
-        // Assegna i valori iniziali
-        document.querySelectorAll(".max_kcal_value").forEach(el => {
-            el.value = food_plan.max_kcal;
-        });
-        document.querySelectorAll(".max_protein_value").forEach(el => {
-            el.value = food_plan.max_protein;
-        });
-        document.querySelectorAll(".max_carbs_value").forEach(el => {
-            el.value = food_plan.max_carbs;
-        });
-        document.querySelectorAll(".max_fats_value").forEach(el => {
-            el.value = food_plan.max_fats;
-        });
-
-        // Aggiunge il comportamento di sincronizzazione tra input con la stessa classe
-        syncInputs("max_kcal_value");
-        syncInputs("max_protein_value");
-        syncInputs("max_carbs_value");
-        syncInputs("max_fats_value");
-
-        [".max_protein_value", ".max_carbs_value", ".max_fats_value"].forEach(className => {
-            document.querySelectorAll(className).forEach(input => {
-                input.addEventListener("input", autoCalculationKCal);
-            });
-        });
-
-        limit_grams.max_kcal = parseFloat(food_plan.max_kcal);
-        limit_grams.max_protein = parseFloat(food_plan.max_protein);
-        limit_grams.max_carboids = parseFloat(food_plan.max_carbs);
-        limit_grams.min_sugar = parseFloat(((food_plan.max_kcal*0.05)/4).toFixed(1));
-        limit_grams.max_sugar = parseFloat(((food_plan.max_kcal*0.1)/4).toFixed(1));
-        limit_grams.max_fats = parseFloat(food_plan.max_fats);
-        limit_grams.max_satured_fats = parseFloat(((food_plan.max_kcal*0.1)/9).toFixed(1));
-        limit_grams.min_fiber = parseFloat(((food_plan.max_kcal/1000)*14).toFixed(1));
-
-        document.getElementById("max_sugars").innerText = limit_grams.min_sugar + "-" + limit_grams.max_sugar + "g";
-        document.getElementById("max_saturated_sugars").innerText = limit_grams.max_satured_fats + "g";
-        document.getElementById("max_fiber").innerText = "almeno " + limit_grams.min_fiber + "g";
-
-        let food_items = food_plan.food_items;
-        const table = document.getElementById("containerFoodPlan");
-
-        // Raggruppiamo gli alimenti per sezione
-        const groupedByFoodSection = food_items.reduce((acc, item) => {
-            if (!acc[item.food_section]) {
-                acc[item.food_section] = [];
-            }
-            acc[item.food_section].push(item);
-            return acc;
-        }, {});
-
-        const food_items_sections_id = Object.keys(groupedByFoodSection);
-        let sections = [];
-
-        // Fetch parallelo delle sezioni
-        const sectionRequests = food_items_sections_id.map(async (id) => {
-            const response_section = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan-section/${id}/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Token " + getCookie('csrftoken'),
-                }
-            });
-
-            return response_section.json();
-        });
-
-        sections = await Promise.all(sectionRequests);
-        sections.sort((a, b) => a.start_time - b.start_time);
-
-        // Creiamo l'array content con le sezioni e gli alimenti
-        sections.forEach(item => {
-            content.push({ type: "section", item });
-
-            const key = item.id.toString();
-            const vector_food_items = groupedByFoodSection[key];
-
-            vector_food_items.forEach(item2 => {
-                content.push({
-                    type: "food-item",
-                    food_plan_item: item2,
-                    food_item: {} // Per ora vuoto, lo popoleremo dopo
-                });
-            });
-        });
-
-        // Fetch parallelo degli alimenti
-        const foodRequests = content
-            .filter(item => item.type === "food-item")
-            .map(async (item) => {
-                const response_food = await fetch(`http://127.0.0.1:8000/api/v1/data/food-item/${item.food_plan_item.food_item}/`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Token " + getCookie('csrftoken'),
-                    }
-                });
-
-                item.food_item = await response_food.json();
-            });
-
-        await Promise.all(foodRequests);
-
-        content.forEach(item => {
-            if (item.type === "section") {
-                const rowSeparator = table.insertRow();
-                rowSeparator.classList.add("separator-row");
-
-                const newFoodPlanSection = table.insertRow();
-                newFoodPlanSection.classList.add("meal-name");
-
-                const cell = newFoodPlanSection.insertCell(0);
-                cell.textContent = `${item.item.name} (orario previsto ${item.item.start_time})`;
-                cell.colSpan = 10;
-            } else if (item.type === "food-item") {
-                const newFoodItem = table.insertRow();
-                newFoodItem.id = item.food_plan_item.id;
-                const cell1 = newFoodItem.insertCell(0);
-                cell1.classList.add("delete-column");
-
-                // Creazione dell'icona Material Icons
-                const trashIcon = document.createElement("span");
-                trashIcon.classList.add("material-icons");
-                trashIcon.textContent = "delete"; // Nome dell'icona di Material Icons
-                trashIcon.style.cursor = "pointer";
-                trashIcon.style.fontSize = "24px"; // Dimensione icona
-                trashIcon.style.color = "red"; // Colore dell'icona
-
-                // Evento di click per eliminare l'elemento
-                trashIcon.addEventListener("click", async function () {
-                    const response = await fetch('http://127.0.0.1:8000/api/v1/data/food-plan-item/delete/' + item.food_plan_item.id + '/', {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Token " + getCookie('csrftoken'),
-                        }
-                    });
-
-                    if (response.ok) {
-                        newFoodItem.remove();
-
-                        let el2 = document.getElementById("totalValueRow");
-                        el2.classList.add("highlight");
-                        setTimeout(() => {
-                            el2.classList.remove("highlight");
-                        }, 1000);
-
-                        const righeValide = document.querySelectorAll(
-                            "tr:not(.meal-name):not(.separator-row):not(#detailsFoodPlanMobile):not(#totalValueRow)"
-                        );
-
-                        const totalRiga = document.getElementById("totalValueRow");
-                        const totalCelle = totalRiga.getElementsByTagName("td");
-
-                        totalCelle[1].textContent = 0;
-                        totalCelle[2].textContent = 0;
-                        totalCelle[3].textContent = 0;
-                        totalCelle[4].textContent = 0;
-                        totalCelle[5].textContent = 0;
-                        totalCelle[6].textContent = 0;
-                        totalCelle[7].textContent = 0;
-
-                        righeValide.forEach(riga => {
-                            const celle = [...riga.querySelectorAll("td")];
-                            celle.forEach((cella, index) => {
-                                if(index == 3) {
-                                    totalCelle[1].textContent = parseFloat(totalCelle[1].textContent) + parseFloat(cella.textContent);
-                                } else if(index == 4) {
-                                    totalCelle[2].textContent = parseFloat(totalCelle[2].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                                } else if(index == 5) {
-                                    totalCelle[3].textContent = parseFloat(totalCelle[3].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                                } else if(index == 6) {
-                                    totalCelle[4].textContent = parseFloat(totalCelle[4].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                                } else if(index == 7) {
-                                    totalCelle[5].textContent = parseFloat(totalCelle[5].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                                } else if(index == 8) {
-                                    totalCelle[6].textContent = parseFloat(totalCelle[6].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                                } else if(index == 9) {
-                                    totalCelle[7].textContent = parseFloat(totalCelle[7].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                                }
-                            });
-                        });
-
-                        totalCelle[1].textContent = parseFloat(totalCelle[1].textContent).toFixed(1);
-                        totalCelle[2].textContent = parseFloat(totalCelle[2].textContent).toFixed(1) + "g";
-                        totalCelle[3].textContent = parseFloat(totalCelle[3].textContent).toFixed(1) + "g";
-                        totalCelle[4].textContent = parseFloat(totalCelle[4].textContent).toFixed(1) + "g";
-                        totalCelle[5].textContent = parseFloat(totalCelle[5].textContent).toFixed(1) + "g";
-                        totalCelle[6].textContent = parseFloat(totalCelle[6].textContent).toFixed(1) + "g";
-                        totalCelle[7].textContent = parseFloat(totalCelle[7].textContent).toFixed(1) + "g";
-
-                        total_grams.kcal = totalCelle[1].textContent;
-                        total_grams.protein = totalCelle[2].textContent;
-                        total_grams.carboids = totalCelle[3].textContent;
-                        total_grams.sugar = totalCelle[4].textContent;
-                        total_grams.fats = totalCelle[5].textContent;
-                        total_grams.satured_fats = totalCelle[6].textContent;
-                        total_grams.fiber = totalCelle[7].textContent;
-                    } else {
-                        document.getElementById("error1").style.display = "block";
-                        document.getElementById("error1").firstChild.textContent = "Errore durante l'eliminazione dell'alimento dalla scheda alimentare!";
-
-                        setTimeout(() => {
-                            document.getElementById("error1").style.display = "none";
-                            document.getElementById("error1").firstChild.textContent = "";
-                        }, 5000);
-                    }
-                });
-
-                cell1.appendChild(trashIcon);
-                const cell2 = newFoodItem.insertCell(1);
-                cell2.classList.add("name-column");
-                if(item.food_item.brand !== null)
-                    cell2.textContent = item.food_item.name + " (" + item.food_item.brand +")";
-                else
-                    cell2.textContent = item.food_item.name;
-
-                const cell3 = newFoodItem.insertCell(2);
-                cell3.classList.add("grams-column");
-                cell3.setAttribute("data-label", item.food_item.name);
-
-                // Creazione dell'input per modificare i grammi
-                const inputGrams = document.createElement("input");
-                inputGrams.type = "number";
-                inputGrams.value = item.food_plan_item.quantity_in_grams;
-                inputGrams.style.textAlign = "center";
-                inputGrams.style.border = "1px solid #ccc";
-                inputGrams.style.borderRadius = "4px";
-                inputGrams.style.padding = "4px";
-                inputGrams.style.fontSize = "18px";
-
-                // Evento per aggiornare il valore quando l'utente preme Invio
-                inputGrams.addEventListener("input", async function (event) {
-                    const newQuantity = parseInt(inputGrams.value, 10);
-
-                    let response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan-item/update/${item.food_plan_item.id}/`, {
-                        method: "PATCH",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Token " + getCookie('csrftoken'),
-                        },
-                        body: JSON.stringify({
-                            id: item.food_plan_item.id,
-                            quantity_in_grams: newQuantity,
-                        })
-                    });
-
-                    let response_inputGrams = await response.json();
-                    
-                    response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-item/${response_inputGrams.food_item}/`, {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": "Token " + getCookie('csrftoken'),
-                        }
-                    });
-
-                    response_inputGrams = await response.json();
-
-                    const riga = document.getElementById(item.food_plan_item.id);
-                    const celle = riga.getElementsByTagName("td");
-                    
-                    const moltiplicatore = newQuantity / 100;
-                    celle[3].textContent = (response_inputGrams.kcal_per_100g * moltiplicatore).toFixed(1);
-                    celle[4].textContent = (response_inputGrams.protein_per_100g * moltiplicatore).toFixed(1) + "g";
-                    celle[5].textContent = (response_inputGrams.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
-                    celle[6].textContent = (response_inputGrams.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
-                    celle[7].textContent = (response_inputGrams.fats_per_100g * moltiplicatore).toFixed(1) + "g";
-                    celle[8].textContent = (response_inputGrams.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
-                    celle[9].textContent = (response_inputGrams.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
-
-                    let el1 = document.getElementById(item.food_plan_item.id);
-                    el1.classList.add("highlight");
-                    setTimeout(() => {
-                        el1.classList.remove("highlight");
-                    }, 1000);
-
-                    let el2 = document.getElementById("totalValueRow");
-                    el2.classList.add("highlight");
-                    setTimeout(() => {
-                        el2.classList.remove("highlight");
-                    }, 1000);
-
-                    const righeValide = document.querySelectorAll(
-                        "tr:not(.meal-name):not(.separator-row):not(#detailsFoodPlanMobile):not(#totalValueRow)"
-                    );
-
-                    const totalRiga = document.getElementById("totalValueRow");
-                    const totalCelle = totalRiga.getElementsByTagName("td");
-                    
-                    totalCelle[1].textContent = 0;
-                    totalCelle[2].textContent = 0;
-                    totalCelle[3].textContent = 0;
-                    totalCelle[4].textContent = 0;
-                    totalCelle[5].textContent = 0;
-                    totalCelle[6].textContent = 0;
-                    totalCelle[7].textContent = 0;
-
-                    righeValide.forEach(riga => {
-                        const celle = [...riga.querySelectorAll("td")];
-                        celle.forEach((cella, index) => {
-                            if(index == 3) {
-                                totalCelle[1].textContent = parseFloat(totalCelle[1].textContent) + parseFloat(cella.textContent);
-                            } else if(index == 4) {
-                                totalCelle[2].textContent = parseFloat(totalCelle[2].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                            } else if(index == 5) {
-                                totalCelle[3].textContent = parseFloat(totalCelle[3].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                            } else if(index == 6) {
-                                totalCelle[4].textContent = parseFloat(totalCelle[4].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                            } else if(index == 7) {
-                                totalCelle[5].textContent = parseFloat(totalCelle[5].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                            } else if(index == 8) {
-                                totalCelle[6].textContent = parseFloat(totalCelle[6].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                            } else if(index == 9) {
-                                totalCelle[7].textContent = parseFloat(totalCelle[7].textContent) + parseFloat(cella.textContent.slice(0, -1));
-                            }
-                        });
-                    });
-
-                    totalCelle[1].textContent = parseFloat(totalCelle[1].textContent).toFixed(1);
-                    totalCelle[2].textContent = parseFloat(totalCelle[2].textContent).toFixed(1) + "g";
-                    totalCelle[3].textContent = parseFloat(totalCelle[3].textContent).toFixed(1) + "g";
-                    totalCelle[4].textContent = parseFloat(totalCelle[4].textContent).toFixed(1) + "g";
-                    totalCelle[5].textContent = parseFloat(totalCelle[5].textContent).toFixed(1) + "g";
-                    totalCelle[6].textContent = parseFloat(totalCelle[6].textContent).toFixed(1) + "g";
-                    totalCelle[7].textContent = parseFloat(totalCelle[7].textContent).toFixed(1) + "g";
-
-                    total_grams.kcal = parseFloat(totalCelle[1].textContent);
-                    total_grams.protein = parseFloat(totalCelle[2].textContent);
-                    total_grams.carboids = parseFloat(totalCelle[3].textContent);
-                    total_grams.sugar = parseFloat(totalCelle[4].textContent);
-                    total_grams.fats = parseFloat(totalCelle[5].textContent);
-                    total_grams.satured_fats = parseFloat(totalCelle[6].textContent);
-                    total_grams.fiber = parseFloat(totalCelle[7].textContent);
-
-                    updateGraphicsLimits()
-                });
-
-                // Aggiunge il campo di input alla cella
-                cell3.appendChild(inputGrams);
-
-                const moltiplicatore = item.food_plan_item.quantity_in_grams / 100;
-                total_grams.kcal += item.food_item.kcal_per_100g * moltiplicatore;
-                const cell4 = newFoodItem.insertCell(3);
-                cell4.classList.add("kcal_column");
-                cell4.setAttribute("data-label", "Kcal:")
-                cell4.textContent = (item.food_item.kcal_per_100g * moltiplicatore).toFixed(1);
-
-                total_grams.protein += item.food_item.protein_per_100g * moltiplicatore;
-                const cell5 = newFoodItem.insertCell(4);
-                cell5.classList.add("protein_column");
-                cell5.setAttribute("data-label", "Proteine:")
-                cell5.textContent = (item.food_item.protein_per_100g * moltiplicatore).toFixed(1) + "g";
-
-                total_grams.carboids += item.food_item.carbs_per_100g * moltiplicatore;
-                const cell6 = newFoodItem.insertCell(5);
-                cell6.classList.add("carbs_column");
-                cell6.setAttribute("data-label", "Carboidrati:")
-                cell6.textContent = (item.food_item.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
-
-                total_grams.sugar += item.food_item.sugars_per_100g * moltiplicatore;
-                const cell7 = newFoodItem.insertCell(6);
-                cell7.classList.add("sugars_column");
-                cell7.setAttribute("data-label", "Zuccheri:")
-                cell7.textContent = (item.food_item.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
-
-                total_grams.fats += item.food_item.fats_per_100g * moltiplicatore;
-                const cell8 = newFoodItem.insertCell(7);
-                cell8.classList.add("fats_column");
-                cell8.setAttribute("data-label", "Grassi:");
-                cell8.textContent = (item.food_item.fats_per_100g * moltiplicatore).toFixed(1) + "g";
-
-                total_grams.satured_fats += item.food_item.saturated_fats_per_100g * moltiplicatore;
-                const cell9 = newFoodItem.insertCell(8);
-                cell9.classList.add("satured_fats_column");
-                cell9.setAttribute("data-label", "Grassi Saturi:");
-                cell9.textContent = (item.food_item.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
-
-                total_grams.fiber += item.food_item.fiber_per_100g * moltiplicatore;
-                const cell10 = newFoodItem.insertCell(9);
-                cell10.classList.add("fiber_column");
-                cell10.setAttribute("data-label", "Fibre:");
-                cell10.textContent = (item.food_item.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
-            }
-        });
-
-        const rowSeparator = table.insertRow();
-        rowSeparator.classList.add("separator-row");
-
-        const totalValueRow = table.insertRow();
-        totalValueRow.classList.add("total-name");
-        totalValueRow.id = "totalValueRow";
-
-        const cell1 = totalValueRow.insertCell(0);
-        cell1.innerHTML = "<b>Somma dei valori degli alimenti</b>";
-        cell1.colSpan = 3;
-
-        const cell2 = totalValueRow.insertCell(1);
-        cell2.classList.add("kcal_column");
-        cell2.setAttribute("data-label", "Kcal:")
-        cell2.textContent = total_grams.kcal.toFixed(1);
-
-        const cell3 = totalValueRow.insertCell(2);
-        cell3.classList.add("protein_column");
-        cell3.setAttribute("data-label", "Proteine:")
-        cell3.textContent = total_grams.protein.toFixed(1) + "g";
-
-        const cell4 = totalValueRow.insertCell(3);
-        cell4.classList.add("carbs_column");
-        cell4.setAttribute("data-label", "Carboidrati:")
-        cell4.textContent = total_grams.carboids.toFixed(1) + "g";
-
-        const cell5 = totalValueRow.insertCell(4);
-        cell5.classList.add("sugars_column");
-        cell5.setAttribute("data-label", "Zuccheri:")
-        cell5.textContent = total_grams.sugar.toFixed(1) + "g";
-
-        const cell6 = totalValueRow.insertCell(5);
-        cell6.classList.add("fats_column");
-        cell6.setAttribute("data-label", "Grassi:")
-        cell6.textContent = total_grams.fats.toFixed(1) + "g";
-
-        const cell7 = totalValueRow.insertCell(6);
-        cell7.classList.add("satured_fats_column");
-        cell7.setAttribute("data-label", "Grassi Saturi:")
-        cell7.textContent = total_grams.satured_fats.toFixed(1) + "g";
-
-        const cell8 = totalValueRow.insertCell(7);
-        cell8.classList.add("fiber_column");
-        cell8.setAttribute("data-label", "Fibre:")
-        cell8.textContent = total_grams.fiber.toFixed(1) + "g";
-
-        updateGraphicsLimits()
-
-        fetchFoodItems();
-        fetchFoodSections();
-    });
-
+    /**
+     * Mostra il modal per la creazione di un nuovo alimento e inizializza i suoi valori.
+     *
+     * Imposta `showFoodModal` a `true` per mostrare il popup e resetta `new_food_item`
+     * con valori vuoti/predefiniti.
+     *
+     * Presuppone che `showFoodModal` e `new_food_item` siano variabili globali o reattive.
+     */
+    function createFoodItem() {
+        showFoodModal = true;
+
+        new_food_item = {
+            name: "", brand: "", barcode: "", kcal: 0,
+            protein: 0, carboids: 0, sugar: 0, fats: 0,
+            saturated_fats: 0, fiber: 0
+        };
+    }
+
+
+
+    /**
+     * Avvia lo scanner barcode utilizzando la libreria `Html5Qrcode` e mostra il modal.
+     *
+     * Dopo aver attivato lo scanner con `facingMode: environment`, ascolta la lettura del codice.
+     * Una volta rilevato il barcode, lo assegna a `new_food_item.barcode`, chiude il modal
+     * e arresta lo scanner.
+     *
+     * Presuppone l’esistenza delle variabili `scanner`, `scanning`, `showScannerModal`,
+     * `new_food_item` e la funzione `tick()` di Svelte per attendere il rendering.
+     */
     async function startScanner() {
         showScannerModal = true;
-        await tick();
+        await tick(); // attende il rendering del DOM
+
         scanner = new Html5Qrcode("barcode-reader");
         scanner.start(
             { facingMode: "environment" },
@@ -1220,9 +461,20 @@
                 showScannerModal = false;
             }
         );
+
         scanning = true;
     }
 
+
+
+    /**
+     * Ferma lo scanner barcode se attivo e ripulisce l’istanza.
+     *
+     * Controlla che `scanner` e `scanning` siano validi prima di chiamare `.stop()` e `.clear()`.
+     * Imposta `scanning` a `false` dopo l'arresto.
+     *
+     * Presuppone che `scanner` e `scanning` siano variabili globali.
+     */
     function stopScanner() {
         if (scanner && scanning) {
             scanner.stop().then(() => {
@@ -1232,6 +484,20 @@
         }
     }
 
+
+
+    /**
+     * Salva un nuovo alimento inviando i suoi dati al backend tramite `POST`.
+     *
+     * I valori vengono estratti da `new_food_item` e inviati all’endpoint `/food-item/create/`.
+     * Dopo il salvataggio:
+     * - chiude il modal (`showFoodModal = false`)
+     * - aggiorna la lista alimenti richiamando `fetchFoodItems()`
+     *
+     * Presuppone che `new_food_item` contenga i dati dell’alimento da creare,
+     * che `getCookie()` restituisca il token CSRF e l’ID utente,
+     * e che esistano `showFoodModal` e `fetchFoodItems()`.
+     */
     async function saveFoodItem() {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-item/create/", {
             method: "POST",
@@ -1256,19 +522,665 @@
 
         if (response.ok) {
             showFoodModal = false;
-            await fetchFoodItems();
+            await fetchFoodItems(); // aggiorna elenco alimenti
         }
     }
+
+
+
+    /**
+     * Salva le modifiche apportate a una scheda alimentare esistente inviando
+     * una richiesta PATCH all'endpoint del backend.
+     *
+     * I dati aggiornati includono le date di inizio/fine e i limiti nutrizionali:
+     * - kcal, proteine, carboidrati, grassi
+     *
+     * Se la richiesta ha successo, l'utente viene reindirizzato alla pagina
+     * delle schede alimentari. In caso contrario, viene mostrato un messaggio
+     * di errore tramite `showError`.
+     *
+     * Presuppone:
+     * - la presenza nel DOM degli elementi `#start_date`, `#end_date`,
+     *   `.max_kcal_value`, `.max_protein_value`, `.max_carbs_value`, `.max_fats_value`
+     * - la funzione `getCookie()` per ottenere il token CSRF
+     * - la funzione `showError()` per mostrare feedback all’utente
+     * - la variabile globale `data.id` con l’ID della scheda alimentare da modificare
+     */
+    async function saveFoodPlan() {
+        // Effettua una richiesta PATCH al backend per aggiornare un piano alimentare esistente
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan/update/${data.id}/`, {
+            method: "PATCH", // Metodo HTTP per aggiornare solo i campi specificati
+            headers: {
+                "Content-Type": "application/json", // Indica che il corpo della richiesta è in formato JSON
+                "Authorization": "Token " + getCookie('csrftoken'), // Aggiunge il token CSRF per autenticazione
+            },
+            // Corpo della richiesta con i dati aggiornati da inviare al server
+            body: JSON.stringify({
+                start_date: document.getElementById("start_date").value, // Data di inizio del piano
+                end_date: document.getElementById("end_date").value,     // Data di fine del piano
+                max_kcal: document.querySelector(".max_kcal_value")?.value,     // Valore massimo di kcal
+                max_protein: document.querySelector(".max_protein_value")?.value, // Valore massimo di proteine
+                max_carbs: document.querySelector(".max_carbs_value")?.value,     // Valore massimo di carboidrati
+                max_fats: document.querySelector(".max_fats_value")?.value        // Valore massimo di grassi
+            })
+        });
+
+        // Se la risposta è positiva (2xx), reindirizza alla pagina dei programmi alimentari
+        if (response.ok) {
+            location.href = "/account/food-programs/";
+        } else {
+            // Altrimenti mostra un messaggio di errore all'utente
+            showError("Errore durante il salvataggio della scheda alimentare!");
+        }
+    }
+
+
+
+    /**
+     * Genera dinamicamente una tabella HTML che rappresenta una scheda alimentare,
+     * includendo sezioni (pasti) e alimenti, con supporto per eliminazione e aggiornamento dei dati.
+     *
+     * La funzione crea righe per ciascuna sezione del piano alimentare, seguite dalle righe degli alimenti
+     * appartenenti a quella sezione. Ogni alimento include un campo input per aggiornare i grammi, un'icona
+     * per eliminarlo, e una serie di celle con i valori nutrizionali calcolati.
+     *
+     * Inoltre aggiorna in tempo reale i totali nutrizionali e sincronizza le variabili globali `total_grams`.
+     *
+     * @function renderFoodPlanTable
+     * @param {Array<Object>} content - Array di oggetti che rappresentano il contenuto da rendere.
+     *        Ogni oggetto ha struttura `{ type: "section" | "food-item", item | food_plan_item, food_item }`.
+     *        - "section": contiene i dati del pasto (nome, orario, ecc.)
+     *        - "food-item": contiene i dati dell’alimento, inclusa quantità e riferimenti all’alimento stesso.
+     * @param {HTMLTableElement} table - Elemento HTML `<table>` in cui verrà renderizzata la struttura completa.
+     *
+     * @global {Object} total_grams - Oggetto globale usato per tracciare i valori nutrizionali totali (kcal, proteine, ecc.).
+     * @global {Function} updateGraphicsLimits - Funzione globale che aggiorna la UI/grafici secondo i nuovi limiti nutrizionali.
+     * @global {Function} getCookie - Funzione per ottenere il token CSRF dai cookie.
+     *
+     * @fires fetch - Vengono effettuate chiamate PATCH e DELETE al backend per aggiornare o eliminare alimenti.
+     * @listens input - Sull’input dei grammi per ogni alimento.
+     * @listens click - Sull’icona di eliminazione di ogni alimento.
+     */
+    function renderFoodPlanTable(content, table) {
+        content.forEach(item => {
+            if (item.type === "section") {
+                // Inserisce una riga separatrice tra le sezioni
+                const rowSeparator = table.insertRow();
+                rowSeparator.classList.add("separator-row");
+
+                // Inserisce una riga con il nome del pasto/sezione
+                const newFoodPlanSection = table.insertRow();
+                newFoodPlanSection.classList.add("meal-name");
+
+                const cell = newFoodPlanSection.insertCell(0);
+                cell.textContent = `${item.item.name} (orario previsto ${item.item.start_time})`;
+                cell.colSpan = 10;
+            } else if (item.type === "food-item") {
+                // Crea una riga per ogni alimento
+                const newFoodItem = table.insertRow();
+                newFoodItem.id = item.food_plan_item.id;
+
+                // Cella per l’icona elimina (trash)
+                const cell1 = newFoodItem.insertCell(0);
+                cell1.classList.add("delete-column");
+
+                const trashIcon = document.createElement("span");
+                trashIcon.classList.add("material-icons");
+                trashIcon.textContent = "delete";
+                trashIcon.style.cursor = "pointer";
+                trashIcon.style.fontSize = "24px";
+                trashIcon.style.color = "red";
+
+                // Gestione click sull’icona di eliminazione alimento
+                trashIcon.addEventListener("click", async function () {
+                    const response = await fetch('http://127.0.0.1:8000/api/v1/data/food-plan-item/delete/' + item.food_plan_item.id + '/', {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
+                        }
+                    });
+
+                    if (response.ok) {
+                        newFoodItem.remove();
+
+                        // Evidenzia la riga totale
+                        const el2 = document.getElementById("totalValueRow");
+                        el2.classList.add("highlight");
+                        setTimeout(() => el2.classList.remove("highlight"), 1000);
+
+                        // Ricalcola tutti i valori nutrizionali totali
+                        const righeValide = document.querySelectorAll("tr:not(.meal-name):not(.separator-row):not(#detailsFoodPlanMobile):not(#totalValueRow)");
+                        const totalRiga = document.getElementById("totalValueRow");
+                        const totalCelle = totalRiga.getElementsByTagName("td");
+
+                        for (let i = 1; i <= 7; i++) totalCelle[i].textContent = 0;
+
+                        righeValide.forEach(riga => {
+                            const celle = [...riga.querySelectorAll("td")];
+                            celle.forEach((cella, index) => {
+                                if (index >= 3 && index <= 9) {
+                                    const val = parseFloat(cella.textContent.replace("g", ""));
+                                    totalCelle[index - 2].textContent = parseFloat(totalCelle[index - 2].textContent) + val;
+                                }
+                            });
+                        });
+
+                        // Arrotonda e formatta i valori
+                        for (let i = 1; i <= 7; i++) {
+                            totalCelle[i].textContent = parseFloat(totalCelle[i].textContent).toFixed(1) + (i > 1 ? "g" : "");
+                        }
+
+                        // Aggiorna le variabili globali
+                        total_grams.kcal = totalCelle[1].textContent;
+                        total_grams.protein = totalCelle[2].textContent;
+                        total_grams.carboids = totalCelle[3].textContent;
+                        total_grams.sugar = totalCelle[4].textContent;
+                        total_grams.fats = totalCelle[5].textContent;
+                        total_grams.satured_fats = totalCelle[6].textContent;
+                        total_grams.fiber = totalCelle[7].textContent;
+                    } else {
+                        // Mostra errore se la DELETE fallisce
+                        const errorBox = document.getElementById("error1");
+                        errorBox.style.display = "block";
+                        errorBox.firstChild.textContent = "Errore durante l'eliminazione dell'alimento dalla scheda alimentare!";
+                        setTimeout(() => {
+                            errorBox.style.display = "none";
+                            errorBox.firstChild.textContent = "";
+                        }, 5000);
+                    }
+                });
+
+                cell1.appendChild(trashIcon);
+
+                // Cella con il nome e brand dell’alimento
+                const cell2 = newFoodItem.insertCell(1);
+                cell2.classList.add("name-column");
+                cell2.textContent = item.food_item.brand
+                    ? `${item.food_item.name} (${item.food_item.brand})`
+                    : item.food_item.name;
+
+                // Cella con input per i grammi
+                const cell3 = newFoodItem.insertCell(2);
+                cell3.classList.add("grams-column");
+                cell3.setAttribute("data-label", item.food_item.name);
+
+                const inputGrams = document.createElement("input");
+                inputGrams.type = "number";
+                inputGrams.value = item.food_plan_item.quantity_in_grams;
+                inputGrams.style.cssText = `
+                    text-align: center;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                    padding: 4px;
+                    font-size: 18px;
+                `;
+
+                // Aggiornamento dei valori al cambio quantità
+                inputGrams.addEventListener("input", async function () {
+                    const newQuantity = parseInt(inputGrams.value, 10);
+
+                    // PATCH della quantità aggiornata
+                    let response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan-item/update/${item.food_plan_item.id}/`, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
+                        },
+                        body: JSON.stringify({
+                            id: item.food_plan_item.id,
+                            quantity_in_grams: newQuantity,
+                        })
+                    });
+
+                    let updatedItem = await response.json();
+
+                    // Rifetch dell’alimento aggiornato
+                    response = await fetch(`http://127.0.0.1:8000/api/v1/data/food-item/${updatedItem.food_item}/`, {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
+                        }
+                    });
+
+                    updatedItem = await response.json();
+
+                    const riga = document.getElementById(item.food_plan_item.id);
+                    const celle = riga.getElementsByTagName("td");
+                    const moltiplicatore = newQuantity / 100;
+
+                    // Aggiorna i valori nella riga
+                    celle[3].textContent = (updatedItem.kcal_per_100g * moltiplicatore).toFixed(1);
+                    celle[4].textContent = (updatedItem.protein_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[5].textContent = (updatedItem.carbs_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[6].textContent = (updatedItem.sugars_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[7].textContent = (updatedItem.fats_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[8].textContent = (updatedItem.saturated_fats_per_100g * moltiplicatore).toFixed(1) + "g";
+                    celle[9].textContent = (updatedItem.fiber_per_100g * moltiplicatore).toFixed(1) + "g";
+
+                    // Evidenzia aggiornamento
+                    riga.classList.add("highlight");
+                    setTimeout(() => riga.classList.remove("highlight"), 1000);
+
+                    const el2 = document.getElementById("totalValueRow");
+                    el2.classList.add("highlight");
+                    setTimeout(() => el2.classList.remove("highlight"), 1000);
+
+                    // Ricalcola i totali
+                    const righeValide = document.querySelectorAll("tr:not(.meal-name):not(.separator-row):not(#detailsFoodPlanMobile):not(#totalValueRow)");
+                    const totalRiga = document.getElementById("totalValueRow");
+                    const totalCelle = totalRiga.getElementsByTagName("td");
+
+                    for (let i = 1; i <= 7; i++) totalCelle[i].textContent = 0;
+
+                    righeValide.forEach(riga => {
+                        const celle = [...riga.querySelectorAll("td")];
+                        celle.forEach((cella, index) => {
+                            if (index >= 3 && index <= 9) {
+                                const val = parseFloat(cella.textContent.replace("g", ""));
+                                totalCelle[index - 2].textContent = parseFloat(totalCelle[index - 2].textContent) + val;
+                            }
+                        });
+                    });
+
+                    for (let i = 1; i <= 7; i++) {
+                        totalCelle[i].textContent = parseFloat(totalCelle[i].textContent).toFixed(1) + (i > 1 ? "g" : "");
+                    }
+
+                    // Aggiorna variabili globali
+                    total_grams.kcal = parseFloat(totalCelle[1].textContent);
+                    total_grams.protein = parseFloat(totalCelle[2].textContent);
+                    total_grams.carboids = parseFloat(totalCelle[3].textContent);
+                    total_grams.sugar = parseFloat(totalCelle[4].textContent);
+                    total_grams.fats = parseFloat(totalCelle[5].textContent);
+                    total_grams.satured_fats = parseFloat(totalCelle[6].textContent);
+                    total_grams.fiber = parseFloat(totalCelle[7].textContent);
+
+                    updateGraphicsLimits();
+                });
+
+                cell3.appendChild(inputGrams);
+
+                // Crea celle con i valori nutrizionali (kcal, proteine, ecc.)
+                const moltiplicatore = item.food_plan_item.quantity_in_grams / 100;
+
+                const creaCella = (val, className, label, isGrammi = true) => {
+                    const cell = newFoodItem.insertCell();
+                    cell.classList.add(className);
+                    cell.setAttribute("data-label", label);
+                    cell.textContent = (val * moltiplicatore).toFixed(1) + (isGrammi ? "g" : "");
+                    return val * moltiplicatore;
+                };
+
+                total_grams.kcal += creaCella(item.food_item.kcal_per_100g, "kcal_column", "Kcal:", false);
+                total_grams.protein += creaCella(item.food_item.protein_per_100g, "protein_column", "Proteine:");
+                total_grams.carboids += creaCella(item.food_item.carbs_per_100g, "carbs_column", "Carboidrati:");
+                total_grams.sugar += creaCella(item.food_item.sugars_per_100g, "sugars_column", "Zuccheri:");
+                total_grams.fats += creaCella(item.food_item.fats_per_100g, "fats_column", "Grassi:");
+                total_grams.satured_fats += creaCella(item.food_item.saturated_fats_per_100g, "satured_fats_column", "Grassi Saturi:");
+                total_grams.fiber += creaCella(item.food_item.fiber_per_100g, "fiber_column", "Fibre:");
+            }
+        });
+    }
+
+
+
+    /**
+     * Crea una riga finale nella tabella del piano alimentare con la somma
+     * dei valori nutrizionali totali (Kcal, proteine, carboidrati, zuccheri, grassi, grassi saturi, fibre).
+     *
+     * @param {HTMLTableElement} table - La tabella HTML in cui inserire la riga dei totali.
+     *
+     * @example
+     * renderTotalRow(document.getElementById("containerFoodPlan"));
+     */
+    function renderTotalRow(table) {
+        // Inserisce una riga vuota come separatore visivo tra sezioni/alimenti e i totali
+        const rowSeparator = table.insertRow();
+        rowSeparator.classList.add("separator-row");
+
+        // Crea la riga finale con i totali dei valori nutrizionali
+        const totalValueRow = table.insertRow();
+        totalValueRow.classList.add("total-name");
+        totalValueRow.id = "totalValueRow";
+
+        // Prima cella: titolo descrittivo della riga
+        const cell1 = totalValueRow.insertCell(0);
+        cell1.innerHTML = "<b>Somma dei valori degli alimenti</b>";
+        cell1.colSpan = 3; // Occupa le colonne di: elimina, nome alimento, grammi
+
+        // Colonna Kcal totale
+        const cell2 = totalValueRow.insertCell(1);
+        cell2.classList.add("kcal_column");
+        cell2.setAttribute("data-label", "Kcal:");
+        cell2.textContent = total_grams.kcal.toFixed(1); // Nessuna "g" perché sono kcal
+
+        // Colonna Proteine totali
+        const cell3 = totalValueRow.insertCell(2);
+        cell3.classList.add("protein_column");
+        cell3.setAttribute("data-label", "Proteine:");
+        cell3.textContent = total_grams.protein.toFixed(1) + "g";
+
+        // Colonna Carboidrati totali
+        const cell4 = totalValueRow.insertCell(3);
+        cell4.classList.add("carbs_column");
+        cell4.setAttribute("data-label", "Carboidrati:");
+        cell4.textContent = total_grams.carboids.toFixed(1) + "g";
+
+        // Colonna Zuccheri totali
+        const cell5 = totalValueRow.insertCell(4);
+        cell5.classList.add("sugars_column");
+        cell5.setAttribute("data-label", "Zuccheri:");
+        cell5.textContent = total_grams.sugar.toFixed(1) + "g";
+
+        // Colonna Grassi totali
+        const cell6 = totalValueRow.insertCell(5);
+        cell6.classList.add("fats_column");
+        cell6.setAttribute("data-label", "Grassi:");
+        cell6.textContent = total_grams.fats.toFixed(1) + "g";
+
+        // Colonna Grassi Saturi totali
+        const cell7 = totalValueRow.insertCell(6);
+        cell7.classList.add("satured_fats_column");
+        cell7.setAttribute("data-label", "Grassi Saturi:");
+        cell7.textContent = total_grams.satured_fats.toFixed(1) + "g";
+
+        // Colonna Fibre totali
+        const cell8 = totalValueRow.insertCell(7);
+        cell8.classList.add("fiber_column");
+        cell8.setAttribute("data-label", "Fibre:");
+        cell8.textContent = total_grams.fiber.toFixed(1) + "g";
+    }
+
+
+
+
+    /**
+     * Inizializza il componente al montaggio caricando e popolando dinamicamente
+     * la scheda alimentare completa da backend.
+     *
+     * Operazioni principali eseguite:
+     *
+     * 1. Recupera i dati della scheda alimentare tramite `GET /food-plan/:id/`
+     * 2. Popola input di data (`start_date`, `end_date`) e limiti nutrizionali
+     * 3. Sincronizza automaticamente tutti gli input con classi simili tra loro
+     * 4. Assegna eventi di input per ricalcolare automaticamente le kcal totali
+     * 5. Calcola i limiti nutrizionali derivati (zuccheri, fibre, grassi saturi)
+     * 6. Costruisce dinamicamente una tabella HTML con sezioni e alimenti associati
+     * 7. Per ogni alimento:
+     *    - permette modifica dei grammi
+     *    - aggiorna i valori nutrizionali in tempo reale
+     *    - consente eliminazione con icona `delete`
+     * 8. Aggiunge una riga finale con la somma totale dei valori nutrizionali
+     * 9. Richiama `updateGraphicsLimits()` per evidenziare valori fuori limite
+     * 10. Richiama `fetchFoodItems()` e `fetchFoodSections()` per aggiornare i dati
+     *
+     * Requisiti:
+     * - `data.id`: ID della scheda alimentare da caricare
+     * - `total_grams`, `limit_grams`: oggetti globali per il calcolo dei valori
+     * - Funzioni: `getCookie()`, `updateGraphicsLimits()`, `autoCalculationKCal()`,
+     *   `fetchFoodItems()`, `fetchFoodSections()`
+     * - Elementi HTML: input per date e valori nutrizionali, tabella `#containerFoodPlan`,
+     *   sezioni con id `start_date`, `end_date`, `error1`, ecc.
+     *
+     * Nota: l'intero flusso è eseguito all'interno di `onMount()` quindi avviene
+     * solo una volta al caricamento del componente.
+     */
+    onMount(async() => {
+        // Recupera la scheda alimentare dal backend
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/" + data.id + "/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+
+        const food_plan = await response.json();
+
+        // Formatto e assegno le date nel formato yyyy-mm-dd per input type="date"
+        const formattedStartDate = food_plan.start_date.split('/').reverse().join('-');
+        document.getElementById("start_date").value = formattedStartDate;
+        const formattedEndDate = food_plan.end_date.split('/').reverse().join('-');
+        document.getElementById("end_date").value = formattedEndDate;
+
+        // Funzione per sincronizzare gli input duplicati (es. desktop e mobile)
+        function syncInputs(className) {
+            document.querySelectorAll(`.${className}`).forEach(input => {
+                input.addEventListener("input", (event) => {
+                    document.querySelectorAll(`.${className}`).forEach(el => {
+                        if (el !== event.target) { // Evita di riassegnare il valore a chi ha attivato l'evento
+                            el.value = event.target.value;
+                        }
+                    });
+                });
+            });
+        }
+
+        // Imposta i valori iniziali dei limiti nutrizionali
+        document.querySelectorAll(".max_kcal_value").forEach(el => {
+            el.value = food_plan.max_kcal;
+        });
+        document.querySelectorAll(".max_protein_value").forEach(el => {
+            el.value = food_plan.max_protein;
+        });
+        document.querySelectorAll(".max_carbs_value").forEach(el => {
+            el.value = food_plan.max_carbs;
+        });
+        document.querySelectorAll(".max_fats_value").forEach(el => {
+            el.value = food_plan.max_fats;
+        });
+
+        // Sincronizza gli input tra loro
+        syncInputs("max_kcal_value");
+        syncInputs("max_protein_value");
+        syncInputs("max_carbs_value");
+        syncInputs("max_fats_value");
+
+        // Aggiunge evento per ricalcolare le kcal quando si modificano proteine, carboidrati o grassi
+        [".max_protein_value", ".max_carbs_value", ".max_fats_value"].forEach(className => {
+            document.querySelectorAll(className).forEach(input => {
+                input.addEventListener("input", autoCalculationKCal);
+            });
+        });
+
+        // Calcola i limiti nutrizionali in grammi in base alle kcal totali
+        limit_grams.max_kcal = parseFloat(food_plan.max_kcal);
+        limit_grams.max_protein = parseFloat(food_plan.max_protein);
+        limit_grams.max_carboids = parseFloat(food_plan.max_carbs);
+        limit_grams.min_sugar = parseFloat(((food_plan.max_kcal*0.05)/4).toFixed(1));
+        limit_grams.max_sugar = parseFloat(((food_plan.max_kcal*0.1)/4).toFixed(1));
+        limit_grams.max_fats = parseFloat(food_plan.max_fats);
+        limit_grams.max_satured_fats = parseFloat(((food_plan.max_kcal*0.1)/9).toFixed(1));
+        limit_grams.min_fiber = parseFloat(((food_plan.max_kcal/1000)*14).toFixed(1));
+
+        // Aggiorna il DOM con i limiti calcolati
+        document.getElementById("max_sugars").innerText = limit_grams.min_sugar + "-" + limit_grams.max_sugar + "g";
+        document.getElementById("max_saturated_sugars").innerText = limit_grams.max_satured_fats + "g";
+        document.getElementById("max_fiber").innerText = "almeno " + limit_grams.min_fiber + "g";
+
+        // Prepara il contenuto tabella partendo dagli alimenti raggruppati per sezione
+        let food_items = food_plan.food_items;
+        const table = document.getElementById("containerFoodPlan");
+
+        // Raggruppiamo gli alimenti per sezione
+        const groupedByFoodSection = food_items.reduce((acc, item) => {
+            if (!acc[item.food_section]) {
+                acc[item.food_section] = [];
+            }
+            acc[item.food_section].push(item);
+            return acc;
+        }, {});
+
+        const food_items_sections_id = Object.keys(groupedByFoodSection);
+        let sections = [];
+
+        // Fetch parallelo per ogni sezione di pasto
+        const sectionRequests = food_items_sections_id.map(async (id) => {
+            const response_section = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan-section/${id}/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                }
+            });
+
+            return response_section.json();
+        });
+
+        sections = await Promise.all(sectionRequests);
+        sections.sort((a, b) => a.start_time - b.start_time); // Ordina le sezioni per orario
+
+        // Riempie il contenuto globale alternando sezione e alimento
+        sections.forEach(item => {
+            content.push({ type: "section", item });
+
+            const key = item.id.toString();
+            const vector_food_items = groupedByFoodSection[key];
+
+            vector_food_items.forEach(item2 => {
+                content.push({
+                    type: "food-item",
+                    food_plan_item: item2,
+                    food_item: {} // Per ora vuoto, lo popoleremo dopo
+                });
+            });
+        });
+
+        // Recupera i dettagli di ogni alimento (fetch parallelo)
+        const foodRequests = content
+            .filter(item => item.type === "food-item")
+            .map(async (item) => {
+                const response_food = await fetch(`http://127.0.0.1:8000/api/v1/data/food-item/${item.food_plan_item.food_item}/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Token " + getCookie('csrftoken'),
+                    }
+                });
+
+                item.food_item = await response_food.json();
+            });
+
+        await Promise.all(foodRequests);
+
+        // Genera dinamicamente la tabella HTML: intestazioni sezioni e righe alimenti
+        renderFoodPlanTable(content, table)
+
+        // Aggiunge riga separatrice e totale finale
+        renderTotalRow(table);
+
+        updateGraphicsLimits()
+        fetchFoodItems();
+        fetchFoodSections();
+    });
 </script>
 
+<!-- Contenitore intestazione della pagina della scheda alimentare -->
+<div class="container">
+    <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda alimentare</h1></div>
+    <div id="section_date">
+        <p><b>Data inizio:</b> <input type="date" id="start_date" required></p>
+        <p><b>Data fine:</b> <input type="date" id="end_date" required></p>
+    </div>
+</div>
+
+<!-- Contenitore per messaggi di errore -->
+<div class="error" id="error1">
+    <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
+</div>
+
+<!-- Contenitore principale del form -->
+<div class="form-container">
+    <!-- Tabella responsiva per la visualizzazione della scheda alimentare -->
+    <table class="responsive-table">
+        <thead>
+        <tr>
+            <!-- Intestazioni principali delle colonne -->
+            <th rowspan="2" colspan="2" class="header-title name-column">Nome</th>
+            <th rowspan="2" class="header-title">Grammi</th>
+            <th class="header-title kcal_column">Kcal</th>
+            <th class="header-title protein_column">Proteine</th>
+            <th class="header-title carbs_column">Carboidrati</th>
+            <th class="header-title sugars_column">Zuccheri</th>
+            <th class="header-title fats_column">Grassi</th>
+            <th class="header-title satured_fats_column">Grassi Saturi</th>
+            <th class="header-title fiber_column">Fibre</th>
+        </tr>
+        <tr>
+            <!-- Seconda riga di intestazioni con input per limiti nutrizionali -->
+            <!-- I valori inseriti saranno usati per i calcoli e i filtri -->
+            <th class="header-limits kcal_column" id="max_kcal">
+                <input type="number" placeholder="Max Kcal..." class="max_kcal_value" on:blur={autoCalculationKCal}>
+            </th>
+            <th class="header-limits protein_column" id="max_protein">
+                <input type="number" placeholder="Max Proteine..." class="max_protein_value" on:blur={autoCalculationKCal}>
+            </th>
+            <th class="header-limits carbs_column" id="max_carbs">
+                <input type="number" placeholder="Max Carboidrati..." class="max_carbs_value" on:blur={autoCalculationKCal}>
+            </th>
+            <!-- Celle vuote: i valori verranno inseriti dinamicamente da JS -->
+            <th class="header-limits sugars_column" id="max_sugars"></th>
+            <th class="header-limits fats_column" id="max_fats">
+                <input type="number" placeholder="Max Grassi..." class="max_fats_value" on:blur={autoCalculationKCal}>
+            </th>
+            <th class="header-limits satured_fats_column" id="max_saturated_sugars"></th>
+            <th class="header-limits fiber_column" id="max_fiber"></th>
+        </tr>
+        </thead>
+
+        <!-- Corpo della tabella: alimenti e sezioni vengono inseriti dinamicamente -->
+        <tbody id="containerFoodPlan">
+        <!-- Riga alternativa per inserimento limiti su dispositivi mobili -->
+        <tr id="detailsFoodPlanMobile">
+            <td data-label="Max Kcal:">
+                <input type="number" placeholder="Max Kcal..." class="max_kcal_value" on:blur={autoCalculationKCal}>
+            </td>
+            <td data-label="Max Proteine:">
+                <input type="number" placeholder="Max Proteine..." class="max_protein_value" on:blur={autoCalculationKCal}>
+            </td>
+            <td data-label="Max Carboidrati:">
+                <input type="number" placeholder="Max Carboidrati..." class="max_carbs_value" on:blur={autoCalculationKCal}>
+            </td>
+            <td data-label="Max Grassi:">
+                <input type="number" placeholder="Max Grassi..." class="max_fats_value" on:blur={autoCalculationKCal}>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Bottone per aggiungere una nuova sezione/pasto alla scheda -->
+<button on:click={() => showModal = true}>Aggiungi pasto</button>
+
+<!-- Separatore visuale tra sezione e azioni -->
+<div class="separator-row"></div>
+
+<!-- Bottone per salvare le modifiche alla scheda alimentare -->
+<button on:click={saveFoodPlan}>Modifica scheda alimentare</button>
+
+<!-- Modal principale per l'aggiunta di un nuovo pasto -->
 {#if showModal}
     <div class="modal">
         <div class="modal-content">
             <h3>Aggiungi Pasto</h3>
+
+            <!-- Sezione contenente la ricerca alimenti e i dettagli -->
             <div class="modal-container">
+
+                <!-- Sezione ricerca alimento -->
                 <div class="food-search">
                     <label for="search">Cerca alimento:</label>
-                    <input type="text" id="search" bind:value={searchQuery} on:input={filterFoodItems} placeholder="Cerca alimento...">
+                    <input
+                            type="text"
+                            id="search"
+                            bind:value={searchQuery}
+                            on:input={filterFoodItems}
+                            placeholder="Cerca alimento..."
+                    />
+
+                    <!-- Lista filtrata di alimenti disponibili -->
                     <ul class="food-list">
                         {#each filteredFoodItems as food}
                             {#if food.brand == null}
@@ -1278,52 +1190,49 @@
                             {/if}
                         {/each}
                     </ul>
+
+                    <!-- Pulsante per creare un nuovo alimento manualmente -->
                     <button style="margin-top: 10px; width: 100%;" on:click={createFoodItem}>
                         Crea nuovo alimento
                     </button>
                 </div>
+
+                <!-- Dettagli dell'alimento selezionato -->
                 <div class="food-details">
                     {#if selectedFood}
-                        {#if selectedFood.brand == null}
-                            <h3>{selectedFood.name}</h3>
-                        {:else}
-                            <h3>{selectedFood.name} ({selectedFood.brand})</h3>
-                        {/if}
+                        <h3>
+                            {selectedFood.name}
+                            {#if selectedFood.brand}
+                                ({selectedFood.brand})
+                            {/if}
+                        </h3>
+
                         <p style="text-align: center">Valori nutrizionali per 100g</p>
-                        <div>
-                            <p><b>Kcal:</b></p>
-                            <p>{selectedFood.kcal_per_100g.toFixed(1)}</p>
-                        </div>
-                        <div>
-                            <p><b>Proteine:</b></p>
-                            <p>{selectedFood.protein_per_100g.toFixed(1)}g</p>
-                        </div>
-                        <div>
-                            <p><b>Carboidrati:</b></p>
-                            <p>{selectedFood.carbs_per_100g.toFixed(1)}g</p>
-                        </div>
-                        <div>
-                            <p><b>Zuccheri:</b></p>
-                            <p>{selectedFood.sugars_per_100g.toFixed(1)}g</p>
-                        </div>
-                        <div>
-                            <p><b>Grassi:</b></p>
-                            <p>{selectedFood.fats_per_100g.toFixed(1)}g</p>
-                        </div>
-                        <div>
-                            <p><b>Grassi Saturi:</b></p>
-                            <p>{selectedFood.saturated_fats_per_100g.toFixed(1)}g</p>
-                        </div>
-                        <div>
-                            <p><b>Fibre:</b></p>
-                            <p>{selectedFood.fiber_per_100g.toFixed(1)}g</p>
-                        </div>
+
+                        <!-- Valori nutrizionali visualizzati -->
+                        <div><p><b>Kcal:</b></p><p>{selectedFood.kcal_per_100g.toFixed(1)}</p></div>
+                        <div><p><b>Proteine:</b></p><p>{selectedFood.protein_per_100g.toFixed(1)}g</p></div>
+                        <div><p><b>Carboidrati:</b></p><p>{selectedFood.carbs_per_100g.toFixed(1)}g</p></div>
+                        <div><p><b>Zuccheri:</b></p><p>{selectedFood.sugars_per_100g.toFixed(1)}g</p></div>
+                        <div><p><b>Grassi:</b></p><p>{selectedFood.fats_per_100g.toFixed(1)}g</p></div>
+                        <div><p><b>Grassi Saturi:</b></p><p>{selectedFood.saturated_fats_per_100g.toFixed(1)}g</p></div>
+                        <div><p><b>Fibre:</b></p><p>{selectedFood.fiber_per_100g.toFixed(1)}g</p></div>
                     {/if}
                 </div>
             </div>
+
             <div class="separator-row"></div>
+
+            <!-- Input per la quantità in grammi -->
             <label for="quantity">Quantità alimento (in grammi):</label>
-            <input type="number" id="quantity" bind:value={selectedQuantity} placeholder="Quantità alimento...">
+            <input
+                    type="number"
+                    id="quantity"
+                    bind:value={selectedQuantity}
+                    placeholder="Quantità alimento..."
+            />
+
+            <!-- Selezione della sezione (pasto) -->
             <label for="section">Sezione alimento:</label>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <select id="section" bind:value={selectedSection}>
@@ -1332,37 +1241,62 @@
                         <option value={section.id}>{section.name}</option>
                     {/each}
                 </select>
+
+                <!-- Pulsante per creare una nuova sezione -->
                 <button on:click={createFoodItemSection}>Crea nuova sezione</button>
             </div>
+
             <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
             <button on:click={addMeal}>Aggiungi</button>
             <button class="close-button" on:click={() => showModal = false}>Annulla</button>
         </div>
     </div>
 {/if}
 
+<!-- Modal per la creazione di una nuova sezione (pasto) -->
 {#if showSectionModal}
     <div class="modal">
         <div class="modal-content" style="width: 500px">
             <h3>Nuova Sezione</h3>
-            <label for="newSectionName">Nome sezione:</label>
-            <input type="text" id="newSectionName" bind:value={newSectionName} placeholder="Nome sezione... (ad esempio, Colazione, Pranzo, ...)" />
 
+            <!-- Input nome sezione -->
+            <label for="newSectionName">Nome sezione:</label>
+            <input
+                    type="text"
+                    id="newSectionName"
+                    bind:value={newSectionName}
+                    placeholder="Nome sezione... (ad esempio, Colazione, Pranzo, ...)"
+            />
+
+            <!-- Input orario previsto -->
             <label for="newSectionTime" style="margin-top: 10px;">Orario previsto (solo ora):</label>
-            <input type="number" id="newSectionTime" min="0" max="24" bind:value={newSectionTime} placeholder="Orario previsto del pasto..." />
+            <input
+                    type="number"
+                    id="newSectionTime"
+                    min="0"
+                    max="24"
+                    bind:value={newSectionTime}
+                    placeholder="Orario previsto del pasto..."
+            />
 
             <div class="separator-row"></div>
-            <button on:click={submitNewSection}>Salva</button>
+
+            <!-- Pulsanti -->
+            <button on:click={saveFoodItemSection}>Salva</button>
             <button class="close-button" on:click={() => showSectionModal = false}>Annulla</button>
         </div>
     </div>
 {/if}
 
+<!-- Modal per la creazione di un nuovo alimento -->
 {#if showFoodModal}
     <div class="modal">
         <div class="modal-content food-item-add" style="width: 800px">
             <h3>Nuovo Alimento</h3>
 
+            <!-- Nome e marca -->
             <div class="form-group">
                 <div class="input-container">
                     <label for="name">Nome:</label>
@@ -1374,14 +1308,14 @@
                 </div>
             </div>
 
+            <!-- Barcode -->
             <label>Barcode:</label>
             <div style="display: flex; align-items: center; gap: 10px;">
                 <input bind:value={new_food_item.barcode} type="text" placeholder="Inserisci barcode manualmente..." />
-                <button type="button" on:click={startScanner}>
-                    Inserisci barcode tramite fotocamera
-                </button>
+                <button type="button" on:click={startScanner}>Inserisci barcode tramite fotocamera</button>
             </div>
 
+            <!-- Valori nutrizionali per 100g -->
             <div class="form-group">
                 <div class="input-container">
                     <label for="kcal">Chilocalorie (Kcal) per 100g:</label>
@@ -1423,12 +1357,15 @@
             </div>
 
             <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
             <button on:click={saveFoodItem}>Aggiungi</button>
             <button class="close-button" on:click={() => showFoodModal = false}>Annulla</button>
         </div>
     </div>
 {/if}
 
+<!-- Modal per la scansione barcode tramite fotocamera -->
 {#if showScannerModal}
     <div class="modal">
         <div class="modal-content" style="width: 90%; max-width: 500px;">

@@ -1,6 +1,5 @@
-.main-content {
-    padding: 0px;
-}
+.main-content { padding: 0px; }
+
 .section {
     min-height: 80vh;
     display: flex;
@@ -8,13 +7,9 @@
     align-items: center;
     text-align: center;
 }
-.section * {
-    color: white;
-    z-index: 1;
-}
-.home h1, .chi-siamo h1 {
-    font-size: 3em;
-}
+.section * { color: white; z-index: 1; }
+
+.home h1, .chi-siamo h1 { font-size: 3em; }
 .home {
     position: relative;
     background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Gym_Free-weights_Area.jpg/800px-Gym_Free-weights_Area.jpg');
@@ -32,6 +27,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
 }
+
 .chi-siamo {
     position: relative;
     display: flex;
@@ -54,6 +50,7 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
 }
+
 .contatti {
     display: flex;
     flex-direction: column;
@@ -61,10 +58,5 @@
     justify-content: center;
     padding: 20px;
 }
-.contatti h2, .contatti p {
-    color: #000100;
-}
-.contatti p {
-    font-size: 1.2em;
-    margin-top: 20px;
-}
+.contatti h2, .contatti p { color: #000100; }
+.contatti p { font-size: 1.2em; margin-top: 20px; }

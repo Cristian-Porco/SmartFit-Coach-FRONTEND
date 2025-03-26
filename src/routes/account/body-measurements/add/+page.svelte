@@ -1,5 +1,5 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="/css/account/body-measurements/style_add_body_measurements.css">
+    <link rel="stylesheet" type="text/css" href="/css/account/body-measurements/style_add_edit_body_measurements.css">
 </head>
 
 <h2 class="titlePage">Misure corporee</h2>

@@ -412,11 +412,25 @@
                     "Authorization": "Token " + getCookie('csrftoken'),
                 }
             });
-            if (!response.ok) throw new Error("Errore nel caricamento degli alimenti");
+            if (!response.ok) {
+                document.getElementById("error1").style.display = "block";
+                document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento degli alimenti!";
+
+                setTimeout(() => {
+                    document.getElementById("error1").style.display = "none";
+                    document.getElementById("error1").firstChild.textContent = "";
+                }, 5000);
+            }
             foodItems = await response.json();
             filteredFoodItems = foodItems;
         } catch (error) {
-            // TODO: visualizzare errori
+            document.getElementById("error1").style.display = "block";
+            document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento degli alimenti!";
+
+            setTimeout(() => {
+                document.getElementById("error1").style.display = "none";
+                document.getElementById("error1").firstChild.textContent = "";
+            }, 5000);
         }
     }
 
@@ -431,18 +445,33 @@
                 }
             });
             if (!response.ok) {
-                // TODO: visualizzare errori
+                document.getElementById("error1").style.display = "block";
+                document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento delle sezioni degli alimenti!";
+
+                setTimeout(() => {
+                    document.getElementById("error1").style.display = "none";
+                    document.getElementById("error1").firstChild.textContent = "";
+                }, 5000);
             }
             foodSections = await response.json();
         } catch (error) {
-            // TODO: visualizzare errori
+            document.getElementById("error1").style.display = "block";
+            document.getElementById("error1").firstChild.textContent = "Errore durante il caricamento delle sezioni degli alimenti!";
+
+            setTimeout(() => {
+                document.getElementById("error1").style.display = "none";
+                document.getElementById("error1").firstChild.textContent = "";
+            }, 5000);
         }
     }
 
     // Filtra gli alimenti in base alla ricerca
     function filterFoodItems() {
+        const query = searchQuery.toLowerCase();
+
         filteredFoodItems = foodItems.filter(item =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            item.name.toLowerCase().includes(query) ||
+            item.brand?.toLowerCase().includes(query)
         );
     }
 
@@ -473,7 +502,13 @@
         if(response.ok) {
             location.reload();
         } else {
-            // TODO: visualizzare errori
+            document.getElementById("error1").style.display = "block";
+            document.getElementById("error1").firstChild.textContent = "Errore durante l'aggiunta dell'alimento alla scheda alimentare!";
+
+            setTimeout(() => {
+                document.getElementById("error1").style.display = "none";
+                document.getElementById("error1").firstChild.textContent = "";
+            }, 5000);
         }
     }
 
@@ -541,7 +576,13 @@
         if(response.ok) {
             location.href = "/account/food-programs/";
         } else {
-            // TODO: visualizzare errori
+            document.getElementById("error1").style.display = "block";
+            document.getElementById("error1").firstChild.textContent = "Errore durante il salvataggio della scheda alimentare!";
+
+            setTimeout(() => {
+                document.getElementById("error1").style.display = "none";
+                document.getElementById("error1").firstChild.textContent = "";
+            }, 5000);
         }
     }
 
@@ -646,6 +687,19 @@
 
     function createFoodItem() {
         showFoodModal = true;
+
+        new_food_item = {
+            "name": "",
+            "brand": "",
+            "barcode": "",
+            "kcal": 0,
+            "protein": 0,
+            "carboids": 0,
+            "sugar": 0,
+            "fats": 0,
+            "saturated_fats": 0,
+            "fiber": 0
+        }
     }
 
     function createFoodItemSection() {
@@ -674,7 +728,13 @@
             newSectionTime = "";
             await fetchFoodSections(); // aggiorna l'elenco delle sezioni
         } else {
-            // TODO: visualizzare errori
+            document.getElementById("error1").style.display = "block";
+            document.getElementById("error1").firstChild.textContent = "Errore durante la creazione della sezione alimentare!";
+
+            setTimeout(() => {
+                document.getElementById("error1").style.display = "none";
+                document.getElementById("error1").firstChild.textContent = "";
+            }, 5000);
         }
     }
 
@@ -908,14 +968,23 @@
                         total_grams.satured_fats = totalCelle[6].textContent;
                         total_grams.fiber = totalCelle[7].textContent;
                     } else {
-                        // TODO: visualizzare errori
+                        document.getElementById("error1").style.display = "block";
+                        document.getElementById("error1").firstChild.textContent = "Errore durante l'eliminazione dell'alimento dalla scheda alimentare!";
+
+                        setTimeout(() => {
+                            document.getElementById("error1").style.display = "none";
+                            document.getElementById("error1").firstChild.textContent = "";
+                        }, 5000);
                     }
                 });
 
                 cell1.appendChild(trashIcon);
                 const cell2 = newFoodItem.insertCell(1);
                 cell2.classList.add("name-column");
-                cell2.textContent = item.food_item.name;
+                if(item.food_item.brand !== null)
+                    cell2.textContent = item.food_item.name + " (" + item.food_item.brand +")";
+                else
+                    cell2.textContent = item.food_item.name;
 
                 const cell3 = newFoodItem.insertCell(2);
                 cell3.classList.add("grams-column");
@@ -1149,9 +1218,6 @@
                 new_food_item.barcode = decodedText;
                 stopScanner();
                 showScannerModal = false;
-            },
-            (errorMessage) => {
-                console.warn(errorMessage);
             }
         );
         scanning = true;
@@ -1162,7 +1228,7 @@
             scanner.stop().then(() => {
                 scanning = false;
                 scanner.clear();
-            }).catch(err => console.error("Errore arresto scanner", err));
+            });
         }
     }
 
@@ -1174,27 +1240,23 @@
                 "Authorization": "Token " + getCookie('csrftoken'),
             },
             body: JSON.stringify({
-                // TODO: aggiustare aggiunta JSON Food Item
-                name,
-                brand,
-                barcode,
-                kcal_per_100g: kcal,
-                protein_per_100g: protein,
-                carbs_per_100g: carbs,
-                sugars_per_100g: sugars,
-                fats_per_100g: fats,
-                saturated_fats_per_100g: saturatedFats,
-                fiber_per_100g: fiber
+                name: new_food_item.name,
+                brand: new_food_item.brand,
+                barcode: new_food_item.barcode,
+                kcal_per_100g: new_food_item.kcal,
+                protein_per_100g: new_food_item.protein,
+                carbs_per_100g: new_food_item.carboids,
+                sugars_per_100g: new_food_item.sugar,
+                fats_per_100g: new_food_item.fats,
+                saturated_fats_per_100g: new_food_item.saturated_fats,
+                fiber_per_100g: new_food_item.fiber,
+                author: getCookie('pk')
             })
         });
 
-        // TODO: controllare se funziona
-
         if (response.ok) {
-            alert("Alimento creato con successo");
             showFoodModal = false;
-        } else {
-            alert("Errore durante la creazione dell'alimento");
+            await fetchFoodItems();
         }
     }
 </script>
@@ -1209,7 +1271,11 @@
                     <input type="text" id="search" bind:value={searchQuery} on:input={filterFoodItems} placeholder="Cerca alimento...">
                     <ul class="food-list">
                         {#each filteredFoodItems as food}
-                            <li on:click={() => selectFood(food)}>{food.name}</li>
+                            {#if food.brand == null}
+                                <li on:click={() => selectFood(food)}>{food.name}</li>
+                            {:else}
+                                <li on:click={() => selectFood(food)}>{food.name} ({food.brand})</li>
+                            {/if}
                         {/each}
                     </ul>
                     <button style="margin-top: 10px; width: 100%;" on:click={createFoodItem}>
@@ -1218,7 +1284,11 @@
                 </div>
                 <div class="food-details">
                     {#if selectedFood}
-                        <h3>{selectedFood.name}</h3>
+                        {#if selectedFood.brand == null}
+                            <h3>{selectedFood.name}</h3>
+                        {:else}
+                            <h3>{selectedFood.name} ({selectedFood.brand})</h3>
+                        {/if}
                         <p style="text-align: center">Valori nutrizionali per 100g</p>
                         <div>
                             <p><b>Kcal:</b></p>

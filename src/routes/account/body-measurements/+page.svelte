@@ -1,68 +1,5 @@
 <head>
-    <style>
-        .icon-sidebar {
-            display: flex;
-        }
-        .sidebar {
-            display: none;
-        }
-        .main-content {
-            min-width: 800px;
-            max-width: 800px;
-        }
-        .body-measurements-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            transition: transform 0.2s;
-        }
-        .body-measurements-item:first-child {
-            font-size: 50px !important;
-        }
-        .body-measurements-item:first-child .details .date {
-            font-size: 16px;
-        }
-        .body-measurements-item .details {
-            display: block;
-            justify-content: flex-start;
-            align-items: center;
-        }
-        .body-measurements-item .details .average {
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        .body-measurements-item .details .date {
-            color: #777;
-        }
-        .body-measurements-item .buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .body-measurements-item .buttons button {
-            padding: 10px 15px;
-            color: white;
-            cursor: pointer;
-            height: 100%;
-            margin: 0
-        }
-        .body-measurements-item .buttons .delete-btn {
-            background: red;
-        }
-        .body-measurements-item .buttons .delete-btn:hover {
-            background: #a62f28;
-        }
-        .body-measurements-item:last-child {
-            border-bottom: none;
-        }
-        @media (max-width: 768px) {
-            .main-content {
-                width: 100%;
-                min-width: 100%;
-            }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/account/body-measurements/style_home_body_measurements.css">
 </head>
 
 <h2 class="titlePage">Misure corporee</h2>
@@ -80,9 +17,7 @@
 
 <script>
     import { onMount } from "svelte";
-    import Chart from "chart.js/auto";
-    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
-    import { redirect } from "@sveltejs/kit";
+    import { getCookie } from 'svelte-cookie';
 
     let chartCanvas;
     let selectedId = null;

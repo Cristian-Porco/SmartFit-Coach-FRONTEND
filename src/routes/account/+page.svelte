@@ -1,60 +1,5 @@
 <head>
-    <style>
-        .icon-sidebar {
-            display: flex;
-        }
-        .sidebar {
-            display: none;
-        }
-        .main-content {
-            min-width: 800px;
-            max-width: 800px;
-        }
-        .recap {
-            height: 40vh;
-            background: linear-gradient(to right, #007bff, #00d4ff);
-            padding: 25px;
-            margin-bottom: 25px;
-            border-radius: 25px;
-        }
-        .recap h2 {
-            color: white;
-            font-size: 50px;
-        }
-        .recap p {
-            color: white;
-        }
-
-        /* Stile per il form */
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .input-container {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                width: 100%;
-                min-width: 100%;
-            }
-            .form-group {
-                flex-direction: column;
-            }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/account/style_account.css">
 </head>
 
 <div class="recap">
@@ -110,6 +55,7 @@
         </div>
     </div>
     <div class="input-container">
+        <!-- TODO: implementare upload immagine di profilo -->
         <label for="file">Immagine di profilo:</label>
         <input type="file" id="file" name="file" bind:value={account.profile_picture} >
     </div>

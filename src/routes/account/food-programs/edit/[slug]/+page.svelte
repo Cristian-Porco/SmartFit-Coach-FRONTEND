@@ -1,5 +1,6 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="/css/account/food-programs/edit/style_edit_food_programs.css">
+    <!-- TODO: aggiustare CSS pop-up per renderlo responsive -->
+    <link rel="stylesheet" type="text/css" href="/css/account/food-programs/style_edit_food_programs.css">
 </head>
 
 <script>

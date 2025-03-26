@@ -1,51 +1,5 @@
 <head>
-    <style>
-        .icon-sidebar {
-            display: flex;
-        }
-        .sidebar {
-            display: none;
-        }
-        .main-content {
-            min-width: 800px;
-            max-width: 800px;
-        }
-        /* Stile per il form */
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .form-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .input-container {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            flex-direction: column;
-        }
-        @media (max-width: 768px) {
-            .main-content {
-                width: 100%;
-                min-width: 100%;
-            }
-            .form-group {
-                flex-direction: column;
-            }
-        }
-        @keyframes glow {
-            0% { background-color: #007bff; }
-            50% { background-color: #80bfff; }
-            100% { background-color: #f1f5f9; }
-        }
-
-        .highlight {
-            animation: glow 1s ease-in-out;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/account/food-programs/style_add_food_programs.css">
 </head>
 
 <p><b>Aggiungi</b></p>

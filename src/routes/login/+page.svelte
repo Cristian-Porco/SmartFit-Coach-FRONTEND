@@ -1,26 +1,5 @@
 <head>
-    <style>
-        .main-content {
-            padding: 0px;
-            text-align: center; /* Per centrare il testo */
-        }
-        .login-page {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-        .login-container {
-            width: 100%;
-        }
-        .login-container h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-        .login-container button {
-            margin-top: 1.5rem;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/login/style_login.css">
 </head>
 
 <div class="login-page">

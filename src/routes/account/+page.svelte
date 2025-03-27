@@ -55,9 +55,8 @@
         </div>
     </div>
     <div class="input-container">
-        <!-- TODO: implementare upload immagine di profilo -->
         <label for="file">Immagine di profilo:</label>
-        <input type="file" id="file" name="file" bind:value={account.profile_picture} >
+        <input type="file" id="file" name="file" accept="image/*" on:change={handleFileChange}>
     </div>
     <div class="form-group">
         <button type="submit">Aggiorna dati</button>
@@ -111,6 +110,9 @@
     let account = {}
     let first_username = "";
 
+    let selectedFile = null;
+    let accountId = 1;
+
     onMount(async () => {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
             method: "GET",
@@ -130,6 +132,10 @@
 
         first_username = account.username;
     });
+
+    function handleFileChange(event) {
+        selectedFile = event.target.files[0];
+    }
 
     async function updateDetails(event) {
         event.preventDefault();
@@ -164,7 +170,7 @@
 
         if(response1.ok){
             const response2 = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
-                method: "PUT",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Token " + getCookie('csrftoken'),
@@ -173,25 +179,46 @@
                     author: account.author,
                     date_of_birth: account.date_of_birth,
                     biological_gender: account.biological_gender,
-                    height_cm: account.height_cm,
-                    profile_picture: account.profile_picture
+                    height_cm: account.height_cm
                 })
             });
 
             const data2 = await response2.json();
-            console.log(data2);
 
             if(response2.ok){
-                document.getElementById("error1").style.display = "none";
-                document.getElementById("warning1").style.display = "none";
-                document.getElementById("info1").style.display = "block";
-                document.getElementById("info1").firstChild.textContent = "Dati anagrafici aggiornati!";
-                window.location.href = "#updateDetailsForm";
+                if(selectedFile) {
+                    const formData = new FormData();
+                    formData.append("profile_picture", selectedFile);
 
-                setTimeout(() => {
-                    document.getElementById("info1").style.display = "none";
-                    document.getElementById("error1").firstChild.textContent = "";
-                }, 5000);
+                    const response3 = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
+                        method: "PATCH",
+                        body: formData,
+                        headers: {
+                            "Authorization": "Token " + getCookie('csrftoken')
+                        }
+                    });
+
+                    if (!response3.ok) {
+                        document.getElementById("error1").style.display = "block";
+                        document.getElementById("warning1").style.display = "none";
+                        document.getElementById("info1").style.display = "none";
+                        if(data1.profile_picture.length != 0) {
+                            document.getElementById("error1").firstChild.textContent = data1.profile_picture[0];
+                        }
+                        window.location.href = "#updateDetailsForm";
+                    } else {
+                        document.getElementById("error1").style.display = "none";
+                        document.getElementById("warning1").style.display = "none";
+                        document.getElementById("info1").style.display = "block";
+                        document.getElementById("info1").firstChild.textContent = "Dati anagrafici aggiornati!";
+                        window.location.href = "#updateDetailsForm";
+
+                        setTimeout(() => {
+                            document.getElementById("info1").style.display = "none";
+                            document.getElementById("error1").firstChild.textContent = "";
+                        }, 5000);
+                    }
+                }
             } else {
                 document.getElementById("error1").style.display = "block";
                 document.getElementById("warning1").style.display = "none";

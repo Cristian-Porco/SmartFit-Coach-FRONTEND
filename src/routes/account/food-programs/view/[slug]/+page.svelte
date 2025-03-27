@@ -246,7 +246,9 @@
                 cell1.appendChild(checkbox);
                 const cell2 = newFoodItem.insertCell(1);
                 cell2.classList.add("name-column");
-                cell2.textContent = item.food_item.name;
+                cell2.textContent = item.food_item.brand
+                    ? `${item.food_item.name} (${item.food_item.brand})`
+                    : item.food_item.name;
 
                 const cell3 = newFoodItem.insertCell(2);
                 cell3.classList.add("grams-column");

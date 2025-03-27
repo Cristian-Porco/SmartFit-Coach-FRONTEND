@@ -171,6 +171,8 @@
 
         if (max !== undefined && value > max) {
             backgroundStyle = "#ff5959"; // rosso: oltre il limite massimo
+        } else if(idPrefix == "fiber" && value < min) {
+            backgroundStyle = "#ff5959"; // rosso: oltre il limite massimo
         } else if (warnColor && min !== undefined && value > min && value < max) {
             backgroundStyle = warnColor; // giallo: in range ma da attenzionare
         }
@@ -181,7 +183,8 @@
             } else {
                 // Stili default per TH e righe totali
                 if (el.tagName === "TH") {
-                    el.style.background = (el.id === `max_${idPrefix}`) ? "#ffffff" : "#e8e8e8";
+                    if(el.id === 'max_fiber') el.style.background = "#e8e8e8";
+                    else el.style.background = (el.id === `max_${idPrefix}`) ? "#ffffff" : "#e8e8e8";
                 } else if (el.id === "totalValueRow") {
                     el.style.background = "#e8e8e8";
                 } else {

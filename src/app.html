@@ -14,7 +14,7 @@
 	<body data-sveltekit-preload-data="hover">
 		<div class="icon-sidebar">
 			<a href="/account"><div class="icon-item">
-				<img alt="Avatar">
+				<img id="profile_picture" class="profile-avatar" alt="Avatar">
 			</div></a>
 			<a href="/account/weights"><div class="icon-item">
 				<i class="material-symbols-outlined">weight</i>
@@ -63,4 +63,33 @@
 		</div>
 	</body>
 	<script src="%sveltekit.assets%/js/js_base.js" defer></script>
+	<script>
+		function getCookie(name) {
+			const value = `; ${document.cookie}`;
+			const parts = value.split(`; ${name}=`);
+			if (parts.length === 2) return parts.pop().split(';').shift();
+		}
+	
+		const csrftoken = getCookie('csrftoken');
+	
+		if (csrftoken) {
+			fetch('http://127.0.0.1:8000/api/v1/data/detailsaccount/me/', {
+				headers: {
+					'Authorization': 'Token ' + csrftoken
+				}
+			})
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('Errore nel recupero del profilo');
+				}
+				return response.json();
+			})
+			.then(data => {
+				if (data.profile_picture) {
+					const img = document.getElementById('profile_picture');
+					img.src = data.profile_picture;
+				}
+			});
+		}
+	</script>
 </html>

@@ -89,16 +89,21 @@
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('food-programs-item');
+                const sameDate = item.start_date === item.end_date;
+                const dateText = sameDate
+                    ? `Scheda alimentare del ${item.start_date}`
+                    : `Scheda alimentare dal ${item.start_date} al ${item.end_date}`;
+
                 div.innerHTML = `
-                <div class="details">
-                    <span class="average">Scheda alimentare dal ${item.start_date} al ${item.end_date}</span>
-                </div>
-                <div class="buttons">
-                    <button class="view-btn" data-id="${item.id}">Visualizza</button>
-                    <button class="edit-btn" data-id="${item.id}">Modifica</button>
-                    <button class="delete-btn" data-id="${item.id}">Elimina</button>
-                </div>
-            `;
+                    <div class="details">
+                        <span class="average">${dateText}</span>
+                    </div>
+                    <div class="buttons">
+                        <button class="view-btn" data-id="${item.id}">Visualizza</button>
+                        <button class="edit-btn" data-id="${item.id}">Modifica</button>
+                        <button class="delete-btn" data-id="${item.id}">Elimina</button>
+                    </div>
+                `;
 
                 container.appendChild(div);
             });

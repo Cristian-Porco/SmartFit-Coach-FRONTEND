@@ -189,7 +189,7 @@ video, #qr-shaded-region { border-radius: 40px; }
         flex-direction: column;
     }
     .modal-container { flex-direction: column; gap: 10px; flex: 1; }
-    .modal-scan { height: auto; border-radius: 10px; }
+    .modal-scan, .modal-section { height: auto; border-radius: 10px; }
     .food-search, .food-details { width: 100%; flex: 1; }
     .food-list { height: auto; max-height: 40vh; }
     .food-details { padding: 10px; max-height: 50vh; overflow-y: auto; }

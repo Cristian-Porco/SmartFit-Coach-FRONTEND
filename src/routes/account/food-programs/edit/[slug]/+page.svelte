@@ -1272,7 +1272,7 @@
 <!-- Modal per la creazione di una nuova sezione (pasto) -->
 {#if showSectionModal}
     <div class="modal">
-        <div class="modal-content" style="width: 500px">
+        <div class="modal-content modal-section" style="width: 500px">
             <h3>Nuova Sezione</h3>
 
             <!-- Input nome sezione -->
@@ -1386,7 +1386,7 @@
             <h3>Scansione Barcode</h3>
             <div id="barcode-reader" style="width: 100%; height: auto;"></div>
             <div class="separator-row"></div>
-            <button on:click={() => { stopScanner(); showScannerModal = false; }}>Chiudi</button>
+            <button class="close-button" on:click={() => { stopScanner(); showScannerModal = false; }}>Chiudi</button>
         </div>
     </div>
 {/if}

@@ -177,4 +177,21 @@ video, #qr-shaded-region { border-radius: 40px; }
         width: auto;
     }
     table input { width: 120px; }
+
+    .modal-content {
+        width: 100vw;
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .modal-container { flex-direction: column; gap: 10px; flex: 1; }
+    .modal-scan { height: auto; border-radius: 10px; }
+    .food-search, .food-details { width: 100%; flex: 1; }
+    .food-list { height: auto; max-height: 40vh; }
+    .food-details { padding: 10px; max-height: 50vh; overflow-y: auto; }
+    .food-details div { flex-direction: column; align-items: flex-start; font-size: 16px; }
 }

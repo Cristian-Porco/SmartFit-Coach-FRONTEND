@@ -1,5 +1,4 @@
 <head>
-    <!-- TODO: aggiustare CSS pop-up per renderlo responsive -->
     <link rel="stylesheet" type="text/css" href="/css/account/food-programs/style_edit_food_programs.css">
 </head>
 
@@ -295,7 +294,8 @@
 
         filteredFoodItems = foodItems.filter(item =>
             item.name.toLowerCase().includes(query) ||
-            item.brand?.toLowerCase().includes(query)
+            item.brand?.toLowerCase().includes(query) ||
+            item.barcode?.toLowerCase().includes(query)
         );
     }
 
@@ -460,7 +460,12 @@
             { facingMode: "environment" },
             { fps: 10, qrbox: 250 },
             (decodedText) => {
-                new_food_item.barcode = decodedText;
+                if(showFoodModal) new_food_item.barcode = decodedText;
+                else {
+                    document.getElementById("search").value = decodedText;
+                    document.getElementById("search").focus();
+                    document.getElementById("search").dispatchEvent(new Event('input', { bubbles: true }));
+                }
                 stopScanner();
                 showScannerModal = false;
             }
@@ -1176,13 +1181,18 @@
                 <!-- Sezione ricerca alimento -->
                 <div class="food-search">
                     <label for="search">Cerca alimento:</label>
-                    <input
-                            type="text"
-                            id="search"
-                            bind:value={searchQuery}
-                            on:input={filterFoodItems}
-                            placeholder="Cerca alimento..."
-                    />
+                    <div class="search-bar">
+                        <input
+                                type="text"
+                                id="search"
+                                bind:value={searchQuery}
+                                on:input={filterFoodItems}
+                                placeholder="Cerca alimento..."
+                        />
+                        <button on:click={startScanner}>
+                            Scansiona barcode
+                        </button>
+                    </div>
 
                     <!-- Lista filtrata di alimenti disponibili -->
                     <ul class="food-list">
@@ -1262,7 +1272,7 @@
 <!-- Modal per la creazione di una nuova sezione (pasto) -->
 {#if showSectionModal}
     <div class="modal">
-        <div class="modal-content" style="width: 500px">
+        <div class="modal-content modal-section" style="width: 500px">
             <h3>Nuova Sezione</h3>
 
             <!-- Input nome sezione -->
@@ -1372,11 +1382,11 @@
 <!-- Modal per la scansione barcode tramite fotocamera -->
 {#if showScannerModal}
     <div class="modal">
-        <div class="modal-content" style="width: 90%; max-width: 500px;">
+        <div class="modal-content modal-scan" style="width: 90%; max-width: 500px;">
             <h3>Scansione Barcode</h3>
             <div id="barcode-reader" style="width: 100%; height: auto;"></div>
             <div class="separator-row"></div>
-            <button on:click={() => { stopScanner(); showScannerModal = false; }}>Chiudi</button>
+            <button class="close-button" on:click={() => { stopScanner(); showScannerModal = false; }}>Chiudi</button>
         </div>
     </div>
 {/if}

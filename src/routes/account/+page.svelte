@@ -103,9 +103,172 @@
     </div>
 </form>
 
+<div class="form-container">
+    <h3>Alimenti aggiunti</h3>
+    <p>In questa sezione puoi modificare facilmente gli alimenti che hai aggiunto in precedenza: aggiorna quantità o
+        correggi dettagli in pochi click, per mantenere sempre la tua scheda alimentare precisa e aggiornata.</p>
+    <div class="food-item-list">
+        {#if foodItems.length > 0}
+            <ul class="food-list">
+                {#each foodItems as item}
+                    <li class="food-list-item">
+                        <span>{item.name}{item.brand ? ` (${item.brand})` : ''}</span>
+                        <button class="edit-button" on:click={() => editFoodModal(item)}>Modifica</button>
+                    </li>
+                {/each}
+            </ul>
+        {:else}
+            <p>Nessun alimento aggiunto!</p>
+        {/if}
+    </div>
+</div>
+
+<div class="form-container">
+    <h3>Sezioni aggiunte</h3>
+    <p>In questa sezione puoi modificare facilmente le sezioni dei tuoi pasti che hai aggiunto in precedenza: aggiorna
+        il nome o l'orario indicativo in pochi click, per mantenere sempre la tua scheda alimentare precisa e aggiornata.</p>
+    <div class="food-item-section-list">
+        {#if foodSectionItems.length > 0}
+            <ul class="food-list">
+                {#each foodSectionItems as item}
+                    <li class="food-list-item">
+                        <span>{item.name} (orario previsto {item.start_time})</span>
+                        <button class="edit-button" on:click={() => editFoodSectionModal(item)}>Modifica</button>
+                    </li>
+                {/each}
+            </ul>
+        {:else}
+            <p>Nessuna sezione di alimenti aggiunto!</p>
+        {/if}
+    </div>
+</div>
+
+<!-- Modal per la creazione di un nuovo alimento -->
+{#if showFoodModal}
+    <div class="modal">
+        <div class="modal-content food-item-add" style="width: 800px">
+            <h3>Modifica Alimento</h3>
+
+            <!-- Nome e marca -->
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="name">Nome:</label>
+                    <input bind:value={edit_food_item.name} type="text" id="name" placeholder="Nome alimento..." />
+                </div>
+                <div class="input-container">
+                    <label for="brand">Marca:</label>
+                    <input bind:value={edit_food_item.brand} type="text" id="brand" placeholder="Marca (opzionale)..." />
+                </div>
+            </div>
+
+            <!-- Barcode -->
+            <label>Barcode:</label>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input bind:value={edit_food_item.barcode} type="text" placeholder="Inserisci barcode manualmente..." />
+                <button type="button" on:click={startScanner}>Inserisci barcode tramite fotocamera</button>
+            </div>
+
+            <!-- Valori nutrizionali per 100g -->
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="kcal">Chilocalorie (Kcal) per 100g:</label>
+                    <input bind:value={edit_food_item.kcal} type="number" id="kcal"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="protein">Proteine per 100g:</label>
+                    <input bind:value={edit_food_item.protein} type="number" id="protein"/>
+                </div>
+                <div class="input-container">
+                    <label for="carboids">Carboidrati per 100g:</label>
+                    <input bind:value={edit_food_item.carboids} type="number" id="carboids"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="sugar">Zuccheri per 100g:</label>
+                    <input bind:value={edit_food_item.sugar} type="number" id="sugar"/>
+                </div>
+                <div class="input-container">
+                    <label for="fats">Grassi per 100g:</label>
+                    <input bind:value={edit_food_item.fats} type="number" id="fats"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <label for="saturated_fats">Grassi Saturi per 100g:</label>
+                    <input bind:value={edit_food_item.saturated_fats} type="number" id="saturated_fats"/>
+                </div>
+                <div class="input-container">
+                    <label for="fiber">Fibre per 100g:</label>
+                    <input bind:value={edit_food_item.fiber} type="number" id="fiber"/>
+                </div>
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button on:click={editFoodItem}>Modifica</button>
+            <button class="close-button" on:click={() => showFoodModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+<!-- Modal per la scansione barcode tramite fotocamera -->
+{#if showScannerModal}
+    <div class="modal">
+        <div class="modal-content modal-scan" style="width: 90%; max-width: 500px;">
+            <h3>Scansione Barcode</h3>
+            <div id="barcode-reader" style="width: 100%; height: auto;"></div>
+            <div class="separator-row"></div>
+            <button class="close-button" on:click={() => { stopScanner(); showScannerModal = false; }}>Chiudi</button>
+        </div>
+    </div>
+{/if}
+
+<!-- Modal per la creazione di una nuova sezione (pasto) -->
+{#if showSectionModal}
+    <div class="modal">
+        <div class="modal-content modal-section" style="width: 500px">
+            <h3>Nuova Sezione</h3>
+
+            <!-- Input nome sezione -->
+            <label for="newSectionName">Nome sezione:</label>
+            <input
+                    type="text"
+                    id="newSectionName"
+                    bind:value={newSectionName}
+                    placeholder="Nome sezione... (ad esempio, Colazione, Pranzo, ...)"
+            />
+
+            <!-- Input orario previsto -->
+            <label for="newSectionTime" style="margin-top: 10px;">Orario previsto (solo ora):</label>
+            <input
+                    type="number"
+                    id="newSectionTime"
+                    min="0"
+                    max="24"
+                    bind:value={newSectionTime}
+                    placeholder="Orario previsto del pasto..."
+            />
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti -->
+            <button on:click={editFoodSection}>Salva</button>
+            <button class="close-button" on:click={() => showSectionModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
 <script>
-    import { onMount } from "svelte";
+    import {onMount, tick} from "svelte";
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import {Html5Qrcode} from "html5-qrcode";
 
     let account = {}
     let first_username = "";
@@ -113,16 +276,139 @@
     let selectedFile = null;
     let accountId = 1;
 
+    let foodItems = [];
+    let showFoodModal = false;
+    let edit_food_item = {
+        "id": 0, "name": "", "brand": "", "barcode": "", "kcal": 0,
+        "protein": 0, "carboids": 0, "sugar": 0, "fats": 0,
+        "saturated_fats": 0, "fiber": 0
+    };
+    let scanner;
+    let scanning = false;
+    let showScannerModal = false;
+
+    let foodSectionItems = [];
+    let showSectionModal = false;
+    let newSectionId = 0;
+    let newSectionName = "";
+    let newSectionTime = "";
+
+    async function startScanner() {
+        showScannerModal = true;
+        await tick(); // attende il rendering del DOM
+
+        scanner = new Html5Qrcode("barcode-reader");
+        scanner.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                if(showFoodModal) edit_food_item.barcode = decodedText;
+                else {
+                    document.getElementById("search").value = decodedText;
+                    document.getElementById("search").focus();
+                    document.getElementById("search").dispatchEvent(new Event('input', { bubbles: true }));
+                }
+                stopScanner();
+                showScannerModal = false;
+            }
+        );
+
+        scanning = true;
+    }
+
+    function stopScanner() {
+        if (scanner && scanning) {
+            scanner.stop().then(() => {
+                scanning = false;
+                scanner.clear();
+            });
+        }
+    }
+
+    function editFoodModal(item) {
+        showFoodModal = true;
+        edit_food_item = {
+            "id": item.id,
+            "name": item.name, "brand": item.brand, "barcode": item.barcode, "kcal": item.kcal_per_100g,
+            "protein": item.protein_per_100g, "carboids": item.carbs_per_100g, "sugar": item.sugars_per_100g,
+            "fats": item.fats_per_100g, "saturated_fats": item.saturated_fats_per_100g, "fiber": item.fiber_per_100g
+        };
+    }
+
+    async function editFoodItem() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-item/update/" + edit_food_item.id + "/", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                name: edit_food_item.name,
+                barcode: edit_food_item.barcode,
+                brand: edit_food_item.brand,
+                kcal_per_100g: edit_food_item.kcal,
+                protein_per_100g: edit_food_item.protein,
+                carbs_per_100g: edit_food_item.carboids,
+                sugars_per_100g: edit_food_item.sugar,
+                fats_per_100g: edit_food_item.fats,
+                saturated_fats_per_100g: edit_food_item.saturated_fats,
+                fiber_per_100g: edit_food_item.fiber
+            })
+        });
+        showFoodModal = false;
+        location.reload();
+    }
+
+    function editFoodSectionModal(item) {
+        showSectionModal = true;
+        newSectionId = item.id;
+        newSectionName = item.name;
+        newSectionTime = item.start_time;
+    }
+
+    async function editFoodSection() {
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan-section/update/" + newSectionId + "/", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                name: newSectionName,
+                start_time: newSectionTime
+            })
+        });
+        showSectionModal = false;
+        location.reload();
+    }
+
     onMount(async () => {
-        const response = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
+        const response1 = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Token " + getCookie('csrftoken'),
             }
         });
-        
-        account = await response.json();
+        account = await response1.json();
+
+        const response2 = await fetch("http://127.0.0.1:8000/api/v1/data/food-item/me/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+        foodItems = await response2.json();
+
+        const response3 = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan-section/me/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+        foodSectionItems = await response3.json();
 
         function formatDateForInput(dateStr) {
             let [day, month, year] = dateStr.split("/");

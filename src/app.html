@@ -14,7 +14,10 @@
 	<body data-sveltekit-preload-data="hover">
 		<div class="icon-sidebar">
 			<a href="/account"><div class="icon-item">
-				<img id="profile_picture" class="profile-avatar" alt="Avatar">
+				<img id="profile_picture"
+					 class="profile-avatar"
+					 src="http://127.0.0.1:8000/media/profile_pics/default.jpg"
+					 alt="Avatar">
 			</div></a>
 			<a href="/account/weights"><div class="icon-item">
 				<i class="material-symbols-outlined">weight</i>
@@ -85,8 +88,8 @@
 				return response.json();
 			})
 			.then(data => {
+				const img = document.getElementById('profile_picture');
 				if (data.profile_picture) {
-					const img = document.getElementById('profile_picture');
 					img.src = data.profile_picture;
 				}
 			});

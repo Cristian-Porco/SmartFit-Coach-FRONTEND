@@ -149,6 +149,11 @@
         <div class="modal-content food-item-add" style="width: 800px">
             <h3>Modifica Alimento</h3>
 
+            <!-- Contenitore per messaggi di errore -->
+            <div class="error" id="errorFood">
+                <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
+            </div>
+
             <!-- Nome e marca -->
             <div class="form-group">
                 <div class="input-container">
@@ -234,7 +239,12 @@
 {#if showSectionModal}
     <div class="modal">
         <div class="modal-content modal-section" style="width: 500px">
-            <h3>Nuova Sezione</h3>
+            <h3>Modifica Sezione</h3>
+
+            <!-- Contenitore per messaggi di errore -->
+            <div class="error" id="errorSection">
+                <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
+            </div>
 
             <!-- Input nome sezione -->
             <label for="newSectionName">Nome sezione:</label>
@@ -355,8 +365,37 @@
                 fiber_per_100g: edit_food_item.fiber
             })
         });
-        showFoodModal = false;
-        location.reload();
+
+        const response_json = await response.json();
+
+        if(response.ok) {
+            document.getElementById("errorFood").style.display = "none";
+            showSectionModal = false;
+            location.reload();
+        } else {
+            document.getElementById("errorFood").style.display = "block";
+            if(response_json.name) {
+                document.getElementById("errorFood").firstChild.textContent = "NOME: " + response_json.name[0];
+            } else if(response_json.barcode) {
+                document.getElementById("errorFood").firstChild.textContent = "BARCODE: " + response_json.barcode[0];
+            } else if(response_json.brand) {
+                document.getElementById("errorFood").firstChild.textContent = "MARCA: " + response_json.brand[0];
+            } else if(response_json.kcal_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "CHILOCALORIE: " + response_json.kcal_per_100g[0];
+            } else if(response_json.protein_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "PROTEINE: " + response_json.protein_per_100g[0];
+            } else if(response_json.carbs_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "CARBOIDRATI: " + response_json.carbs_per_100g[0];
+            } else if(response_json.sugars_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "ZUCCHERI: " + response_json.sugars_per_100g[0];
+            } else if(response_json.fats_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "GRASSI: " + response_json.fats_per_100g[0];
+            } else if(response_json.saturated_fats_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "GRASSI SATURI: " + response_json.saturated_fats_per_100g[0];
+            } else if(response_json.fiber_per_100g) {
+                document.getElementById("errorFood").firstChild.textContent = "FIBRE: " + response_json.fiber_per_100g[0];
+            }
+        }
     }
 
     function editFoodSectionModal(item) {
@@ -378,8 +417,21 @@
                 start_time: newSectionTime
             })
         });
-        showSectionModal = false;
-        location.reload();
+
+        const response_json = await response.json();
+
+        if(response.ok) {
+            document.getElementById("errorSection").style.display = "none";
+            showSectionModal = false;
+            location.reload();
+        } else {
+            document.getElementById("errorSection").style.display = "block";
+            if(response_json.name) {
+                document.getElementById("errorSection").firstChild.textContent = "NOME SEZIONE: " + response_json.name[0];
+            } else if(response_json.start_time) {
+                document.getElementById("errorSection").firstChild.textContent = "ORARIO PREVISTO: " + response_json.start_time[0];
+            }
+        }
     }
 
     onMount(async () => {

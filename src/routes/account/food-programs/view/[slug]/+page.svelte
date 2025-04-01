@@ -20,19 +20,16 @@
             <th class="header-title">Kcal</th>
             <th class="header-title">Proteine</th>
             <th class="header-title">Carboidrati</th>
-            <th class="header-title">Zuccheri</th>
+            <th rowspan="2" class="header-title">Zuccheri</th>
             <th class="header-title">Grassi</th>
-            <th class="header-title">Grassi Saturi</th>
-            <th class="header-title">Fibre</th>
+            <th rowspan="2" class="header-title">Grassi Saturi</th>
+            <th rowspan="2" class="header-title">Fibre</th>
         </tr>
         <tr>
             <th class="header-limits" id="max_kcal"></th>
             <th class="header-limits" id="max_protein"></th>
             <th class="header-limits" id="max_carbs"></th>
-            <th class="header-limits"></th>
             <th class="header-limits" id="max_fats"></th>
-            <th class="header-limits"></th>
-            <th class="header-limits"></th>
         </tr>
         </thead>
         <tbody id="containerFoodPlan">

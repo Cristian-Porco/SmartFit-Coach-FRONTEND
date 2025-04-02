@@ -71,6 +71,18 @@
     let selectedDate = today;
 
     onMount(async() => {
+        toggleClassByPathContains({
+            substring: '/account/body-measurements/edit',
+            targetId: 'body-measurements-icon-item',
+            className: 'current-page',
+            removeFromIds: [
+                'weight-icon-item',
+                'food-program-icon-item',
+                'account-icon-item',
+                'gym-program-icon-item'
+            ]
+        });
+
         idBodyMeasurement = data.id;
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/" + idBodyMeasurement + "/", {
             method: "GET",

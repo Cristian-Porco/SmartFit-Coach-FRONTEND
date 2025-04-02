@@ -4,6 +4,8 @@
 
     onMount(() => {
         deleteCookie('csrftoken');
+        deleteCookie('pk');
+        deleteCookie('username');
         window.location.href = "/";
     });
 </script>

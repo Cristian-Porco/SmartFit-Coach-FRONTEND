@@ -71,6 +71,18 @@
     let selectedId = null;
 
     onMount(async() => {
+        toggleClassByPathEquals({
+            substring: '/account/weights',
+            targetId: 'weight-icon-item',
+            className: 'current-page',
+            removeFromIds: [
+                'account-icon-item',
+                'body-measurements-icon-item',
+                'food-program-icon-item',
+                'gym-program-icon-item'
+            ]
+        });
+
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/me/", {
             method: "GET",
             headers: {

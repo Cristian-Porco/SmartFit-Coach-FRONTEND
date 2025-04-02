@@ -40,9 +40,24 @@
 
 <script>
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import {onMount} from "svelte";
 
     let today = new Date().toISOString().split('T')[0];
     let selectedDate = today;
+
+    onMount(() => {
+        toggleClassByPathEquals({
+            substring: '/account/food-programs/add',
+            targetId: 'food-program-icon-item',
+            className: 'current-page',
+            removeFromIds: [
+                'weight-icon-item',
+                'body-measurements-icon-item',
+                'account-icon-item',
+                'gym-program-icon-item'
+            ]
+        });
+    });
 
     async function addFoodPrograms() {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/create/", {

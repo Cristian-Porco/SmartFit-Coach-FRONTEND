@@ -74,6 +74,18 @@
     let selectedId = null;
 
     onMount(async() => {
+        toggleClassByPathEquals({
+            substring: '/account/food-programs',
+            targetId: 'food-program-icon-item',
+            className: 'current-page',
+            removeFromIds: [
+                'weight-icon-item',
+                'body-measurements-icon-item',
+                'account-icon-item',
+                'gym-program-icon-item'
+            ]
+        });
+
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/me/", {
             method: "GET",
             headers: {

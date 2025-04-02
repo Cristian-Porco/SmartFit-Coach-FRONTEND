@@ -44,6 +44,7 @@ body { display: flex; flex-direction: row; height: 100vh; }
 }
 .icon-item:hover { background: #ced4e2; }
 .icon-item:active { transform: scale(0.80); }
+.current-page { background: #adb1c5; }
 .sidebar {
     width: 250px;
     min-width: 250px;

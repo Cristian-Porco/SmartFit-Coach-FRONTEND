@@ -28,3 +28,58 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+
+
+function toggleClassByPathEquals({
+                                       substring,
+                                       targetId,
+                                       className,
+                                       removeFromIds = []
+                                   }) {
+    const path = window.location.pathname;
+
+    //const shouldApply = path.includes(substring);
+    const shouldApply = path === substring;
+    const targetEl = document.getElementById(targetId);
+
+    if (shouldApply && targetEl) {
+        targetEl.classList.add(className);
+    }
+
+    // Rimuove la classe da tutti gli altri elementi
+    removeFromIds.forEach(id => {
+        if (id !== targetId) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove(className);
+            }
+        }
+    });
+}
+
+function toggleClassByPathContains({
+                                     substring,
+                                     targetId,
+                                     className,
+                                     removeFromIds = []
+                                 }) {
+    const path = window.location.pathname;
+
+    const shouldApply = path.includes(substring);
+    const targetEl = document.getElementById(targetId);
+
+    if (shouldApply && targetEl) {
+        targetEl.classList.add(className);
+    }
+
+    // Rimuove la classe da tutti gli altri elementi
+    removeFromIds.forEach(id => {
+        if (id !== targetId) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove(className);
+            }
+        }
+    });
+}

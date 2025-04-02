@@ -63,9 +63,24 @@
 
 <script>
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import {onMount} from "svelte";
 
     let today = new Date().toISOString().split('T')[0];
     let selectedDate = today;
+
+    onMount(async() =>  {
+        toggleClassByPathEquals({
+            substring: '/account/body-measurements/add',
+            targetId: 'body-measurements-icon-item',
+            className: 'current-page',
+            removeFromIds: [
+                'weight-icon-item',
+                'food-program-icon-item',
+                'account-icon-item',
+                'gym-program-icon-item'
+            ]
+        });
+    });
 
     async function addBodyMeasurement() {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/create/", {

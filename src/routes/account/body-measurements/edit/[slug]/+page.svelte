@@ -94,6 +94,12 @@
 
         const body_measurement_id = await response.json();
 
+        function formatDateForInput(dateStr) {
+            let [day, month, year] = dateStr.split("/");
+            return `${year}-${month}-${day}`; // Restituisce formato YYYY-MM-DD
+        }
+        let date_format_ita = formatDateForInput(body_measurement_id.date_recorded);
+
         document.getElementById("chest").value = body_measurement_id.chest;
         document.getElementById("bicep").value = body_measurement_id.bicep;
         document.getElementById("thigh").value = body_measurement_id.thigh;
@@ -103,7 +109,7 @@
         document.getElementById("calf").value = body_measurement_id.calf;
         document.getElementById("neck").value = body_measurement_id.neck;
         document.getElementById("shoulders").value = body_measurement_id.shoulders;
-        document.getElementById("date_recorded").value = body_measurement_id.date_recorded;
+        document.getElementById("date_recorded").value = date_format_ita;
     });
 
     async function editBodyMeasurement() {

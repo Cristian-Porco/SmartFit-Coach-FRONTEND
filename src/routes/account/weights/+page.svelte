@@ -98,16 +98,23 @@
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('weight-item');
+
+                function formatDateForInput(dateStr) {
+                    let [day, month, year] = dateStr.split("/");
+                    return `${year}-${month}-${day}`; // Restituisce formato YYYY-MM-DD
+                }
+                let date_format_ita = formatDateForInput(item.date_recorded);
+
                 div.innerHTML = `
-                <div class="details">
-                    <span class="weight">${item.weight_value} kg</span>
-                    <span class="date">${item.date_recorded}</span>
-                </div>
-                <div class="buttons">
-                    <button class="edit-btn" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${item.date_recorded}">Modifica</button>
-                    <button class="delete-btn" data-id="${item.id}">Elimina</button>
-                </div>
-            `;
+                    <div class="details">
+                        <span class="weight">${item.weight_value} kg</span>
+                        <span class="date">${item.date_recorded}</span>
+                    </div>
+                    <div class="buttons">
+                        <button class="edit-btn" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${date_format_ita}">Modifica</button>
+                        <button class="delete-btn" data-id="${item.id}">Elimina</button>
+                    </div>
+                `;
 
                 container.appendChild(div);
             });

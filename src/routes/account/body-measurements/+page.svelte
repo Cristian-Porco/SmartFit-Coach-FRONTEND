@@ -50,16 +50,22 @@
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('body-measurements-item');
+
+                if(item.average_measurement == null)
+                    item.average_measurement = "Misurazione vuota"
+                else
+                    item.average_measurement += " cm";
+
                 div.innerHTML = `
-                <div class="details">
-                    <span class="average">${item.average_measurement} cm</span>
-                    <span class="date">${item.date_recorded}</span>
-                </div>
-                <div class="buttons">
-                    <button class="edit-btn" data-id="${item.id}">Modifica</button>
-                    <button class="delete-btn" data-id="${item.id}">Elimina</button>
-                </div>
-            `;
+                    <div class="details">
+                        <span class="average">${item.average_measurement}</span>
+                        <span class="date">${item.date_recorded}</span>
+                    </div>
+                    <div class="buttons">
+                        <button class="edit-btn" data-id="${item.id}">Modifica</button>
+                        <button class="delete-btn" data-id="${item.id}">Elimina</button>
+                    </div>
+                `;
 
                 container.appendChild(div);
             });

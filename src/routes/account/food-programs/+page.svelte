@@ -66,9 +66,7 @@
 
 <script>
     import { onMount } from "svelte";
-    import Chart from "chart.js/auto";
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
-    import { redirect } from "@sveltejs/kit";
 
     let chartCanvas;
     let selectedId = null;

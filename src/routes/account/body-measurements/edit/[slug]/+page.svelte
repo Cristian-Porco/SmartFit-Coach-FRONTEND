@@ -94,10 +94,6 @@
 
         const body_measurement_id = await response.json();
 
-        function formatDateForInput(dateStr) {
-            let [day, month, year] = dateStr.split("/");
-            return `${year}-${month}-${day}`; // Restituisce formato YYYY-MM-DD
-        }
         let date_format_ita = formatDateForInput(body_measurement_id.date_recorded);
 
         document.getElementById("chest").value = body_measurement_id.chest;
@@ -113,6 +109,18 @@
     });
 
     async function editBodyMeasurement() {
+        let values_clear = {
+            chest: replaceAllCommasWithDots(document.getElementById("chest").value),
+            bicep: replaceAllCommasWithDots(document.getElementById("bicep").value),
+            thigh: replaceAllCommasWithDots(document.getElementById("thigh").value),
+            waist: replaceAllCommasWithDots(document.getElementById("waist").value),
+            hips: replaceAllCommasWithDots(document.getElementById("hips").value),
+            abdomen: replaceAllCommasWithDots(document.getElementById("abdomen").value),
+            calf: replaceAllCommasWithDots(document.getElementById("calf").value),
+            neck: replaceAllCommasWithDots(document.getElementById("neck").value),
+            shoulders: replaceAllCommasWithDots(document.getElementById("shoulders").value),
+        }
+
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/update/" + idBodyMeasurement + "/", {
             method: "PUT",
             headers: {
@@ -120,15 +128,15 @@
                 "Authorization": "Token " + getCookie('csrftoken'),
             },
             body: JSON.stringify({
-                chest: document.getElementById("chest").value,
-                bicep: document.getElementById("bicep").value,
-                thigh: document.getElementById("thigh").value,
-                waist: document.getElementById("waist").value,
-                hips: document.getElementById("hips").value,
-                abdomen: document.getElementById("abdomen").value,
-                calf: document.getElementById("calf").value,
-                neck: document.getElementById("neck").value,
-                shoulders: document.getElementById("shoulders").value,
+                chest: values_clear.chest,
+                bicep: values_clear.bicep,
+                thigh: values_clear.thigh,
+                waist: values_clear.waist,
+                hips: values_clear.hips,
+                abdomen: values_clear.abdomen,
+                calf: values_clear.calf,
+                neck: values_clear.neck,
+                shoulders: values_clear.shoulders,
                 date_recorded: document.getElementById("date_recorded").value,
                 user: getCookie("pk")
             })

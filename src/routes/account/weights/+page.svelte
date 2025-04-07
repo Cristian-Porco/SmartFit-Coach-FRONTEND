@@ -99,10 +99,6 @@
                 const div = document.createElement('div');
                 div.classList.add('weight-item');
 
-                function formatDateForInput(dateStr) {
-                    let [day, month, year] = dateStr.split("/");
-                    return `${year}-${month}-${day}`; // Restituisce formato YYYY-MM-DD
-                }
                 let date_format_ita = formatDateForInput(item.date_recorded);
 
                 div.innerHTML = `
@@ -163,7 +159,7 @@
 
         // Event listener per salvare le modifiche
         document.getElementById("save-edit").addEventListener("click", async () => {
-            const newWeight = document.getElementById("edit-weight").value;
+            const newWeight = replaceAllCommasWithDots(document.getElementById("edit-weight").value);
             const newDate = document.getElementById("edit-date").value;
 
             const updateResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/update/${selectedId}/`, {
@@ -244,6 +240,8 @@
 
     // Funzione per aggiungere un record del peso
     async function addWeight() {
+        let weight_value_clear = replaceAllCommasWithDots(document.getElementById("add-weight").value);
+
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/create/", {
             method: "POST",
             headers: {
@@ -252,7 +250,7 @@
             },
             body: JSON.stringify({
                 id_user: getCookie("pk"),
-                weight_value: document.getElementById("add-weight").value,
+                weight_value: weight_value_clear,
                 date_recorded: document.getElementById("add-date").value
             })
         });

@@ -83,3 +83,12 @@ function toggleClassByPathContains({
         }
     });
 }
+
+function replaceAllCommasWithDots(str) {
+    return str.replace(/,/g, '.');
+}
+
+function formatDateForInput(dateStr) {
+    let [day, month, year] = dateStr.split("/");
+    return `${year}-${month}-${day}`; // Restituisce formato YYYY-MM-DD
+}

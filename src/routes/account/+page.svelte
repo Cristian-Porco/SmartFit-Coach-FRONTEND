@@ -474,10 +474,6 @@
         });
         foodSectionItems = await response3.json();
 
-        function formatDateForInput(dateStr) {
-            let [day, month, year] = dateStr.split("/");
-            return `${year}-${month}-${day}`; // Restituisce formato YYYY-MM-DD
-        }
         account.date_of_birth = formatDateForInput(account.date_of_birth)
 
         first_username = account.username;

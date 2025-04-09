@@ -112,7 +112,7 @@
                 neck: values_clear.neck,
                 shoulders: values_clear.shoulders,
                 date_recorded: document.getElementById("date_recorded").value,
-                user: getCookie("pk")
+                author: getCookie("pk")
             })
         });
 

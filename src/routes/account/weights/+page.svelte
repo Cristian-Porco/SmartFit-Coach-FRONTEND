@@ -169,7 +169,7 @@
                     "Authorization": "Token " + getCookie('csrftoken'),
                 },
                 body: JSON.stringify({
-                    id_user: getCookie("pk"),
+                    author: getCookie("pk"),
                     weight_value: newWeight,
                     date_recorded: newDate
                 })
@@ -249,7 +249,7 @@
                 "Authorization": "Token " + getCookie('csrftoken'),
             },
             body: JSON.stringify({
-                id_user: getCookie("pk"),
+                author: getCookie("pk"),
                 weight_value: weight_value_clear,
                 date_recorded: document.getElementById("add-date").value
             })

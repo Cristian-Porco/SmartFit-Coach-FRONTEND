@@ -68,7 +68,6 @@
     import { onMount } from "svelte";
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
 
-    let chartCanvas;
     let selectedId = null;
 
     onMount(async() => {

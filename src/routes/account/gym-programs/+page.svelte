@@ -68,6 +68,8 @@
     import { onMount } from "svelte";
     import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
 
+    let selectedId = null;
+
     onMount(async() => {
         toggleClassByPathEquals({
             substring: '/account/gym-programs',

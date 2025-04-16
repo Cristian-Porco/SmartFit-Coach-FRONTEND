@@ -102,6 +102,14 @@
             color: #e74c3c;
         }
 
+        .set-label {
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .set-col {
+            text-align: center;
+        }
 
         .set-box {
             margin: 20px 0;
@@ -114,17 +122,18 @@
             color: #007bff;
         }
 
-        .set-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .set-left {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        th {
+            font-size: 16px;
+        }
+
+        th, td {
+            padding: 8px;
+            border: 0;
         }
 
         .set-number {
@@ -137,29 +146,108 @@
             line-height: 26px;
             font-size: 0.85rem;
             font-weight: bold;
-        }
-
-        .set-exercise {
-            font-weight: 500;
-        }
-
-        .set-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .set-info {
-            color: #333;
+            margin: 0 auto;
         }
 
         .set-input {
-            width: 60px;
+            height: 30px;
+            font-size: 0.85rem;
             padding: 2px 6px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 4px;
+            box-sizing: border-box;
+            text-align: center;
         }
 
+        .input-with-info,
+        .input-with-info-enabled {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-with-info input,
+        .input-with-info-enabled input {
+            flex-grow: 1;
+        }
+
+        .info-icon {
+            cursor: help;
+        }
+
+        .order-value {
+            width: 56px;
+        }
+
+        .data-value {
+            width: 100px;
+        }
+
+        .set-box table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .set-box th, .set-box td {
+            padding: 0.5rem;
+        }
+
+        .mobile-label {
+            display: none;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        @media screen and (max-width: 968px) {
+            .set-box table,
+            .set-box thead,
+            .set-box tbody,
+            .set-box th,
+            .set-box td,
+            .set-box tr {
+                display: block;
+                width: 100%;
+            }
+
+            .set-box thead {
+                display: none;
+            }
+
+            .set-box tr {
+                margin-bottom: 1rem;
+                padding: 0.5rem;
+                border-bottom: 1px solid #ccc;
+            }
+
+            .set-box tr:last-child {
+                border-bottom: none;
+            }
+
+            .set-box td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.4rem;
+                border: none;
+            }
+
+            .mobile-label {
+                display: inline-block;
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+
+            .input-with-info,
+            .input-with-info-enabled {
+                width: 80%;
+            }
+
+            .set-input {
+                width: 100%;
+                padding: 0.3rem;
+                font-size: 0.9rem;
+            }
+        }
 
         @media screen and (max-width: 768px) {
             .container { flex-direction: column; align-items: center; }
@@ -279,7 +367,6 @@
 
                         divDay.appendChild(gym_plan_item);
 
-                        // ✅ Raggruppa i set per set_number
                         const groupedSets = {};
                         item.sets.forEach(set => {
                             if (!groupedSets[set.set_number]) {
@@ -293,27 +380,135 @@
                         setNumbers.forEach(setNumber => {
                             const box = document.createElement("div");
                             box.classList.add("set-box");
-                            box.innerHTML = `<h4>Set ${setNumber}</h4>`;
+                            box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
 
-                            groupedSets[setNumber].forEach((set, index) => {
-                                const row = document.createElement("div");
-                                row.classList.add("set-row");
+                            let sameExercisesOnSets = groupedSets[setNumber].every(
+                                set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                            );
+                            let lengthSets = groupedSets[setNumber].length;
 
-                                row.innerHTML = `
-                            <div class="set-left">
-                                <div class="set-number">${index + 1}</div>
-                                <div class="set-exercise">${set.exercise.name}</div>
-                            </div>
-                            <div class="set-right">
-                                <span class="set-info">Prescritte: ${set.prescribed_reps}</span>
-                                <input type="number" class="set-input" value="${set.actual_reps}" />
-                                <span class="set-info">RIR: ${set.rir}</span>
-                                <span class="set-info">Peso: ${set.weight}kg</span>
-                                <span class="set-info">Tempo: ${set.tempo}</span>
-                            </div>
-                        `;
+                            const table = document.createElement("table");
 
-                                box.appendChild(row);
+                            const thead = document.createElement("thead");
+                            const headerRow = document.createElement("tr");
+
+                            const headers = [
+                                { className: "order-value", content: "" },
+                                { style: "text-align: left", content: "Esercizio" },
+                                { className: "data-value", content: "Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                { className: "data-value", content: "Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
+                                { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
+                                { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                            ];
+
+                            headers.forEach(h => {
+                                const th = document.createElement("th");
+                                if (h.className) th.className = h.className;
+                                if (h.style) th.setAttribute("style", h.style);
+                                if (h.title) {
+                                    const span = document.createElement("span");
+                                    span.className = "info-icon";
+                                    span.title = h.title;
+                                    span.textContent = h.content;
+                                    th.appendChild(span);
+                                } else {
+                                    th.textContent = h.content;
+                                }
+                                headerRow.appendChild(th);
+                            });
+
+                            thead.appendChild(headerRow);
+                            table.appendChild(thead);
+
+                            const tbody = document.createElement("tbody");
+                            table.appendChild(tbody);
+
+                            box.append(table);
+
+                            groupedSets[setNumber].forEach((set, test) => {
+                                const row = document.createElement("tr");
+
+                                const [ecc, fermo, conc] = set.tempo.split("-");
+                                const rest = set.rest_seconds;
+
+                                const data = [
+                                    { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                    { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                    { type: "input", value: set.prescribed_reps, disabled: true, mobilelabel: "Segnate:" },
+                                    { type: "input", value: set.actual_reps, disabled: false, mobilelabel: "Svolte:" },
+                                    { type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" },
+                                    { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                    { type: "input", value: ecc, disabled: true, mobilelabel: "Eccentrica:" },
+                                    { type: "input", value: fermo, disabled: true, mobilelabel: "Fermo:" },
+                                    { type: "input", value: conc, disabled: true, mobilelabel: "Concentrica:" },
+                                    { type: "input", value: rest+"s", disabled: true, mobilelabel: "Riposo:" },
+                                ];
+
+                                data.forEach((item, index) => {
+                                    const td = document.createElement("td");
+
+                                    if (index === 0) {
+                                        if(!sameExercisesOnSets) {
+                                            const div = document.createElement("div");
+                                            div.className = item.className;
+                                            div.textContent = item.value;
+
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            td.appendChild(span);
+                                            td.appendChild(div);
+                                        }
+                                        row.appendChild(td);
+                                    } else if (index === 1) {
+                                        if(test === 0 && sameExercisesOnSets) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+                                            row.appendChild(span);
+
+                                            td.textContent = item.value;
+                                            td.rowSpan = lengthSets;
+                                            row.appendChild(td);
+                                        } else if(!sameExercisesOnSets) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+                                            row.appendChild(span);
+
+                                            td.textContent = item.value;
+                                            row.appendChild(td);
+                                        }
+                                    } else {
+                                        const span = document.createElement("span");
+                                        span.className = "mobile-label";
+                                        span.textContent = item.mobilelabel;
+
+                                        const wrapper = document.createElement("div");
+                                        wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                        const input = document.createElement("input");
+                                        input.type = "text";
+                                        input.className = "set-input";
+                                        input.value = item.value;
+                                        if (item.disabled) input.disabled = true;
+
+                                        wrapper.appendChild(input);
+                                        td.appendChild(span);
+                                        td.appendChild(wrapper);
+                                        row.appendChild(td);
+                                    }
+
+
+                                });
+
+                                tbody.appendChild(row);
+                                table.appendChild(tbody);
                             });
 
                             divDay.appendChild(box);

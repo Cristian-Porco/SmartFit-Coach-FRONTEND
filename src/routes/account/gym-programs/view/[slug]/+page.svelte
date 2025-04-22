@@ -198,6 +198,67 @@
             margin-bottom: 4px;
         }
 
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 700px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        }
+        .modal-content>h2 { margin-bottom: 15px; }
+        .modal-content>h3 { margin: 8px 0; }
+        .modal-container {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .instructions-list p {margin-bottom: 8px; }
+        .carousel {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .carousel-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+            max-height: 400px;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 8px;
+            gap: 6px;
+        }
+
+        .carousel-indicators button {
+            width: 50px;
+            padding: 0;
+            border-radius: 100%;
+            height: 50px;
+            font-size: 16px;
+        }
+
+        .carousel-indicators button.selected {
+            background-color: #0056b3;
+        }
+
         @media screen and (max-width: 968px) {
             .set-box table,
             .set-box thead,
@@ -247,6 +308,18 @@
                 padding: 0.3rem;
                 font-size: 0.9rem;
             }
+
+            .modal-content {
+                width: 100vw;
+                height: 100vh;
+                max-height: none;
+                border-radius: 0;
+                padding: 15px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+            }
+            .modal-container { flex-direction: column; gap: 10px; flex: 1; }
         }
 
         @media screen and (max-width: 768px) {
@@ -278,6 +351,50 @@
     </div>
 </div>
 
+{#if showExercisePopup}
+    <div class="modal">
+        <div class="modal-content">
+            <h2>{selectedExercise.name}</h2>
+
+            <!-- Slideshow -->
+            {#if selectedExercise.image_files?.length}
+                <div class="carousel">
+                    <img class="carousel-image" src={selectedExercise.image_files[currentSlide]} alt="Foto esercizio" />
+
+                    <div class="carousel-indicators">
+                        {#each selectedExercise.image_files as _, index}
+                            <button
+                                    class:selected={index === currentSlide}
+                                    on:click={() => currentSlide = index}
+                            >
+                                {index + 1}
+                            </button>
+                        {/each}
+                    </div>
+                </div>
+            {/if}
+
+            <!-- Dettagli -->
+            <p><strong>Livello:</strong> {selectedExercise.level_display}</p>
+            <p><strong>Meccanica:</strong> {selectedExercise.mechanic_display}</p>
+            <p><strong>Categoria:</strong> {selectedExercise.category_display}</p>
+            <p><strong>Attrezzatura:</strong> {selectedExercise.equipment_display}</p>
+
+            <!-- Istruzioni -->
+            {#if selectedExercise.instructions?.length}
+                <h3>Istruzioni</h3>
+                <div class="instructions-list">
+                    {#each selectedExercise.instructions as step}
+                        <p>{step}</p>
+                    {/each}
+                </div>
+            {/if}
+
+            <button on:click={closeExercisePopup} style="margin: 0; margin-top: 15px">Chiudi visualizzazione esercizio</button>
+        </div>
+    </div>
+{/if}
+
 <script>
     import {onMount} from "svelte";
     import {getCookie} from "svelte-cookie";
@@ -285,7 +402,49 @@
     export let data;
     let idGymPlan;
 
-    let content = [];
+    let selectedExercise = null;
+    let showExercisePopup = false;
+    let currentSlide = 0;
+
+    async function openExercisePopup(exercise) {
+        const imageIds = exercise.image_urls || [];
+        const imageFiles = await fetchExerciseImages(imageIds);
+
+        exercise.image_files = imageFiles;
+        selectedExercise = exercise;
+        currentSlide = 0; // reset allo slide iniziale
+        showExercisePopup = true;
+    }
+
+    function closeExercisePopup() {
+        showExercisePopup = false;
+        selectedExercise = null;
+    }
+
+    async function fetchExerciseImages(imageIds) {
+        const imageUrls = [];
+
+        for (const id of imageIds) {
+            try {
+                const res = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-media-upload/${id}/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Token " + getCookie('csrftoken') // usa la funzione Svelte che già usi
+                    }
+                });
+
+                const data = await res.json();
+                if (data.file) {
+                    imageUrls.push(data.file);
+                }
+            } catch (err) {
+                console.error("Errore caricando immagine ID:", id, err);
+            }
+        }
+
+        return imageUrls;
+    }
 
     onMount(async () => {
         toggleClassByPathEquals({
@@ -432,19 +591,19 @@
                             groupedSets[setNumber].forEach((set, test) => {
                                 const row = document.createElement("tr");
 
-                                const [ecc, fermo, conc] = set.tempo.split("-");
+                                const [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                 const rest = set.rest_seconds;
 
                                 const data = [
                                     { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                     { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                    { type: "input", value: set.prescribed_reps, disabled: true, mobilelabel: "Segnate:" },
-                                    { type: "input", value: set.actual_reps, disabled: false, mobilelabel: "Svolte:" },
+                                    { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Segnate:" },
+                                    { type: "input", value: set.actual_reps_1, disabled: false, mobilelabel: "Svolte:" },
                                     { type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" },
                                     { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                    { type: "input", value: ecc, disabled: true, mobilelabel: "Eccentrica:" },
-                                    { type: "input", value: fermo, disabled: true, mobilelabel: "Fermo:" },
-                                    { type: "input", value: conc, disabled: true, mobilelabel: "Concentrica:" },
+                                    { type: "input", value: ecc+"\"", disabled: true, mobilelabel: "Eccentrica:" },
+                                    { type: "input", value: fermo+"\"", disabled: true, mobilelabel: "Fermo:" },
+                                    { type: "input", value: conc+"\"", disabled: true, mobilelabel: "Concentrica:" },
                                     { type: "input", value: rest+"s", disabled: true, mobilelabel: "Riposo:" },
                                 ];
 
@@ -472,8 +631,13 @@
                                             span.textContent = item.mobilelabel;
                                             row.appendChild(span);
 
-                                            td.textContent = item.value;
+                                            const link_exercise = document.createElement("a");
+                                            link_exercise.href = "";
+                                            link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                            link_exercise.textContent = item.value;
+
                                             td.rowSpan = lengthSets;
+                                            td.appendChild(link_exercise);
                                             row.appendChild(td);
                                         } else if(!sameExercisesOnSets) {
                                             const span = document.createElement("span");
@@ -481,7 +645,12 @@
                                             span.textContent = item.mobilelabel;
                                             row.appendChild(span);
 
-                                            td.textContent = item.value;
+                                            const link_exercise = document.createElement("a");
+                                            link_exercise.href = "";
+                                            link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                            link_exercise.textContent = item.value;
+
+                                            td.appendChild(link_exercise);
                                             row.appendChild(td);
                                         }
                                     } else {

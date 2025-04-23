@@ -225,6 +225,13 @@
             width: 100%;
             margin-bottom: 10px;
         }
+        .instructions-list {
+            border-radius: 10px;
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
         .instructions-list p {margin-bottom: 8px; }
         .carousel {
             position: relative;
@@ -375,10 +382,10 @@
             {/if}
 
             <!-- Dettagli -->
-            <p><strong>Livello:</strong> {selectedExercise.level_display}</p>
-            <p><strong>Meccanica:</strong> {selectedExercise.mechanic_display}</p>
-            <p><strong>Categoria:</strong> {selectedExercise.category_display}</p>
-            <p><strong>Attrezzatura:</strong> {selectedExercise.equipment_display}</p>
+            {#if selectedExercise.level_display != null}<p><strong>Livello:</strong> {selectedExercise.level_display}</p>{/if}
+            {#if selectedExercise.mechanic_display != null}<p><strong>Meccanica:</strong> {selectedExercise.mechanic_display}</p>{/if}
+            {#if selectedExercise.category_display != null}<p><strong>Categoria:</strong> {selectedExercise.category_display}</p>{/if}
+            {#if selectedExercise.equipment_display != null}<p><strong>Attrezzatura:</strong> {selectedExercise.equipment_display}</p>{/if}
 
             <!-- Istruzioni -->
             {#if selectedExercise.instructions?.length}
@@ -446,6 +453,37 @@
         return imageUrls;
     }
 
+    function parseDateIT(str) {
+        const [gg, mm, aaaa] = str.split('/');
+        return new Date(`${aaaa}-${mm}-${gg}`); // ISO: YYYY-MM-DD
+    }
+
+    function getTodayWeekdayIfInRange(startStr, endStr) {
+        const giorniSettimana = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // normalizza l'orario
+
+        const start = parseDateIT(startStr);
+        const end = parseDateIT(endStr);
+
+        if (today >= start && today <= end) {
+            return giorniSettimana[today.getDay()];
+        } else {
+            return null;
+        }
+    }
+
+    function giorniPrecedenti(giorno) {
+        const giorniSettimana = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+
+        if (giorno === null) return giorniSettimana;
+
+        const index = giorniSettimana.indexOf(giorno);
+        if (index === -1) return []; // giorno non valido
+
+        return giorniSettimana.slice(0, index);
+    }
+
     onMount(async () => {
         toggleClassByPathEquals({
             substring: '/account/gym-programs/view',
@@ -475,6 +513,9 @@
         if(gym_plan_json["note"] !== "") document.getElementById("note").innerText = gym_plan_json["note"];
         else document.getElementById("notes").style.display ="none";
 
+        let isNameDayOrNull = getTodayWeekdayIfInRange(gym_plan_json["start_date"], gym_plan_json["end_date"]);
+        let dayBeforeToday = giorniPrecedenti(isNameDayOrNull);
+
         let gym_plan_items = gym_plan_json["gym_plan_items"];
 
         const days = [
@@ -492,11 +533,17 @@
 
         days.forEach(({ full, short }) => {
             const tab = document.createElement("div");
+            tab.id = full + "Tab";
             tab.classList.add("tab");
 
             tab.innerHTML = `<span class="day-full">${full}</span>`;
 
             tab.addEventListener("click", () => {
+                let disabledDayBefore = false;
+                if(dayBeforeToday.includes(full)) {
+                    console.log("TEST")
+                    disabledDayBefore = true;
+                }
                 document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
                 tab.classList.add("active");
                 content.style.border = "1px solid #cfcfcf";
@@ -523,6 +570,9 @@
                             <div class="exercise-title">${item.notes}</div>
                             <div class="exercise-technique">${techniques}</div>
                         `;
+                        gym_plan_item.id = "orderExercise" + item.order;
+
+                        let plan_item = item.id;
 
                         divDay.appendChild(gym_plan_item);
 
@@ -722,9 +772,9 @@
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
                                         { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte (arto 1):" },
-                                        { type: "input", value: set.actual_reps_1, disabled: false, mobilelabel: "Serie Effettuate (arto 1):" },
+                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate (arto 1):" },
                                         { type: "input", value: set.prescribed_reps_2, disabled: true, mobilelabel: "Serie Prescritte (arto 2):" },
-                                        { type: "input", value: set.actual_reps_2, disabled: false, mobilelabel: "Serie Effettuate (arto 2):" },
+                                        { type: "input", value: set.actual_reps_2, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate (arto 2):" },
                                         { type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" },
                                         { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
                                         { type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" },
@@ -813,6 +863,310 @@
 
                                 divDay.appendChild(box);
                             });
+                        } else if (item.intensity_techniques.includes("rest_pause")) {
+                            const button = document.createElement("button");
+                            button.textContent = "Aggiungi serie a cedimento";
+                            button.style.margin = 0;
+
+                            setNumbers.forEach(setNumber => {
+                                const box = document.createElement("div");
+                                box.classList.add("set-box");
+                                if(setNumber == 1)
+                                    box.innerHTML = `<h4>Serie d'introduzione</h4>`;
+                                else if(setNumber >= 2)
+                                    box.innerHTML = `<h4>Serie a cedimento</h4>`;
+
+                                let sameExercisesOnSets = groupedSets[setNumber].every(
+                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                );
+                                let lengthSets = groupedSets[setNumber].length;
+
+                                const table = document.createElement("table");
+
+                                const thead = document.createElement("thead");
+                                const headerRow = document.createElement("tr");
+
+                                let headers;
+                                if(setNumber == 1) {
+                                    headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        { className: "data-value", content: "Serie Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                        { className: "data-value", content: "Serie Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                        { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                        { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                        { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    ];
+                                } else if(setNumber >= 2) {
+                                    headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        { className: "data-value", content: "Serie Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                        { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                        { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                        { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    ];
+                                }
+
+                                headers.forEach(h => {
+                                    const th = document.createElement("th");
+                                    if (h.className) th.className = h.className;
+                                    if (h.style) th.setAttribute("style", h.style);
+                                    if (h.title) {
+                                        const span = document.createElement("span");
+                                        span.className = "info-icon";
+                                        span.title = h.title;
+                                        span.textContent = h.content;
+                                        th.appendChild(span);
+                                    } else {
+                                        th.textContent = h.content;
+                                    }
+                                    headerRow.appendChild(th);
+                                });
+
+                                thead.appendChild(headerRow);
+                                table.appendChild(thead);
+
+                                const tbody = document.createElement("tbody");
+                                table.appendChild(tbody);
+
+                                box.append(table);
+
+                                groupedSets[setNumber].forEach((set, test, array) => {
+                                    const row = document.createElement("tr");
+
+                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    const rest = set.rest_seconds;
+
+                                    let data;
+                                    if(setNumber == 1) {
+                                        data = [
+                                            {
+                                                type: "div",
+                                                className: "set-number",
+                                                value: test + 1,
+                                                mobilelabel: "Ordine:"
+                                            },
+                                            {
+                                                type: "text",
+                                                value: set.exercise.name,
+                                                disabled: true,
+                                                mobilelabel: "Esercizio:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: set.prescribed_reps_1,
+                                                disabled: true,
+                                                mobilelabel: "Serie Prescritte:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: set.actual_reps_1,
+                                                disabled: disabledDayBefore,
+                                                mobilelabel: "Serie Effettuate:"
+                                            },
+                                            {type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:"},
+                                            {
+                                                type: "input",
+                                                value: set.weight + "kg",
+                                                disabled: true,
+                                                mobilelabel: "Peso:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: ecc + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Eccentrica:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: fermo + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Fermo:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: conc + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Concentrica:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: rest + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Riposo:"
+                                            },
+                                        ];
+                                    } else if(setNumber >= 2) {
+                                        data = [
+                                            {
+                                                type: "div",
+                                                className: "set-number",
+                                                value: test + 1,
+                                                mobilelabel: "Ordine:"
+                                            },
+                                            {
+                                                type: "text",
+                                                value: set.exercise.name,
+                                                disabled: true,
+                                                mobilelabel: "Esercizio:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: set.actual_reps_1,
+                                                disabled: disabledDayBefore,
+                                                mobilelabel: "Serie Effettuate:"
+                                            },
+                                            {type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:"},
+                                            {
+                                                type: "input",
+                                                value: set.weight + "kg",
+                                                disabled: true,
+                                                mobilelabel: "Peso:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: ecc + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Eccentrica:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: fermo + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Fermo:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: conc + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Concentrica:"
+                                            },
+                                            {
+                                                type: "input",
+                                                value: rest + " sec.",
+                                                disabled: true,
+                                                mobilelabel: "Riposo:"
+                                            },
+                                        ];
+                                    }
+
+                                    data.forEach((item, index) => {
+                                        const td = document.createElement("td");
+
+                                        if (index === 0) {
+                                            if(!sameExercisesOnSets) {
+                                                const div = document.createElement("div");
+                                                div.className = item.className;
+                                                div.textContent = item.value;
+
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                td.appendChild(span);
+                                                td.appendChild(div);
+                                            }
+                                            row.appendChild(td);
+                                        } else if (index === 1) {
+                                            if(test === 0 && sameExercisesOnSets) {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+                                                row.appendChild(span);
+
+                                                const link_exercise = document.createElement("a");
+                                                link_exercise.href = "";
+                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                link_exercise.textContent = item.value;
+
+                                                td.rowSpan = lengthSets;
+                                                td.appendChild(link_exercise);
+                                                row.appendChild(td);
+                                            } else if(!sameExercisesOnSets) {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+                                                row.appendChild(span);
+
+                                                const link_exercise = document.createElement("a");
+                                                link_exercise.href = "";
+                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                link_exercise.textContent = item.value;
+
+                                                td.appendChild(link_exercise);
+                                                row.appendChild(td);
+                                            }
+                                        } else {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement("div");
+                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                            const input = document.createElement("input");
+                                            input.type = "text";
+                                            input.className = "set-input";
+                                            input.value = item.value;
+                                            if (item.disabled) input.disabled = true;
+
+                                            wrapper.appendChild(input);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        }
+
+
+                                    });
+
+                                    tbody.appendChild(row);
+                                    table.appendChild(tbody);
+
+                                    if(setNumber == 2 && test === array.length - 1) {
+                                        button.addEventListener("click", async() => {
+                                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                    "Authorization": "Token " + getCookie('csrftoken'),
+                                                },
+                                                body: JSON.stringify({
+                                                    order: set.order+1,
+                                                    set_number: set.set_number,
+                                                    prescribed_reps_1: 0,
+                                                    prescribed_reps_2: 0,
+                                                    actual_reps_1: 0,
+                                                    actual_reps_2: 0,
+                                                    rir: set.rir,
+                                                    rest_seconds: set.rest_seconds,
+                                                    weight: set.weight,
+                                                    tempo_fcr: set.tempo_fcr,
+                                                    plan_item: plan_item,
+                                                    exercise_id: set.exercise.id
+                                                })
+                                            });
+
+                                            localStorage.setItem("scrollToId", gym_plan_item.id);
+                                            location.reload();
+                                        });
+                                    }
+                                });
+
+                                if(sameExercisesOnSets)
+                                    for (const riga of table.rows)
+                                        if (riga.cells[0])
+                                            riga.deleteCell(0);
+
+                                box.appendChild(button);
+                                divDay.appendChild(box);
+                            });
                         } else {
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
@@ -876,7 +1230,7 @@
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
                                         { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: false, mobilelabel: "Serie Effettuate:" },
+                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:" },
                                         { type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" },
                                         { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
                                         { type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" },
@@ -976,5 +1330,15 @@
 
             tabsContainer.appendChild(tab);
         });
+
+        if(isNameDayOrNull !== null)
+            document.getElementById(isNameDayOrNull + "Tab").click();
+
+        const id = localStorage.getItem("scrollToId");
+        if (id) {
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+            localStorage.removeItem("scrollToId");
+        }
     });
 </script>

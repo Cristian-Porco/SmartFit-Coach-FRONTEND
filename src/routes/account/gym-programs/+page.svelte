@@ -42,6 +42,48 @@
         .gym-programs-item:last-child {
             border-bottom: none;
         }
+
+        .animated-gradient-border {
+            position: relative;
+            background: white;
+            padding: 8px 13px !important;
+            z-index: 0;
+            border: 2px solid transparent;
+            font-weight: bold;
+
+            /* Imposta sfumatura per bordo e testo */
+            background-image: linear-gradient(white, white),
+            linear-gradient(90deg, #ff0000, #ff9900, #33cc33, #3399ff, #cc33ff, #ff0000);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            animation: animated-border 6s linear infinite;
+            background-size: 400% 100%;
+        }
+
+        .animated-gradient-border span {
+            background: linear-gradient(90deg, #ff0000, #ff9900, #33cc33, #3399ff, #cc33ff, #ff0000);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: animated-border 6s linear infinite;
+        }
+
+        .animated-gradient-border:hover span {
+            -webkit-text-fill-color: white; /* cambia il testo a bianco per contrasto */
+        }
+
+        @keyframes animated-border {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 width: 100%;
@@ -70,9 +112,13 @@
 
     let selectedId = null;
 
+    function parseDateIT(str) {
+        const [gg, mm, aaaa] = str.split('/');
+        return new Date(`${aaaa}-${mm}-${gg}`); // ISO: YYYY-MM-DD
+    }
+
     onMount(async() => {
         toggleClassByPathEquals({
-            substring: '/account/gym-programs',
             targetId: 'gym-program-icon-item',
             className: 'current-page',
             removeFromIds: [
@@ -98,17 +144,26 @@
             data.forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('gym-programs-item');
-                const sameDate = item.start_date === item.end_date;
-                const dateText = sameDate
-                    ? `Scheda di allenamento del ${item.start_date}`
-                    : `Scheda di allenamento dal ${item.start_date} al ${item.end_date}`;
+                const dateText = `Scheda di allenamento dal ${item.start_date} al ${item.end_date}`;
+                let targetView = "Visualizza";
+                let classList = "view-btn";
+
+                const today = new Date();
+
+                const start = parseDateIT(item.start_date);
+                const end = parseDateIT(item.end_date);
+
+                if (today >= start && today <= end) {
+                    targetView = "<span>Allenati!</span>";
+                    classList += " animated-gradient-border"
+                }
 
                 div.innerHTML = `
                     <div class="details">
                         <span class="average">${dateText}</span>
                     </div>
                     <div class="buttons">
-                        <button class="view-btn" data-id="${item.id}">Visualizza</button>
+                        <button class="${classList}" data-id="${item.id}">${targetView}</button>
                         <button class="edit-btn" data-id="${item.id}">Modifica</button>
                         <button class="delete-btn" data-id="${item.id}">Elimina</button>
                     </div>

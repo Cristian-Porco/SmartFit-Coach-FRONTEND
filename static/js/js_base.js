@@ -37,13 +37,9 @@ function toggleClassByPathEquals({
                                        className,
                                        removeFromIds = []
                                    }) {
-    const path = window.location.pathname;
-
-    //const shouldApply = path.includes(substring);
-    const shouldApply = path === substring;
     const targetEl = document.getElementById(targetId);
 
-    if (shouldApply && targetEl) {
+    if (targetEl) {
         targetEl.classList.add(className);
     }
 

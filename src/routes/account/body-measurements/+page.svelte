@@ -24,7 +24,6 @@
 
     onMount(async() => {
         toggleClassByPathEquals({
-            substring: '/account/body-measurements',
             targetId: 'body-measurements-icon-item',
             className: 'current-page',
             removeFromIds: [

@@ -436,7 +436,6 @@
 
     onMount(async () => {
         toggleClassByPathEquals({
-            substring: '/account',
             targetId: 'account-icon-item',
             className: 'current-page',
             removeFromIds: [

@@ -47,7 +47,6 @@
 
     onMount(() => {
         toggleClassByPathEquals({
-            substring: '/account/food-programs/add',
             targetId: 'food-program-icon-item',
             className: 'current-page',
             removeFromIds: [

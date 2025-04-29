@@ -72,7 +72,6 @@
 
     onMount(async() => {
         toggleClassByPathEquals({
-            substring: '/account/weights',
             targetId: 'weight-icon-item',
             className: 'current-page',
             removeFromIds: [

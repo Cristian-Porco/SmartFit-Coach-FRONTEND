@@ -186,6 +186,9 @@
         .data-value {
             width: 100px;
         }
+        .action-value {
+            width: 74px
+        }
 
         .set-box table {
             width: 100%;
@@ -269,6 +272,57 @@
         .carousel-indicators button.selected {
             background-color: #0056b3;
         }
+        #section_date input { display: inline; width: auto; }
+
+        .input-kg-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .input-kg {
+            padding-right: 2.5em; /* Spazio per la targhetta "kg" */
+            box-sizing: border-box;
+        }
+        .kg-label {
+            position: absolute;
+            right: 0.3em;
+            top: 38%;
+            transform: translateY(-50%);
+            pointer-events: none; /* Permette clic solo sull'input */
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .input-sec-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .input-sec {
+            padding-right: 2.5em; /* Spazio per la targhetta "kg" */
+            box-sizing: border-box;
+        }
+        .sec-label {
+            position: absolute;
+            right: 0.3em;
+            top: 38%;
+            transform: translateY(-50%);
+            pointer-events: none; /* Permette clic solo sull'input */
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .exercise-actions {
+            margin-left: 10px;
+        }
+        .edit-exercise-button, .delete-exercise-button, .edit-details-exercise-button, .delete-details-exercise-button {
+            cursor: pointer;
+            font-size: 24px;
+        }
+        .edit-exercise-button, .edit-details-exercise-button {
+            color: #007bff
+        }
+        .delete-exercise-button, .delete-details-exercise-button {
+            color: red;
+        }
 
         @media screen and (max-width: 968px) {
             .set-box table,
@@ -311,7 +365,7 @@
 
             .input-with-info,
             .input-with-info-enabled {
-                width: 80%;
+                width: 75%;
             }
 
             .set-input {
@@ -339,11 +393,12 @@
     </style>
 </head>
 
+<!-- Contenitore intestazione della pagina della scheda alimentare -->
 <div class="container">
-    <div><p><b>Visualizza</b></p><h1 class="titlePage">Scheda di allenamento</h1></div>
-    <div>
-        <p><b>Data inizio:</b> <span id="start_date">--/--/----</span></p>
-        <p><b>Data fine:</b> <span id="end_date">--/--/----</span></p>
+    <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda di allenamento</h1></div>
+    <div id="section_date">
+        <p><b>Data inizio:</b> <input type="date" id="start_date" required></p>
+        <p><b>Data fine:</b> <input type="date" id="end_date" required></p>
     </div>
 </div>
 
@@ -358,8 +413,9 @@
 
     <div class="content-note" id="notes">
         <h2 class="day-title">Note sulla scheda di allenamento</h2>
-        <p id="note">Contenuto della giornata selezionata apparirà qui.</p>
+        <textarea placeholder="Inserisci le note sulla scheda di allenamento qui..." id="note" style="margin-bottom: 0;"></textarea>
     </div>
+    <button>Modifica scheda di allenamento</button>
 </div>
 
 {#if showExercisePopup}
@@ -510,10 +566,12 @@
 
         const gym_plan_json = await response.json();
 
-        document.getElementById("start_date").innerText = gym_plan_json["start_date"];
-        document.getElementById("end_date").innerText = gym_plan_json["end_date"];
-        if(gym_plan_json["note"] !== "") document.getElementById("note").innerText = gym_plan_json["note"];
-        else document.getElementById("notes").style.display ="none";
+        const formattedStartDate = gym_plan_json["start_date"].split('/').reverse().join('-');
+        document.getElementById("start_date").value = formattedStartDate;
+        const formattedEndDate = gym_plan_json["end_date"].split('/').reverse().join('-');
+        document.getElementById("end_date").value = formattedEndDate;
+
+        document.getElementById("note").innerText = gym_plan_json["note"];
 
         let isNameDayOrNull = getTodayWeekdayIfInRange(gym_plan_json["start_date"], gym_plan_json["end_date"]);
         let dayBeforeToday = giorniPrecedenti(isNameDayOrNull);
@@ -584,8 +642,21 @@
                             <div class="exercise-number">${item.order}</div>
                             <div class="exercise-title">${item.notes}</div>
                             <div class="exercise-technique">${techniques}</div>
+                            <div class="exercise-actions">
+                                <span class="material-icons edit-exercise-button">edit</span>
+                                <span class="material-icons delete-exercise-button">delete</span>
+                            </div>
                         `;
                         gym_plan_item.id = "orderExercise" + item.order;
+
+
+                        gym_plan_item.querySelector(".edit-exercise-button").addEventListener("click", (e) => {
+                            alert("Modifica esercizio n." + item.id);
+                        });
+
+                        gym_plan_item.querySelector(".delete-exercise-button").addEventListener("click", (e) => {
+                            alert("Elimina esercizio n." + item.id);
+                        });
 
                         let plan_item = item.id;
 
@@ -602,6 +673,8 @@
                         const setNumbers = Object.keys(groupedSets).sort((a, b) => a - b);
 
                         if(item.intensity_techniques.includes("tempo-based")) {
+                            // TODO: aggiustare visualizzazione
+                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -622,6 +695,7 @@
                                     { className: "data-value", content: "Minuti Prescritti", title: "Numero di minuti prescritti da eseguire" },
                                     { className: "data-value", content: "Minuti Effettuati", title: "Numero di minuti realmente eseguiti" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    { className: "action-value" },
                                 ];
 
                                 headers.forEach(h => {
@@ -655,10 +729,11 @@
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1 + " min.", disabled: true, mobilelabel: "Minuti Prescritti:" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
+                                        { type: "input", value: set.prescribed_reps_1 + " min.", disabled: false, mobilelabel: "Minuti Prescritti:" },
                                         { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Minuti Effettuati:", event: true},
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
+                                        { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -693,6 +768,35 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(index === 4) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -733,6 +837,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("unilateral")) {
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -748,19 +854,6 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 const headers = [
                                     { className: "order-value", content: "" },
                                     { style: "text-align: left", content: "Esercizio" },
@@ -768,11 +861,11 @@
                                     { className: "data-value", content: "Ripetizioni Effettuate (arto 1)", title: "Numero di ripetizioni realmente eseguite" },
                                     { className: "data-value", content: "Ripetizioni Prescritte (arto 2)", title: "Numero di ripetizioni prescritte da eseguire" },
                                     { className: "data-value", content: "Ripetizioni Effettuate (arto 2)", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                    { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                     { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }]:[]),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }]:[]),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }]:[]),
+                                    { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                    { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                    { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                                 ];
 
@@ -808,17 +901,17 @@
 
                                     const data = [
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte (arto 1):" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
+                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte (arto 1):" },
                                         { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 1):", event: true},
-                                        { type: "input", value: set.prescribed_reps_2, disabled: true, mobilelabel: "Ripetizioni Prescritte (arto 2):" },
+                                        { type: "input", value: set.prescribed_reps_2, disabled: false, mobilelabel: "Ripetizioni Prescritte (arto 2):" },
                                         { type: "input", value: set.actual_reps_2, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 2):", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }]:[]),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }]:[]),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }]:[]),
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -926,6 +1019,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("rest_pause")) {
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             const button = document.createElement("button");
                             button.classList.add("buttonCedimento");
                             button.textContent = "Aggiungi serie a cedimento";
@@ -949,19 +1044,6 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 let headers;
                                 if(setNumber == 1) {
                                     headers = [
@@ -969,11 +1051,11 @@
                                         { style: "text-align: left", content: "Esercizio" },
                                         { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
                                         { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                         { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                        { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                        { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                         { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
                                     ];
                                 } else if(setNumber >= 2) {
@@ -981,11 +1063,11 @@
                                         { className: "order-value", content: "" },
                                         { style: "text-align: left", content: "Esercizio" },
                                         { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                         { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                        { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                        { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                         { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
                                     ];
                                 }
@@ -1032,13 +1114,13 @@
                                             {
                                                 type: "text",
                                                 value: set.exercise.name,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Esercizio:"
                                             },
                                             {
                                                 type: "input",
                                                 value: set.prescribed_reps_1,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Ripetizioni Prescritte:"
                                             },
                                             {
@@ -1048,15 +1130,15 @@
                                                 mobilelabel: "Ripetizioni Effettuate:",
                                                 event: true
                                             },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
                                                 value: rest + " sec.",
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Recupero:"
                                             }
                                         ];
@@ -1071,7 +1153,7 @@
                                             {
                                                 type: "text",
                                                 value: set.exercise.name,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Esercizio:"
                                             },
                                             {
@@ -1081,15 +1163,15 @@
                                                 mobilelabel: "Ripetizioni Effettuate:",
                                                 event: true
                                             },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
                                                 value: rest + " sec.",
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Recupero:"
                                             }
                                         ];
@@ -1220,6 +1302,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("myoreps")) {
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             const button = document.createElement("button");
                             button.classList.add("buttonCedimento");
                             button.textContent = "Aggiungi serie a cedimento";
@@ -1246,19 +1330,6 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 let headers;
                                 if(setNumber == 1) {
                                     headers = [
@@ -1266,11 +1337,11 @@
                                         { style: "text-align: left", content: "Esercizio" },
                                         { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
                                         { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                         { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                        { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                        { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                         { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
                                     ];
                                 } else if(setNumber >= 2) {
@@ -1280,11 +1351,11 @@
                                         { className: "data-value", content: "Ripetizioni Prescritte massime", title: "Numero di ripetizioni massime prescritte da eseguire" },
                                         { className: "data-value", content: "Ripetizioni Prescritte minime", title: "Numero di ripetizioni minime prescritte da eseguire" },
                                         { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                         { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                        { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                        { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                         { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
                                     ];
                                 }
@@ -1333,13 +1404,13 @@
                                             {
                                                 type: "text",
                                                 value: set.exercise.name,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Esercizio:"
                                             },
                                             {
                                                 type: "input",
                                                 value: set.prescribed_reps_1,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Serie Prescritte:"
                                             },
                                             {
@@ -1349,15 +1420,15 @@
                                                 mobilelabel: "Serie Effettuate:",
                                                 event: true
                                             },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
                                                 value: rest + " sec.",
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Recupero:"
                                             }
                                         ];
@@ -1372,19 +1443,19 @@
                                             {
                                                 type: "text",
                                                 value: set.exercise.name,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Esercizio:"
                                             },
                                             {
                                                 type: "input",
                                                 value: maxReps,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Serie Prescritte massime:"
                                             },
                                             {
                                                 type: "input",
                                                 value: minReps,
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Serie Prescritte minime:"
                                             },
                                             {
@@ -1394,15 +1465,15 @@
                                                 mobilelabel: "Serie Effettuate:",
                                                 event: true
                                             },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
                                                 value: rest + " sec.",
-                                                disabled: true,
+                                                disabled: false,
                                                 mobilelabel: "Recupero:"
                                             }
                                         ];
@@ -1539,6 +1610,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1554,29 +1627,16 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 const headers = [
                                     { className: "order-value", content: "" },
                                     { style: "text-align: left", content: "Esercizio" },
                                     { className: "data-value", content: "Secondi Prescritti", title: "Numero di secondi prescritti da eseguire" },
                                     { className: "data-value", content: "Secondi Effettuati", title: "Numero di secondi realmente eseguiti" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                    { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                     { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                    { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                    { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                                 ];
 
@@ -1612,15 +1672,15 @@
 
                                     const data = [
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
+                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
                                         { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -1716,6 +1776,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("emom")) {
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1731,29 +1793,16 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 const headers = [
                                     { style: "text-align: left", content: "Esercizio" },
                                     { className: "order-value", content: "Minuto" },
                                     { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
                                     { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                    { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                     { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                    { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                    { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                 ];
 
                                 headers.forEach(h => {
@@ -1787,15 +1836,15 @@
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Minuto:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
+                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
                                         { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -1884,6 +1933,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("amrap")) {
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1902,30 +1953,17 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 const headers = [
                                     { className: "order-value", content: "" },
                                     { style: "text-align: left", content: "Esercizio" },
                                     { className: "data-value", content: "Durata", title: "Durata dell'esercizio in AMRAP" },
                                     { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
                                     { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                    { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                     { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                    { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                    { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                 ];
 
                                 headers.forEach((h, index) => {
@@ -1962,15 +2000,15 @@
 
                                     const data = [
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Durata:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte:" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
+                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Durata:" },
+                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte:" },
                                         { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" }
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2091,6 +2129,8 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("death_set")){
+                            // TODO: aggiustare visualizzazione
+                            // TODO: aggiungere azioni
                             setNumbers.forEach(setNumber => {
                                 let showRecoveryColumn = false;
                                 if(setNumber == 3) showRecoveryColumn = true;
@@ -2120,19 +2160,6 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 const headers = [
                                     { className: "order-value", content: "" },
                                     { style: "text-align: left", content: "Esercizio" },
@@ -2143,11 +2170,11 @@
                                         { className: "data-value", content: "Secondi Prescritti", title: "Numero di secondi prescritti da eseguire" },
                                         { className: "data-value", content: "Secondi Effettuati", title: "Numero di secondi realmente eseguiti" },
                                     ]),
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                    { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                     { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                    { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                    { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     ...(showRecoveryColumn ? [{ className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }] : []),
                                 ];
 
@@ -2183,20 +2210,20 @@
 
                                     const data = [
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
                                         ...(isSecondSet ? [
-                                            { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte:" },
+                                            { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte:" },
                                             { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
                                         ] : [
-                                            { type: "input", value: set.prescribed_reps_1 + " sec.", disabled: true, mobilelabel: "Secondi Prescritti:" },
+                                            { type: "input", value: set.prescribed_reps_1 + " sec.", disabled: false, mobilelabel: "Secondi Prescritti:" },
                                             { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Secondi Effettuati:", event: true},
                                         ]),
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                        ...(showRecoveryColumn ? [{ type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" }] : []),
+                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
+                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
+                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
+                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                        ...(showRecoveryColumn ? [{ type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" }] : []),
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2290,6 +2317,8 @@
                                 divDay.appendChild(box);
                             });
                         } else {
+                            // aggiustato visualizzazione
+                            // TODO: aggiungere azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -2305,29 +2334,16 @@
                                 const thead = document.createElement("thead");
                                 const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
                                 const headers = [
                                     { className: "order-value", content: "" },
                                     { style: "text-align: left", content: "Esercizio" },
                                     { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
                                     { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                    { className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" },
                                     { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
+                                    { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
+                                    { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                                 ];
 
@@ -2358,20 +2374,20 @@
                                 groupedSets[setNumber].forEach((set, test) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        { type: "div", target: "order", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
+                                        { type: "number", target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
+                                        { type: "number", target: "actual_reps_1", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:"},
+                                        { type: "number", target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        { type: "number", target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                        { type: "number", target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                        { type: "number", target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                        { type: "number", target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
+                                        { type: "number", target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Recupero:" }
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2420,6 +2436,118 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "rest_seconds"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        rest_seconds: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -2433,7 +2561,7 @@
                                             input.className = "set-input";
                                             input.value = item.value;
                                             if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -2441,7 +2569,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });

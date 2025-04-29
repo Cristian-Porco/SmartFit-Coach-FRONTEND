@@ -72,7 +72,6 @@
 
     onMount(async() => {
         toggleClassByPathEquals({
-            substring: '/account/food-programs',
             targetId: 'food-program-icon-item',
             className: 'current-page',
             removeFromIds: [

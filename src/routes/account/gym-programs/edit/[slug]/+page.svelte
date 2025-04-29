@@ -768,7 +768,7 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
-                                        } else if(index === 4) {
+                                        } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
                                             span.textContent = item.mobilelabel;
@@ -838,7 +838,7 @@
                             });
                         } else if (item.intensity_techniques.includes("unilateral")) {
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -867,6 +867,7 @@
                                     { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                     { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    { className: "action-value" },
                                 ];
 
                                 headers.forEach(h => {
@@ -912,6 +913,7 @@
                                         { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
                                         { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                         { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
+                                        { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -960,6 +962,35 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.type === "action") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1020,7 +1051,7 @@
                             });
                         } else if (item.intensity_techniques.includes("rest_pause")) {
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni
                             const button = document.createElement("button");
                             button.classList.add("buttonCedimento");
                             button.textContent = "Aggiungi serie a cedimento";
@@ -1056,7 +1087,8 @@
                                         { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
                                         { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                         { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                        { className: "action-value" },
                                     ];
                                 } else if(setNumber >= 2) {
                                     headers = [
@@ -1068,7 +1100,8 @@
                                         { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
                                         { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                         { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                        { className: "action-value" },
                                     ];
                                 }
 
@@ -1140,7 +1173,8 @@
                                                 value: rest + " sec.",
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
-                                            }
+                                            },
+                                            { type: "action", mobilelabel: "Azioni:" }
                                         ];
                                     } else if(setNumber >= 2) {
                                         data = [
@@ -1173,7 +1207,8 @@
                                                 value: rest + " sec.",
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
-                                            }
+                                            },
+                                            { type: "action", mobilelabel: "Azioni:" }
                                         ];
                                     }
 
@@ -1223,6 +1258,35 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.type === "action") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1303,7 +1367,7 @@
                             });
                         } else if (item.intensity_techniques.includes("myoreps")) {
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni
                             const button = document.createElement("button");
                             button.classList.add("buttonCedimento");
                             button.textContent = "Aggiungi serie a cedimento";
@@ -1342,7 +1406,8 @@
                                         { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
                                         { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                         { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                        { className: "action-value" },
                                     ];
                                 } else if(setNumber >= 2) {
                                     headers = [
@@ -1356,7 +1421,8 @@
                                         { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
                                         { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                         { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                        { className: "action-value" },
                                     ];
                                 }
 
@@ -1430,7 +1496,8 @@
                                                 value: rest + " sec.",
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
-                                            }
+                                            },
+                                            { type: "action", mobilelabel: "Azioni:" },
                                         ];
                                     } else if(setNumber >= 2) {
                                         data = [
@@ -1475,7 +1542,8 @@
                                                 value: rest + " sec.",
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
-                                            }
+                                            },
+                                            { type: "action", mobilelabel: "Azioni:" },
                                         ];
                                     }
 
@@ -1525,6 +1593,35 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.type === "action") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1611,7 +1708,7 @@
                             });
                         } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1638,6 +1735,7 @@
                                     { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                     { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    { className: "action-value" },
                                 ];
 
                                 headers.forEach(h => {
@@ -1681,6 +1779,7 @@
                                         { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
                                         { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
                                         { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
+                                        { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -1729,6 +1828,35 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.type === "action") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1777,7 +1905,7 @@
                             });
                         } else if (item.intensity_techniques.includes("emom")) {
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni (no azioni, solo su gym-plan-item)
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1934,7 +2062,7 @@
                             });
                         } else if (item.intensity_techniques.includes("amrap")) {
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1964,6 +2092,7 @@
                                     { className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" },
                                     { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                     { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
+                                    { className: "action-value" },
                                 ];
 
                                 headers.forEach((h, index) => {
@@ -2008,7 +2137,8 @@
                                         { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
                                         { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
                                         { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" }
+                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                        { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2082,6 +2212,35 @@
                                                 row.appendChild(td);
                                             }
                                             // Se non è la prima riga, saltiamo la creazione della cella Durata
+                                        } else if(item.type === "action") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -2130,7 +2289,7 @@
                             });
                         } else if (item.intensity_techniques.includes("death_set")){
                             // TODO: aggiustare visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni (si modifica il gym plan item)
                             setNumbers.forEach(setNumber => {
                                 let showRecoveryColumn = false;
                                 if(setNumber == 3) showRecoveryColumn = true;
@@ -2318,7 +2477,7 @@
                             });
                         } else {
                             // aggiustato visualizzazione
-                            // TODO: aggiungere azioni
+                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -2345,6 +2504,7 @@
                                     { className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" },
                                     { className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" },
                                     { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    { className: "action-value" },
                                 ];
 
                                 headers.forEach(h => {
@@ -2387,7 +2547,8 @@
                                         { type: "number", target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
                                         { type: "number", target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
                                         { type: "number", target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
-                                        { type: "number", target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Recupero:" }
+                                        { type: "number", target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Recupero:" },
+                                        { type: "action", mobilelabel: "Azioni:" }
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2547,6 +2708,35 @@
                                             wrapper.appendChild(label);
                                             td.appendChild(span);
                                             td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(item.type === "action") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const actionsDiv = document.createElement("div");
+                                            actionsDiv.classList.add("exercise-actions");
+                                            actionsDiv.style.marginLeft = 0;
+
+                                            const editIcon = document.createElement("span");
+                                            editIcon.classList.add("material-icons", "edit-details-exercise-button");
+                                            editIcon.textContent = "edit";
+                                            editIcon.addEventListener("click", (e) => {
+                                                alert("Modifica dettaglio esercizio n." + set.id);
+                                            });
+
+                                            const deleteIcon = document.createElement("span");
+                                            deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
+                                            deleteIcon.textContent = "delete";
+                                            deleteIcon.addEventListener("click", (e) => {
+                                                alert("Elimina dettaglio esercizio n." + set.id);
+                                            });
+
+                                            actionsDiv.appendChild(editIcon);
+                                            actionsDiv.appendChild(deleteIcon);
+
+                                            td.appendChild(span);
+                                            td.appendChild(actionsDiv);
                                             row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");

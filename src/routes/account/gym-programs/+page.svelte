@@ -60,15 +60,7 @@
             background-size: 400% 100%;
         }
 
-        .animated-gradient-border span {
-            background: linear-gradient(90deg, #ff0000, #ff9900, #33cc33, #3399ff, #cc33ff, #ff0000);
-            background-size: 400% 100%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: animated-border 6s linear infinite;
-        }
-
-        .animated-gradient-border:hover span {
+        .animated-gradient-border:hover {
             -webkit-text-fill-color: white; /* cambia il testo a bianco per contrasto */
         }
 
@@ -149,46 +141,53 @@
                 let classList = "view-btn";
 
                 const today = new Date();
-
                 const start = parseDateIT(item.start_date);
                 const end = parseDateIT(item.end_date);
 
+
+
+                const detailsDiv = document.createElement("div");
+                detailsDiv.classList.add("details");
+
+                const dateSpan = document.createElement("span");
+                dateSpan.classList.add("average");
+                dateSpan.textContent = dateText;
+
+                detailsDiv.appendChild(dateSpan);
+
+                const buttonsDiv = document.createElement("div");
+                buttonsDiv.classList.add("buttons");
+
+                const viewBtn = document.createElement("button");
+                let color;
                 if (today >= start && today <= end) {
-                    targetView = "<span>Allenati!</span>";
-                    classList += " animated-gradient-border"
+                    targetView = "Allenati!";
+                    classList += " animated-gradient-border";
+                    color = "#3e3e3e";
                 }
-
-                div.innerHTML = `
-                    <div class="details">
-                        <span class="average">${dateText}</span>
-                    </div>
-                    <div class="buttons">
-                        <button class="${classList}" data-id="${item.id}">${targetView}</button>
-                        <button class="edit-btn" data-id="${item.id}">Modifica</button>
-                        <button class="delete-btn" data-id="${item.id}">Elimina</button>
-                    </div>
-                `;
-
-                container.appendChild(div);
-            });
-
-            document.querySelectorAll(".view-btn").forEach(button => {
-                button.addEventListener("click", async (event) => {
+                viewBtn.className = classList;
+                viewBtn.dataset.id = item.id;
+                viewBtn.innerHTML = targetView;
+                viewBtn.style.color = color;
+                viewBtn.addEventListener("click", async (event) => {
                     selectedId = event.target.getAttribute("data-id");
                     window.location.href = `/account/gym-programs/view/${selectedId}`;
                 });
-            });
 
-            document.querySelectorAll(".edit-btn").forEach(button => {
-                button.addEventListener("click", async (event) => {
+                const editBtn = document.createElement("button");
+                editBtn.className = "edit-btn";
+                editBtn.dataset.id = item.id;
+                editBtn.textContent = "Modifica";
+                editBtn.addEventListener("click", async (event) => {
                     selectedId = event.target.getAttribute("data-id");
                     window.location.href = `/account/gym-programs/edit/${selectedId}`;
-                });
-            });
+                })
 
-            // Event listener per eliminare il peso
-            document.querySelectorAll(".delete-btn").forEach(button => {
-                button.addEventListener("click", async (event) => {
+                const deleteBtn = document.createElement("button");
+                deleteBtn.className = "delete-btn";
+                deleteBtn.dataset.id = item.id;
+                deleteBtn.textContent = "Elimina";
+                deleteBtn.addEventListener("click", async (event) => {
                     selectedId = event.target.getAttribute("data-id");
                     const deleteResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan/delete/${selectedId}/`, {
                         method: "DELETE",
@@ -202,6 +201,15 @@
                         location.reload();
                     }
                 });
+
+                buttonsDiv.appendChild(viewBtn);
+                buttonsDiv.appendChild(editBtn);
+                buttonsDiv.appendChild(deleteBtn);
+
+                div.appendChild(detailsDiv);
+                div.appendChild(buttonsDiv);
+
+                container.appendChild(div);
             });
         } else {
             const p = document.createElement('p');

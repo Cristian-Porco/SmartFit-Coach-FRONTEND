@@ -290,6 +290,7 @@
             pointer-events: none; /* Permette clic solo sull'input */
             font-size: 0.9em;
             font-weight: bold;
+            color: gray
         }
 
         .input-sec-wrapper {
@@ -308,6 +309,26 @@
             pointer-events: none; /* Permette clic solo sull'input */
             font-size: 0.9em;
             font-weight: bold;
+            color: gray
+        }
+
+        .input-min-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .input-min {
+            padding-right: 2.5em; /* Spazio per la targhetta "kg" */
+            box-sizing: border-box;
+        }
+        .min-label {
+            position: absolute;
+            right: 0.3em;
+            top: 38%;
+            transform: translateY(-50%);
+            pointer-events: none; /* Permette clic solo sull'input */
+            font-size: 0.9em;
+            font-weight: bold;
+            color: gray
         }
 
         .exercise-actions {
@@ -673,8 +694,6 @@
                         const setNumbers = Object.keys(groupedSets).sort((a, b) => a - b);
 
                         if(item.intensity_techniques.includes("tempo-based")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -730,9 +749,9 @@
 
                                     const data = [
                                         { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1 + " min.", disabled: false, mobilelabel: "Minuti Prescritti:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Minuti Effettuati:", event: true},
-                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
+                                        {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Minuti Prescritti:" },
+                                        {  target: "actual_reps_1",value: set.actual_reps_1, disabled: false, mobilelabel: "Minuti Effettuati:"},
+                                        {  target: "rest_seconds",value: rest, disabled: false, mobilelabel: "Recupero:" },
                                         { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
@@ -768,6 +787,79 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(
+                                            item.target === "prescribed_reps_1" ||
+                                            item.target === "actual_reps_1"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-min-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        [item.target]: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'min-label';
+                                            label.textContent = 'min';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "rest_seconds"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        [item.target]: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -797,36 +889,6 @@
                                             td.appendChild(span);
                                             td.appendChild(actionsDiv);
                                             row.appendChild(td);
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
                                         }
                                     });
 
@@ -837,8 +899,6 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("unilateral")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -897,22 +957,22 @@
                                 groupedSets[setNumber].forEach((set, test) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                        { type: "div", target: "order", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte (arto 1):" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 1):", event: true},
-                                        { type: "input", value: set.prescribed_reps_2, disabled: false, mobilelabel: "Ripetizioni Prescritte (arto 2):" },
-                                        { type: "input", value: set.actual_reps_2, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 2):", event: true},
-                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
-                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
+                                        {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte (arto 1):" },
+                                        {  target: "actual_reps_1", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 1):"},
+                                        {  target: "prescribed_reps_2", value: set.prescribed_reps_2, disabled: false, mobilelabel: "Ripetizioni Prescritte (arto 2):" },
+                                        {  target: "actual_reps_2", value: set.actual_reps_2, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 2):"},
+                                        {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                        {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                        {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                        {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
+                                        {  target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Recupero:" },
                                         { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
@@ -962,6 +1022,118 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "rest_seconds"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        [item.target]: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1000,11 +1172,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event && index == 3) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -1012,19 +1183,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-                                            else if(item.event && index == 5) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_2: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -1050,8 +1209,6 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("rest_pause")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni
                             const button = document.createElement("button");
                             button.classList.add("buttonCedimento");
                             button.textContent = "Aggiungi serie a cedimento";
@@ -1132,7 +1289,7 @@
                                 groupedSets[setNumber].forEach((set, test, array) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     let data;
@@ -1140,6 +1297,7 @@
                                         data = [
                                             {
                                                 type: "div",
+                                                target: "order",
                                                 className: "set-number",
                                                 value: test + 1,
                                                 mobilelabel: "Ordine:"
@@ -1152,25 +1310,27 @@
                                             },
                                             {
                                                 type: "input",
+                                                target: "prescribed_reps_1",
                                                 value: set.prescribed_reps_1,
                                                 disabled: false,
                                                 mobilelabel: "Ripetizioni Prescritte:"
                                             },
                                             {
                                                 type: "input",
+                                                target: "actual_reps_1",
                                                 value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
+                                                disabled: false,
                                                 mobilelabel: "Ripetizioni Effettuate:",
-                                                event: true
                                             },
-                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                            {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                            {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                            {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                            {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
-                                                value: rest + " sec.",
+                                                target: "rest_seconds",
+                                                value: rest,
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
                                             },
@@ -1180,6 +1340,7 @@
                                         data = [
                                             {
                                                 type: "div",
+                                                target: "order",
                                                 className: "set-number",
                                                 value: test + 1,
                                                 mobilelabel: "Ordine:"
@@ -1192,19 +1353,20 @@
                                             },
                                             {
                                                 type: "input",
+                                                target: "actual_reps_1",
                                                 value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
+                                                disabled: false,
                                                 mobilelabel: "Ripetizioni Effettuate:",
-                                                event: true
                                             },
-                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                            {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                            {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                            {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                            {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
-                                                value: rest + " sec.",
+                                                target: "rest_seconds",
+                                                value: rest,
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
                                             },
@@ -1258,6 +1420,118 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "rest_seconds"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        [item.target]: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1296,11 +1570,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -1308,7 +1581,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -1366,8 +1639,6 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("myoreps")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni
                             const button = document.createElement("button");
                             button.classList.add("buttonCedimento");
                             button.textContent = "Aggiungi serie a cedimento";
@@ -1453,7 +1724,7 @@
                                 groupedSets[setNumber].forEach((set, test, array) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     let data;
@@ -1463,6 +1734,7 @@
                                         data = [
                                             {
                                                 type: "div",
+                                                target: "order",
                                                 className: "set-number",
                                                 value: test + 1,
                                                 mobilelabel: "Ordine:"
@@ -1475,25 +1747,27 @@
                                             },
                                             {
                                                 type: "input",
+                                                target: "prescribed_reps_1",
                                                 value: set.prescribed_reps_1,
                                                 disabled: false,
                                                 mobilelabel: "Serie Prescritte:"
                                             },
                                             {
                                                 type: "input",
+                                                target: "actual_reps_1",
                                                 value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
+                                                disabled: false,
                                                 mobilelabel: "Serie Effettuate:",
-                                                event: true
                                             },
-                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                            {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                            {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                            {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                            {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
-                                                value: rest + " sec.",
+                                                target: "rest_seconds",
+                                                value: rest,
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
                                             },
@@ -1503,6 +1777,7 @@
                                         data = [
                                             {
                                                 type: "div",
+                                                target: "order",
                                                 className: "set-number",
                                                 value: test + 1,
                                                 mobilelabel: "Ordine:"
@@ -1515,31 +1790,34 @@
                                             },
                                             {
                                                 type: "input",
+                                                target: "prescribed_reps_2",
                                                 value: maxReps,
                                                 disabled: false,
                                                 mobilelabel: "Serie Prescritte massime:"
                                             },
                                             {
                                                 type: "input",
+                                                target: "actual_reps_2",
                                                 value: minReps,
                                                 disabled: false,
                                                 mobilelabel: "Serie Prescritte minime:"
                                             },
                                             {
                                                 type: "input",
+                                                target: "actual_reps_1",
                                                 value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
+                                                disabled: false,
                                                 mobilelabel: "Serie Effettuate:",
-                                                event: true
                                             },
-                                            { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                            { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                            { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                            { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                            { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                            {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                            {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                            {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                            {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                            {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
                                             {
                                                 type: "input",
-                                                value: rest + " sec.",
+                                                target: "rest_seconds",
+                                                value: rest,
                                                 disabled: false,
                                                 mobilelabel: "Recupero:"
                                             },
@@ -1593,6 +1871,118 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "rest_seconds"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        [item.target]: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1631,11 +2021,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -1643,7 +2032,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -1707,8 +2096,6 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1765,20 +2152,20 @@
                                 groupedSets[setNumber].forEach((set, test) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                        { type: "div", target: "order", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
-                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" },
+                                        {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
+                                        {  target: "actual_reps_1", value: set.actual_reps_1, disabled: false, mobilelabel: "Serie Effettuate:"},
+                                        {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                        {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                        {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                        {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
+                                        {  target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Recupero:" },
                                         { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
@@ -1828,6 +2215,118 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "rest_seconds"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        [item.target]: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -1866,11 +2365,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -1878,7 +2376,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -1904,8 +2402,6 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("emom")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni (no azioni, solo su gym-plan-item)
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -1960,19 +2456,19 @@
                                 groupedSets[setNumber].forEach((set, test) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
+                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
                                         { type: "div", className: "set-number", value: test+1, mobilelabel: "Minuto:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                        {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
+                                        {  target: "actual_reps_1", value: set.actual_reps_1, disabled: false, mobilelabel: "Serie Effettuate:"},
+                                        {  target: "rir", value: set.rir, disabled: true, mobilelabel: "RIR:" },
+                                        {  target: "weight", value: set.weight, disabled: true, mobilelabel: "Peso:" },
+                                        {  target: "ecc", value: ecc, disabled: true, mobilelabel: "Eccentrica:" },
+                                        {  target: "fermo", value: fermo, disabled: true, mobilelabel: "Fermo:" },
+                                        {  target: "conc", value: conc, disabled: true, mobilelabel: "Concentrica:" },
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2019,6 +2515,82 @@
                                             td.appendChild(span);
                                             td.appendChild(div);
                                             row.appendChild(td);
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -2028,11 +2600,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -2040,7 +2611,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -2061,8 +2632,6 @@
                                 divDay.appendChild(box);
                             });
                         } else if (item.intensity_techniques.includes("amrap")) {
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -2124,20 +2693,20 @@
                                 groupedSets[setNumber].forEach((set, test) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                        { type: "div", target: "order", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Durata:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
-                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
+                                        {  target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Durata:" },
+                                        {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte:" },
+                                        {  target: "actual_reps_1", value: set.actual_reps_1, disabled: false, mobilelabel: "Ripetizioni Effettuate:"},
+                                        {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                        {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                        {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                        {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
                                         { type: "action", mobilelabel: "Azioni:" },
                                     ];
 
@@ -2195,23 +2764,114 @@
                                                 span.className = "mobile-label";
                                                 span.textContent = item.mobilelabel;
 
-                                                const wrapper = document.createElement("div");
-                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+                                                const wrapper = document.createElement('div');
+                                                wrapper.className = 'input-sec-wrapper input-with-info-enabled';
 
-                                                const input = document.createElement("input");
-                                                input.type = "text";
-                                                input.className = "set-input";
+                                                const input = document.createElement('input');
+                                                input.type = 'number';
+                                                input.className = 'set-input';
                                                 input.value = item.value;
-                                                if (item.disabled) input.disabled = true;
+                                                input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            [item.target]: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                const label = document.createElement('span');
+                                                label.className = 'sec-label';
+                                                label.textContent = 'sec';
 
                                                 wrapper.appendChild(input);
+                                                wrapper.appendChild(label);
                                                 td.appendChild(span);
                                                 td.appendChild(wrapper);
-
-                                                td.rowSpan = lengthSets; // <-- RIGA IMPORTANTE: fa sì che la cella duri per tutte le righe
+                                                td.rowSpan = lengthSets;
                                                 row.appendChild(td);
                                             }
                                             // Se non è la prima riga, saltiamo la creazione della cella Durata
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else if(item.type === "action") {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -2250,11 +2910,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -2262,7 +2921,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -2287,9 +2946,7 @@
 
                                 divDay.appendChild(box);
                             });
-                        } else if (item.intensity_techniques.includes("death_set")){
-                            // TODO: aggiustare visualizzazione
-                            // aggiustato azioni (si modifica il gym plan item)
+                        } else if (item.intensity_techniques.includes("death_set")) {
                             setNumbers.forEach(setNumber => {
                                 let showRecoveryColumn = false;
                                 if(setNumber == 3) showRecoveryColumn = true;
@@ -2364,25 +3021,25 @@
                                 groupedSets[setNumber].forEach((set, test) => {
                                     const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                    let [ecc, fermo, conc] = set.tempo_fcr.split("-");
                                     const rest = set.rest_seconds;
 
                                     const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                        { type: "div", target: "order", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
                                         ...(isSecondSet ? [
-                                            { type: "input", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte:" },
-                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
+                                            {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Ripetizioni Prescritte:" },
+                                            {  target: "actual_reps_1", value: set.actual_reps_1, disabled: false, mobilelabel: "Ripetizioni Effettuate:"},
                                         ] : [
-                                            { type: "input", value: set.prescribed_reps_1 + " sec.", disabled: false, mobilelabel: "Secondi Prescritti:" },
-                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Secondi Effettuati:", event: true},
+                                            {  target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Secondi Prescritti:" },
+                                            {  target: "actual_reps_1", value: set.actual_reps_1, disabled: false, mobilelabel: "Secondi Effettuati:"},
                                         ]),
-                                        { type: "input", value: set.rir, disabled: false, mobilelabel: "RIR:" },
-                                        { type: "input", value: set.weight+"kg", disabled: false, mobilelabel: "Peso:" },
-                                        { type: "input", value: ecc+" sec.", disabled: false, mobilelabel: "Eccentrica:" },
-                                        { type: "input", value: fermo+" sec.", disabled: false, mobilelabel: "Fermo:" },
-                                        { type: "input", value: conc+" sec.", disabled: false, mobilelabel: "Concentrica:" },
-                                        ...(showRecoveryColumn ? [{ type: "input", value: rest+" sec.", disabled: false, mobilelabel: "Recupero:" }] : []),
+                                        {  target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
+                                        {  target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
+                                        {  target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
+                                        {  target: "fermo", value: fermo, disabled: false, mobilelabel: "Fermo:" },
+                                        {  target: "conc", value: conc, disabled: false, mobilelabel: "Concentrica:" },
+                                        ...(showRecoveryColumn ? [{  target: "rest_seconds", value: rest, disabled: false, mobilelabel: "Recupero:" }] : []),
                                     ];
 
                                     data.forEach((item, index) => {
@@ -2431,6 +3088,121 @@
                                                 td.appendChild(link_exercise);
                                                 row.appendChild(td);
                                             }
+                                        }  else if(
+                                            !isSecondSet && (
+                                                item.target === "prescribed_reps_1" ||
+                                                item.target === "actual_reps_1"
+                                            )
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(item.target === "weight") {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        weight: this.value
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'kg-label';
+                                            label.textContent = 'kg';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
+                                        } else if(
+                                            item.target === "ecc" ||
+                                            item.target === "fermo" ||
+                                            item.target === "conc"
+                                        ) {
+                                            const span = document.createElement("span");
+                                            span.className = "mobile-label";
+                                            span.textContent = item.mobilelabel;
+
+                                            const wrapper = document.createElement('div');
+                                            wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                                            const input = document.createElement('input');
+                                            input.type = 'number';
+                                            input.className = 'set-input';
+                                            input.value = item.value;
+                                            input.addEventListener("input", async function () {
+                                                if(item.target === "ecc") ecc = this.value;
+                                                else if(item.target === "fermo") fermo = this.value;
+                                                else if(item.target === "conc") conc = this.value;
+
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                    method: "PATCH",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        tempo_fcr: ecc + "-" + fermo + "-" + conc
+                                                    })
+                                                });
+                                            });
+
+                                            const label = document.createElement('span');
+                                            label.className = 'sec-label';
+                                            label.textContent = 'sec';
+
+                                            wrapper.appendChild(input);
+                                            wrapper.appendChild(label);
+                                            td.appendChild(span);
+                                            td.appendChild(wrapper);
+                                            row.appendChild(td);
                                         } else {
                                             const span = document.createElement("span");
                                             span.className = "mobile-label";
@@ -2440,11 +3212,10 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
+                                            input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",
                                                     headers: {
@@ -2476,8 +3247,6 @@
                                 divDay.appendChild(box);
                             });
                         } else {
-                            // aggiustato visualizzazione
-                            // aggiustato azioni
                             setNumbers.forEach(setNumber => {
                                 const box = document.createElement("div");
                                 box.classList.add("set-box");
@@ -2541,7 +3310,7 @@
                                         { type: "div", target: "order", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
                                         { type: "text", value: set.exercise.name, disabled: false, mobilelabel: "Esercizio:" },
                                         { type: "number", target: "prescribed_reps_1", value: set.prescribed_reps_1, disabled: false, mobilelabel: "Serie Prescritte:" },
-                                        { type: "number", target: "actual_reps_1", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:"},
+                                        { type: "number", target: "actual_reps_1", value: set.actual_reps_1, disabled: false, mobilelabel: "Serie Effettuate:"},
                                         { type: "number", target: "rir", value: set.rir, disabled: false, mobilelabel: "RIR:" },
                                         { type: "number", target: "weight", value: set.weight, disabled: false, mobilelabel: "Peso:" },
                                         { type: "number", target: "ecc", value: ecc, disabled: false, mobilelabel: "Eccentrica:" },
@@ -2695,7 +3464,7 @@
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        rest_seconds: this.value
+                                                        [item.target]: this.value
                                                     })
                                                 });
                                             });
@@ -2747,10 +3516,9 @@
                                             wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
 
                                             const input = document.createElement("input");
-                                            input.type = "text";
+                                            input.type = "number";
                                             input.className = "set-input";
                                             input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
                                             input.addEventListener("input", async function () {
                                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
                                                     method: "PATCH",

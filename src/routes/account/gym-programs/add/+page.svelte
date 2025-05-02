@@ -107,7 +107,7 @@
             }
         } else {
             document.getElementById("error1").style.display = "block";
-            document.getElementById("error1").firstChild.textContent =  result.message;
+            document.getElementById("error1").firstChild.textContent = result.message;
         }
     }
 </script>

@@ -61,9 +61,14 @@
         const errorEl = document.getElementById(elementId);
 
         if (errorEl) {
+            // Mostra l'errore
             errorEl.style.display = "block";
             errorEl.firstChild.textContent = message;
 
+            // Scroll animato verso l'elemento
+            errorEl.scrollIntoView({ behavior: "smooth", block: "center" });
+
+            // Nasconde l'errore dopo 5 secondi
             setTimeout(() => {
                 errorEl.style.display = "none";
                 errorEl.firstChild.textContent = "";

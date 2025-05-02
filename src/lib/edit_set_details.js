@@ -1,6 +1,6 @@
 import {getCookie} from "svelte-cookie";
 
-export function IntensityTechniquesTempoBase(setNumbers, groupedSets, divDay) {
+export function IntensityTechniquesTempoBase(setNumbers, groupedSets, divDay, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
@@ -207,7 +207,7 @@ export function IntensityTechniquesTempoBase(setNumbers, groupedSets, divDay) {
     });
 }
 
-export function IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, disabledDayBefore) {
+export function IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, disabledDayBefore, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
@@ -519,7 +519,7 @@ export function IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, d
     });
 }
 
-export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, dayBeforeToday, full, button) {
+export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
@@ -946,7 +946,7 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
     });
 }
 
-export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayBeforeToday, full, button) {
+export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup) {
     let maxReps, minReps;
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
@@ -1398,7 +1398,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
     });
 }
 
-export function IntensityTechniquesIsometric(setNumbers, groupedSets, divDay) {
+export function IntensityTechniquesIsometric(setNumbers, groupedSets, divDay, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
@@ -1706,7 +1706,7 @@ export function IntensityTechniquesIsometric(setNumbers, groupedSets, divDay) {
     });
 }
 
-export function IntensityTechniquesEMOM(setNumbers, groupedSets, divDay) {
+export function IntensityTechniquesEMOM(setNumbers, groupedSets, divDay, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
@@ -1938,7 +1938,7 @@ export function IntensityTechniquesEMOM(setNumbers, groupedSets, divDay) {
     });
 }
 
-export function IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay) {
+export function IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
@@ -2255,7 +2255,7 @@ export function IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay) {
     });
 }
 
-export function IntensityTechniquesDeathSet(setNumbers, groupedSets, divDay) {
+export function IntensityTechniquesDeathSet(setNumbers, groupedSets, divDay, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         let showRecoveryColumn = false;
         if(setNumber == 3) showRecoveryColumn = true;
@@ -2557,7 +2557,7 @@ export function IntensityTechniquesDeathSet(setNumbers, groupedSets, divDay) {
     });
 }
 
-export function IntensityTechniquesDefault(setNumbers, groupedSets, divDay) {
+export function IntensityTechniquesDefault(setNumbers, groupedSets, divDay, openExercisePopup) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");

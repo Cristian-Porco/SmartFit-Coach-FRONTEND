@@ -600,7 +600,19 @@
 
     async function updateGoal() {
         const goal_description = document.getElementById("goal_description").value;
-        console.log(goal_description);
+
+        const responseGoals = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                goal_description: goal_description
+            })
+        });
+
+        if(responseGoals.ok) window.location.reload();
     }
 
     let password = "";

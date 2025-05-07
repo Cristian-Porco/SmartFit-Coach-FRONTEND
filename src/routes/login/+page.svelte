@@ -31,6 +31,10 @@
     let email = "";
     let password = "";
 
+    onMount(() => {
+        if(getCookie('csrftoken') !== "") window.location.href = "/account";
+    });
+
     async function login(event) {
         event.preventDefault();
 
@@ -44,7 +48,6 @@
 
         if (response1.ok) {
             const data1 = await response1.json();
-            console.log(data1);
             setCookie("csrftoken", data1.key);
             window.location.href = "/account";
 

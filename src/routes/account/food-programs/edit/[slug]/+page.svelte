@@ -942,6 +942,8 @@
      * solo una volta al caricamento del componente.
      */
     onMount(async() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathContains({
             substring: '/account/food-programs/edit',
             targetId: 'food-program-icon-item',

@@ -23,6 +23,8 @@
     let selectedId = null;
 
     onMount(async() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'body-measurements-icon-item',
             className: 'current-page',

@@ -1,475 +1,5 @@
 <head>
-    <style>
-        .icon-sidebar { display: flex; }
-        .sidebar { display: none; }
-        .main-content { width: 100%; min-width: 100%; }
-
-        .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            padding: 10px;
-        }
-        .container div { flex: 1; text-align: center; }
-        .container div:nth-child(1) { text-align: left; }
-        .container div:nth-child(2) { text-align: right; }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 1rem;
-            border-radius: 10px;
-            background-color: #e1e7ee;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            flex: 1 1 120px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .tab:hover {
-            background-color: #acb0c3;
-        }
-
-        .tab.active {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        .tab.active .day-full {
-            color: white;
-        }
-
-        .content-day, .content-note {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .content-note {
-            border: 1px solid #cfcfcf;
-        }
-
-        .day-title {
-            margin: 0;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-            color: #333;
-        }
-
-        .day-subtitle {
-            color: #afafaf;
-        }
-
-        .exercise-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin: 8px 0;
-            background-color: #f9f9f9;
-        }
-
-        .exercise-number {
-            width: 30px;
-            height: 30px;
-            min-width: 30px;
-            min-height: 30px;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 50%;
-            font-weight: bold;
-            text-align: center;
-            line-height: 30px;
-            margin-right: 10px;
-        }
-
-        .exercise-title {
-            flex: 1;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .exercise-technique {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #e74c3c;
-        }
-
-        .set-label {
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-
-        .set-col {
-            text-align: center;
-        }
-
-        .set-box {
-            margin: 20px 0;
-            padding: 10px;
-            border-left: 4px solid #007bff;
-        }
-
-        .set-box h3 {
-            margin-bottom: 10px;
-            color: #007bff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            font-size: 16px;
-        }
-
-        th, td {
-            padding: 8px;
-            border: 0;
-        }
-
-        .set-number {
-            width: 26px;
-            height: 26px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 26px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin: 0 auto;
-        }
-
-        .set-input {
-            height: 30px;
-            font-size: 0.85rem;
-            padding: 2px 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .input-with-info,
-        .input-with-info-enabled {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-with-info input,
-        .input-with-info-enabled input {
-            flex-grow: 1;
-        }
-
-        .info-icon {
-            cursor: help;
-        }
-
-        .order-value {
-            width: 56px;
-        }
-
-        .data-value {
-            width: 100px;
-        }
-        .action-value {
-            width: 74px
-        }
-
-        .set-box table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .set-box th, .set-box td {
-            padding: 0.5rem;
-        }
-
-        .mobile-label {
-            display: none;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 700px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-        }
-        .modal-content>h2 { margin-bottom: 15px; }
-        .modal-content>h3 { margin: 8px 0; }
-        .modal-container {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .instructions-list {
-            border-radius: 10px;
-            height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        .instructions-list p {margin-bottom: 8px; }
-        .carousel {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .carousel-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: contain;
-            max-height: 300px;
-        }
-
-        .carousel-indicators {
-            display: flex;
-            justify-content: center;
-            margin-top: 8px;
-            gap: 6px;
-        }
-
-        .carousel-indicators button {
-            width: 50px;
-            padding: 0;
-            border-radius: 100%;
-            height: 50px;
-            font-size: 16px;
-        }
-
-        .carousel-indicators button.selected {
-            background-color: #0056b3;
-        }
-        #section_date input { display: inline; width: auto; }
-
-        .input-kg-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .input-kg {
-            padding-right: 2.5em; /* Spazio per la targhetta "kg" */
-            box-sizing: border-box;
-        }
-        .kg-label {
-            position: absolute;
-            right: 0.3em;
-            top: 38%;
-            transform: translateY(-50%);
-            pointer-events: none; /* Permette clic solo sull'input */
-            font-size: 0.9em;
-            font-weight: bold;
-            color: gray
-        }
-
-        .input-sec-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .input-sec {
-            padding-right: 2.5em; /* Spazio per la targhetta "kg" */
-            box-sizing: border-box;
-        }
-        .sec-label {
-            position: absolute;
-            right: 0.3em;
-            top: 38%;
-            transform: translateY(-50%);
-            pointer-events: none; /* Permette clic solo sull'input */
-            font-size: 0.9em;
-            font-weight: bold;
-            color: gray
-        }
-
-        .input-min-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-        .input-min {
-            padding-right: 2.5em; /* Spazio per la targhetta "kg" */
-            box-sizing: border-box;
-        }
-        .min-label {
-            position: absolute;
-            right: 0.3em;
-            top: 38%;
-            transform: translateY(-50%);
-            pointer-events: none; /* Permette clic solo sull'input */
-            font-size: 0.9em;
-            font-weight: bold;
-            color: gray
-        }
-
-        .exercise-actions {
-            margin-left: 10px;
-        }
-        .edit-exercise-button, .delete-exercise-button, .edit-details-exercise-button, .delete-details-exercise-button {
-            cursor: pointer;
-            font-size: 24px;
-        }
-        .edit-exercise-button, .edit-details-exercise-button {
-            color: #007bff
-        }
-        .delete-exercise-button, .delete-details-exercise-button {
-            color: red;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 700px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-        }
-        .modal-content>h3 { margin-bottom: 15px; }
-        .modal-container {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .food-search { width: 50%; }
-        .food-list {
-            list-style: none;
-            height: 500px; /* Altezza limitata */
-            overflow-y: scroll; /* Abilita la barra di scorrimento verticale */
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            padding: 0;
-            border: 1px solid #ddd;
-            border-radius: 40px;
-        }
-        .food-list::-webkit-scrollbar { display: none; }
-        .food-list li {
-            padding: 10px;
-            border-top: 1px solid #ddd;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-        .food-list li:first-child { border-top: none; }
-        .food-list li:last-child { border-bottom: none; }
-        .food-details {
-            width: 50%;
-            background: #f1f5f9;
-            border-radius: 40px;
-            padding: 15px;
-        }
-        .food-details h3 { font-size: 1.5em; text-align: center; }
-        .food-details div {
-            margin: 5px 0;
-        }
-        .close-button { margin-bottom: 0; }
-
-        @media screen and (max-width: 968px) {
-            .set-box table,
-            .set-box thead,
-            .set-box tbody,
-            .set-box th,
-            .set-box td,
-            .set-box tr {
-                display: block;
-                width: 100%;
-            }
-
-            .set-box thead {
-                display: none;
-            }
-
-            .set-box tr {
-                margin-bottom: 1rem;
-                padding: 0.5rem;
-                border-bottom: 1px solid #ccc;
-            }
-
-            .set-box tr:last-child {
-                border-bottom: none;
-            }
-
-            .set-box td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.4rem;
-                border: none;
-            }
-
-            .mobile-label {
-                display: inline-block;
-                font-weight: 600;
-                font-size: 0.9rem;
-            }
-
-            .input-with-info,
-            .input-with-info-enabled {
-                width: 75%;
-            }
-
-            .set-input {
-                width: 100%;
-                padding: 0.3rem;
-                font-size: 0.9rem;
-            }
-
-            .modal-content {
-                width: 100vw;
-                height: 100vh;
-                max-height: none;
-                border-radius: 0;
-                padding: 15px;
-                overflow-y: auto;
-                display: flex;
-                flex-direction: column;
-            }
-            .modal-container { flex-direction: column; gap: 10px; flex: 1; }
-        }
-
-        @media screen and (max-width: 768px) {
-            .container { flex-direction: column; align-items: center; }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/account/gym-programs/style_edit_gym_programs.css">
 </head>
 
 <!-- Contenitore intestazione della pagina della scheda alimentare -->
@@ -599,7 +129,8 @@
             <!-- Sezione input -->
             <div class="input-group">
                 <!-- Pulsante per scegliere l'esercizio -->
-                <button on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
 
                 <label for="sets">Numero di serie:</label>
                 <input id="sets" type="number" bind:value={numSeries} min="0" />
@@ -629,8 +160,8 @@
             <div class="separator-row"></div>
 
             <!-- Pulsanti azione -->
-            <button on:click={addDefaultExercise}>Aggiungi</button>
-            <button class="close-button" on:click={() => {showBilateralExercise = false; idExercises = []}}>Annulla</button>
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showBilateralExercise = false; resetExerciseModal(); }}>Annulla</button>
         </div>
     </div>
 {/if}
@@ -643,7 +174,8 @@
             <!-- Sezione input -->
             <div class="input-group">
                 <!-- Pulsante per scegliere l'esercizio -->
-                <button on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
 
                 <label for="sets">Numero di serie:</label>
                 <input id="sets" type="number" bind:value={numSeries} min="0" />
@@ -673,8 +205,8 @@
             <div class="separator-row"></div>
 
             <!-- Pulsanti azione -->
-            <button on:click={addDefaultExercise}>Aggiungi</button>
-            <button class="close-button" on:click={() => {showUnilateralExercise = false; idExercises = []}}>Annulla</button>
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showUnilateralExercise = false; resetExerciseModal(); }}>Annulla</button>
         </div>
     </div>
 {/if}
@@ -687,7 +219,8 @@
             <!-- Sezione input -->
             <div class="input-group">
                 <!-- Pulsante per scegliere l'esercizio -->
-                <button on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
 
                 <label for="reps">Minuti prescritti:</label>
                 <input id="reps" type="number" bind:value={numReps} min="0" />
@@ -699,8 +232,8 @@
             <div class="separator-row"></div>
 
             <!-- Pulsanti azione -->
-            <button on:click={() => { numSeries = 1; addDefaultExercise(); }}>Aggiungi</button>
-            <button class="close-button" on:click={() => {showTempoBasedExercise = false; idExercises = []}}>Annulla</button>
+            <button class="save-exercise-button" style="display: none" on:click={() => { numSeries = 1; addDefaultExercise(); }}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showTempoBasedExercise = false; resetExerciseModal(); }}>Annulla</button>
         </div>
     </div>
 {/if}
@@ -708,12 +241,13 @@
 {#if showDropSetExercise}
     <div class="modal">
         <div class="modal-content">
-            <h3>Aggiungi esercizio bilaterale</h3>
+            <h3>Aggiungi esercizio Drop Set</h3>
 
             <!-- Sezione input -->
             <div class="input-group">
                 <!-- Pulsante per scegliere l'esercizio -->
-                <button on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
 
                 <label for="sets">Numero di serie:</label>
                 <input id="sets" type="number" bind:value={numSeries} min="0" />
@@ -743,13 +277,821 @@
             <div class="separator-row"></div>
 
             <!-- Pulsanti azione -->
-            <button on:click={addDropSetExercise}>Aggiungi</button>
-            <button class="close-button" on:click={() => {showDropSetExercise = false; idExercises = []}}>Annulla</button>
+            <button class="save-exercise-button" style="display: none" on:click={addDropSetExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showDropSetExercise = false; resetExerciseModal(); }}>Annulla</button>
         </div>
     </div>
 {/if}
 
+{#if showSuperSetExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio Super Set / Giant Set</h3>
 
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+
+                <div class="info" style="display: block; margin-bottom: 10px">
+                    <p>Puoi modificare i dettagli di ogni esercizio direttamente nella schermata principale di modifica</p>
+                </div>
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addSuperSetExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => { showSuperSetExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showForcedRepsExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio Serie Forzate</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte (separate dalla virgola):</label>
+                <input id="reps" type="text" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addForcedRepsExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showForcedRepsExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showHalfRepsExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio Half Reps</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte (separate dalla virgola):</label>
+                <input id="reps" type="text" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addForcedRepsExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showHalfRepsExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showRestPauseExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio Rest Pause</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="reps">Ripetizioni prescritte per la serie d'introduzione:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addRestPauseExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showRestPauseExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showMyorepsExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio MyoReps</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="reps">Ripetizioni prescritte per la serie d'introduzione:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="reps">Ripetizioni prescritte per le serie a cedimento (valore massimo e minimo separato da una virgola):</label>
+                <input id="reps" type="text" bind:value={numSeries} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addMyorepsExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showMyorepsExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showPreFatigueExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio di Pre-Affaticamento</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showPreFatigueExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showNegativeExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con negativa forzata</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="1" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showNegativeExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showPeakContractionExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con concentrazione di picco</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showPeakContractionExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showTempoTUTExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Tempo Training / TUT</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showTempoTUTExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showIsometricExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con contrazioni isometriche</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Secondi prescritti:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showIsometricExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showSevenSevenExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio 21 Serie (7-7-7)</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addSevenSevenExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showSevenSevenExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showClusterExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio Cluster Set</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Numero di ripetizioni in una serie:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+
+                <div class="info" style="display: block; margin-bottom: 10px">
+                    <p>Puoi modificare i dettagli di ogni esercizio direttamente nella schermata principale di modifica</p>
+                </div>
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addClusterExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showClusterExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showPyramidExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Piramidale</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="reps">Ripetizioni prescritte (separate dalla virgola):</label>
+                <input id="reps" type="text" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg, separate dalla virgola):</label>
+                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addPyramidExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showPyramidExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showWaveLoadingExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Wave Loading</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="reps">Ripetizioni prescritte (separate dalla virgola):</label>
+                <input id="reps" type="text" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg, separate dalla virgola):</label>
+                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addPyramidExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showWaveLoadingExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showIsometricOverloadExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Isometric Overload</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Secondi prescritti:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showIsometricOverloadExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showAccommodatingResistanceExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Accommodating Resistance</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="notes">Note sull'esercizio:</label>
+                <input id="notes" type="text" bind:value={notesGymPlanItems} placeholder="Inserisci in parole povere la resistenza durante l'arco del movimento..."/>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultWithNoteExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showAccommodatingResistanceExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showPauseRepsExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Pause Reps</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Numero di serie:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Recupero (in secondi):</label>
+                <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDefaultExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showPauseRepsExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showEMOMExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica EMOM (Every Minute On the Minute)</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Minuti prescritti:</label>
+                <input id="sets" type="number" bind:value={numSeries} min="0" />
+
+                <label for="reps">Ripetizioni prescritte in ogni minuto:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addEMOMExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showEMOMExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showAMRAPExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica AMRAP (As Many Reps As Possible)</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <label for="sets">Durata (in secondi):</label>
+                <input id="sets" type="number" bind:value={rest_seconds} min="0" />
+
+                <label for="reps">Ripetizioni prescritte in ogni minuto:</label>
+                <input id="reps" type="number" bind:value={numReps} min="0" />
+
+                <label for="rir">RIR:</label>
+                <input id="rir" type="number" bind:value={rir} min="0" />
+
+                <label for="weight">Peso (in kg):</label>
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+
+                <label for="eccentric">Eccentrica (in secondi):</label>
+                <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
+
+                <label for="pause">Fermo (in secondi):</label>
+                <input id="pause" type="number" bind:value={pause} min="0" step="1" />
+
+                <label for="concentric">Concentrica (in secondi):</label>
+                <input id="concentric" type="number" bind:value={concentric} min="0" step="1" />
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addAMRAPExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showAMRAPExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showDeathSetExercise}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Aggiungi esercizio con tecnica Death Set</h3>
+
+            <!-- Sezione input -->
+            <div class="input-group">
+                <!-- Pulsante per scegliere l'esercizio -->
+                <p style="text-align: center; margin-bottom: 10px; font-style: italic">{nameExercises}</p>
+                <button class="choose-exercise-button" on:click={() => showChooseExerciseModal = true}>Scegli esercizio</button>
+
+                <div class="info" style="display: block; margin-bottom: 10px">
+                    <p>Puoi modificare i dettagli di ogni esercizio direttamente nella schermata principale di modifica</p>
+                </div>
+            </div>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="save-exercise-button" style="display: none" on:click={addDeathSetExercise}>Aggiungi</button>
+            <button class="close-button" on:click={() => {showDeathSetExercise = false; resetExerciseModal(); }}>Annulla</button>
+        </div>
+    </div>
+{/if}
 
 {#if showChooseExerciseModal}
     <div class="modal">
@@ -816,7 +1158,7 @@
             <div class="separator-row"></div>
 
             <!-- Pulsanti azione -->
-            <button on:click={() => {idExercises.push(selectedGymItem.id); showChooseExerciseModal = false; }}>Aggiungi</button>
+            <button on:click={addExerciseToVector}>Aggiungi</button>
             <button class="close-button" on:click={() => showChooseExerciseModal = false}>Annulla</button>
         </div>
     </div>
@@ -855,6 +1197,10 @@
     let selectedTechnique = 'bilateral';
 
     let idExercises = [];
+    let nameExercises = "Nessun esercizio selezionato...";
+    let limitAdd = false;
+
+    let notesGymPlanItems = "";
     let numSeries = 0;
     let numReps = 0;
     let rir = 0;
@@ -868,6 +1214,26 @@
     let showUnilateralExercise = false;
     let showTempoBasedExercise = false;
     let showDropSetExercise = false;
+    let showSuperSetExercise = false;
+    let showForcedRepsExercise = false;
+    let showHalfRepsExercise = false;
+    let showRestPauseExercise = false;
+    let showMyorepsExercise = false;
+    let showPreFatigueExercise = false;
+    let showNegativeExercise = false;
+    let showPeakContractionExercise = false;
+    let showTempoTUTExercise = false;
+    let showIsometricExercise = false;
+    let showSevenSevenExercise = false;
+    let showClusterExercise = false;
+    let showPyramidExercise = false;
+    let showWaveLoadingExercise = false;
+    let showIsometricOverloadExercise = false;
+    let showAccommodatingResistanceExercise = false;
+    let showPauseRepsExercise = false;
+    let showEMOMExercise = false;
+    let showAMRAPExercise = false;
+    let showDeathSetExercise = false;
 
     async function openExercisePopup(exercise) {
         const imageIds = exercise.image_urls || [];
@@ -951,18 +1317,136 @@
     }
 
     function openSelectedTechnique() {
-        switch(selectedTechnique) {
+        switch (selectedTechnique) {
             case "bilateral":
                 showBilateralExercise = true;
+                break;
             case "unilateral":
                 showUnilateralExercise = true;
+                break;
             case "tempo-based":
                 showTempoBasedExercise = true;
+                break;
             case "drop_set":
                 numReps = "";
                 weight = "";
                 showDropSetExercise = true;
+                break;
+            case "super_set":
+                showSuperSetExercise = true;
+                break;
+            case "forced_reps":
+                showForcedRepsExercise = true;
+                break;
+            case "half_reps":
+                showHalfRepsExercise = true;
+                break;
+            case "rest_pause":
+                showRestPauseExercise = true;
+                break;
+            case "myoreps":
+                numSeries = "";
+                showMyorepsExercise = true;
+                break;
+            case "pre_fatigue":
+                showPreFatigueExercise = true;
+                break;
+            case "negative":
+                eccentric = 1;
+                showNegativeExercise = true;
+                break;
+            case "peak_contraction":
+                pause = 1;
+                eccentric = 1;
+                showPeakContractionExercise = true;
+                break;
+            case "tempoTUT":
+                showTempoTUTExercise = true;
+                break;
+            case "isometric":
+                showIsometricExercise = true;
+                break;
+            case "seven_seven":
+                showSevenSevenExercise = true;
+                break;
+            case "cluster":
+                showClusterExercise = true;
+                break;
+            case "pyramid":
+                numReps = "";
+                weight = "";
+                showPyramidExercise = true;
+                break;
+            case "wave_loading":
+                numReps = "";
+                weight = "";
+                showWaveLoadingExercise = true;
+                break;
+            case "isometric_overload":
+                showIsometricOverloadExercise = true;
+                break;
+            case "accomodating":
+                showAccommodatingResistanceExercise = true;
+                break;
+            case "pause_reps":
+                showPauseRepsExercise = true;
+                break;
+            case "emom":
+                rest_seconds = 60;
+                showEMOMExercise = true;
+                break;
+            case "amrap":
+                showAMRAPExercise = true;
+                break;
+            case "death_set":
+                showDeathSetExercise = true;
+                break;
         }
+    }
+
+    function addExerciseToVector() {
+        idExercises.push(selectedGymItem.id);
+
+        if(idExercises.length === 1) {
+            nameExercises = selectedGymItem.name;
+        } else {
+            nameExercises += ", ";
+            nameExercises += selectedGymItem.name;
+        }
+
+        if(idExercises.length >= 1) {
+            limitAdd = true;
+        }
+
+        document.querySelectorAll('.choose-exercise-button').forEach(button => {
+            let checkValidation = showAMRAPExercise || showSuperSetExercise;
+            if(!checkValidation) {
+                if (!limitAdd) button.style.display = "block";
+                else button.style.display = "none";
+            }
+        });
+
+        document.querySelectorAll('.save-exercise-button').forEach(button => {
+            if(limitAdd) button.style.display = "block";
+            else button.style.display = "none";
+        });
+
+        showChooseExerciseModal = false;
+    }
+
+    function resetExerciseModal() {
+        idExercises = [];
+        nameExercises = "Nessun esercizio selezionato...";
+
+        notesGymPlanItems = "";
+        numSeries = 0;
+        numReps = 0;
+        rir = 0;
+        weight = 0;
+        eccentric = 0;
+        pause = 0;
+        concentric = 0;
+        rest_seconds = 0;
     }
 
     async function addDefaultExercise() {
@@ -1024,7 +1508,563 @@
         location.reload();
     }
 
+    async function addDefaultWithNoteExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: notesGymPlanItems
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    exercise_id: idExercises[0],
+                    order: 0, // puoi personalizzare l’ordine se necessario
+                    set_number: i,
+                    prescribed_reps_1: numReps,
+                    prescribed_reps_2: numReps,
+                    rir: rir,
+                    rest_seconds: rest_seconds,
+                    weight: weight,
+                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
+                    plan_item: planItemId
+                }),
+            });
+
+            const setData = await setResponse.json();
+        }
+
+        location.reload();
+    }
+
     async function addDropSetExercise() {
+        const arrayNumReps = String(numReps).split(",");
+        const arrayWeight = String(weight).split(",");
+
+        if (arrayNumReps.length != arrayWeight.length) {}
+
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            for (let j=0; j < arrayNumReps.length; j++) {
+                let calcRest = rest_seconds;
+
+                if (j !== arrayNumReps.length - 1) {
+                    calcRest = 10;
+                }
+
+                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        exercise_id: idExercises[0],
+                        order: j,
+                        set_number: i,
+                        prescribed_reps_1: arrayNumReps[j],
+                        prescribed_reps_2: arrayNumReps[j],
+                        rir: rir,
+                        rest_seconds: calcRest,
+                        weight: arrayWeight[j],
+                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                        plan_item: planItemId
+                    }),
+                });
+
+                const setData = await setResponse.json();
+            }
+        }
+
+        location.reload();
+    }
+
+    async function addSuperSetExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            for (let j=0; j < idExercises.length; j++) {
+                let calcRest = rest_seconds;
+
+                if (j !== idExercises.length - 1) {
+                    calcRest = 0;
+                }
+
+                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        exercise_id: idExercises[j],
+                        order: j,
+                        set_number: i,
+                        prescribed_reps_1: 0,
+                        prescribed_reps_2: 0,
+                        rir: 0,
+                        rest_seconds: calcRest,
+                        weight: 0,
+                        tempo_fcr: `0-0-0`,
+                        plan_item: planItemId
+                    }),
+                });
+
+                const setData = await setResponse.json();
+            }
+        }
+
+        location.reload();
+    }
+
+    async function addForcedRepsExercise() {
+        const arrayNumReps = String(numReps).split(",");
+
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            for (let j=0; j < arrayNumReps.length; j++) {
+                let calcRest = rest_seconds;
+
+                if (j !== arrayNumReps.length - 1) {
+                    calcRest = 0;
+                }
+
+                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        exercise_id: idExercises[0],
+                        order: j,
+                        set_number: i,
+                        prescribed_reps_1: arrayNumReps[j],
+                        prescribed_reps_2: arrayNumReps[j],
+                        rir: rir,
+                        rest_seconds: calcRest,
+                        weight: weight,
+                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                        plan_item: planItemId
+                    }),
+                });
+
+                const setData = await setResponse.json();
+            }
+        }
+
+        location.reload();
+    }
+
+    async function addRestPauseExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        let setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                exercise_id: idExercises[0],
+                order: 0,
+                set_number: 0,
+                prescribed_reps_1: numReps,
+                prescribed_reps_2: numReps,
+                rir: rir,
+                rest_seconds: rest_seconds,
+                weight: weight,
+                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                plan_item: planItemId
+            }),
+        });
+
+        setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                exercise_id: idExercises[0],
+                order: 0,
+                set_number: 1,
+                prescribed_reps_1: numReps,
+                prescribed_reps_2: numReps,
+                rir: rir,
+                rest_seconds: rest_seconds,
+                weight: weight,
+                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                plan_item: planItemId
+            }),
+        });
+
+
+        location.reload();
+    }
+
+    async function addMyorepsExercise() {
+        const arrayNumRepsMaxMin = String(numSeries).split(",");
+
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        let setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                exercise_id: idExercises[0],
+                order: 0,
+                set_number: 0,
+                prescribed_reps_1: numReps,
+                prescribed_reps_2: arrayNumRepsMaxMin[0],
+                actual_reps_2: arrayNumRepsMaxMin[1],
+                rir: rir,
+                rest_seconds: rest_seconds,
+                weight: weight,
+                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                plan_item: planItemId
+            }),
+        });
+
+        setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                exercise_id: idExercises[0],
+                order: 0,
+                set_number: 1,
+                prescribed_reps_1: arrayNumRepsMaxMin[0],
+                prescribed_reps_2: arrayNumRepsMaxMin[1],
+                rir: rir,
+                rest_seconds: rest_seconds,
+                weight: weight,
+                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                plan_item: planItemId
+            }),
+        });
+
+
+        location.reload();
+    }
+
+    async function addSevenSevenExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            for (let j=0; j < 3; j++) {
+                let calcRest = rest_seconds;
+
+                if (j !== 2) {
+                    calcRest = 10;
+                }
+
+                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        exercise_id: idExercises[0],
+                        order: j,
+                        set_number: i,
+                        prescribed_reps_1: 7,
+                        prescribed_reps_2: 7,
+                        rir: rir,
+                        rest_seconds: calcRest,
+                        weight: weight,
+                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                        plan_item: planItemId
+                    }),
+                });
+
+                const setData = await setResponse.json();
+            }
+        }
+
+        location.reload();
+    }
+
+    async function addClusterExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            for (let j=0; j < numReps; j++) {
+                let calcRest = rest_seconds;
+
+                if (j !== numReps-1) {
+                    calcRest = 10;
+                }
+
+                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        exercise_id: idExercises[0],
+                        order: j,
+                        set_number: i,
+                        prescribed_reps_1: 0,
+                        prescribed_reps_2: 0,
+                        rir: rir,
+                        rest_seconds: calcRest,
+                        weight: weight,
+                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                        plan_item: planItemId
+                    }),
+                });
+
+                const setData = await setResponse.json();
+            }
+        }
+
+        location.reload();
+    }
+
+    async function addPyramidExercise() {
         const arrayNumReps = String(numReps).split(",");
         const arrayWeight = String(weight).split(",");
         console.log(arrayNumReps);
@@ -1063,37 +2103,205 @@
         const planItemId = data.id;
 
         // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            for (let j=0; j < arrayNumReps.length; j++) {
-                let calcRest = rest_seconds;
-                console.log(j + " " + (arrayNumReps.length - 1));
+        for (let j=1; j <= arrayNumReps.length; j++) {
+            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    exercise_id: idExercises[0],
+                    order: 0,
+                    set_number: j,
+                    prescribed_reps_1: arrayNumReps[j],
+                    prescribed_reps_2: arrayNumReps[j],
+                    rir: rir,
+                    rest_seconds: rest_seconds,
+                    weight: arrayWeight[j],
+                    tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                    plan_item: planItemId
+                }),
+            });
 
-                if (j !== arrayNumReps.length - 1) {
-                    calcRest = 10;
-                }
+            const setData = await setResponse.json();
+        }
 
-                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        exercise_id: idExercises[0],
-                        order: j,
-                        set_number: i,
-                        prescribed_reps_1: arrayNumReps[j],
-                        prescribed_reps_2: arrayNumReps[j],
-                        rir: rir,
-                        rest_seconds: calcRest,
-                        weight: arrayWeight[j],
-                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                        plan_item: planItemId
-                    }),
-                });
+        location.reload();
+    }
 
-                const setData = await setResponse.json();
+    async function addEMOMExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
             }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let j=1; j <= numSeries; j++) {
+            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token ' + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    exercise_id: idExercises[0],
+                    order: j,
+                    set_number: 1,
+                    prescribed_reps_1: numReps,
+                    prescribed_reps_2: numReps,
+                    rir: rir,
+                    rest_seconds: rest_seconds,
+                    weight: weight,
+                    tempo_fcr: `${eccentric}-${pause}-${concentric}`,
+                    plan_item: planItemId
+                }),
+            });
+
+            const setData = await setResponse.json();
+        }
+
+        location.reload();
+    }
+
+    async function addAMRAPExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= idExercises.length; i++) {
+            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    exercise_id: idExercises[0],
+                    order: i, // puoi personalizzare l’ordine se necessario
+                    set_number: 1,
+                    prescribed_reps_1: numReps,
+                    prescribed_reps_2: numReps,
+                    rir: rir,
+                    rest_seconds: rest_seconds,
+                    weight: weight,
+                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
+                    plan_item: planItemId
+                }),
+            });
+
+            const setData = await setResponse.json();
+        }
+
+        location.reload();
+    }
+
+    async function addDeathSetExercise() {
+        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            }
+        });
+        const orderData = await orderRes.json();
+        const order = orderData.first_available_order;
+
+        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
+
+        // Step 1: Crea GymPlanItem
+        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + getCookie('csrftoken'),
+            },
+            body: JSON.stringify({
+                section_id: idGymSection,
+                order: order,
+                intensity_techniques: intensityTechniques,
+                notes: "Nessuna nota tecnica"
+            }),
+        });
+
+        const data = await response.json();
+        const planItemId = data.id;
+
+        // Step 2: Ciclo per creare i set associati
+        for (let i = 1; i <= numSeries; i++) {
+            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    exercise_id: idExercises[0],
+                    order: 0, // puoi personalizzare l’ordine se necessario
+                    set_number: i,
+                    prescribed_reps_1: numReps,
+                    prescribed_reps_2: numReps,
+                    rir: rir,
+                    rest_seconds: rest_seconds,
+                    weight: weight,
+                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
+                    plan_item: planItemId
+                }),
+            });
+
+            const setData = await setResponse.json();
         }
 
         location.reload();
@@ -1212,6 +2420,8 @@
     }
 
     onMount(async () => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'gym-program-icon-item',
             className: 'current-page',
@@ -1279,7 +2489,7 @@
                 gym_plan_items.forEach((item) => {
                     if (item.section.day === short) {
                         type_day = item.section.type;
-                        notes_day = item.section.notes;
+                        notes_day = item.section.note;
                     }
                 });
                 if(type_day === undefined ) { type_day = ""; }
@@ -1291,7 +2501,7 @@
                     </h2>
 
                     <label for="type_day">Tipologia della giornata:</label>
-                    <input type="text" name="type_day" value="${type_day}"
+                    <input type="text" id="type_day" name="type_day" value="${type_day}"
                         placeholder="Inserisci la tipologia della giornata qui..."/>
 
                     <label for="notes_day">Note della giornata:</label>
@@ -1300,6 +2510,44 @@
 
                     <div id="${short}"></div>
                 `;
+
+                gym_plan_items.forEach((item) => {
+                    if (item.section.day === short) {
+                        document.getElementById('type_day').addEventListener("input", async function () {
+                            const newType = this.value;
+                            const sectionId = item.section.id;
+
+                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-section/update/${sectionId}/`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "Authorization": "Token " + getCookie('csrftoken'),
+                                },
+                                body: JSON.stringify({
+                                    type: newType
+                                }),
+                            });
+                        });
+
+                        document.getElementById('notes_day').addEventListener("input", async function () {
+                            const newNote = this.value;
+                            const sectionId = item.section.id;
+
+                            console.log(newNote);
+
+                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-section/update/${sectionId}/`, {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "Authorization": "Token " + getCookie('csrftoken'),
+                                },
+                                body: JSON.stringify({
+                                    note: newNote
+                                }),
+                            });
+                        });
+                    }
+                });
 
                 const divDay = document.getElementById(short);
 
@@ -1321,91 +2569,100 @@
                             techniques = item.intensity_techniques_display.split(/[,;|]/).map(t => t.trim()).join(', ');
                         }
 
-                        const gym_plan_item = document.createElement("div");
-                        gym_plan_item.classList.add("exercise-row");
-                        gym_plan_item.innerHTML = `
-                            <div class="exercise-number">${item.order+1}</div>
-                            <div class="exercise-title">${item.notes}</div>
-                            <div class="exercise-technique">${techniques}</div>
-                            <div class="exercise-actions">
-                                <span class="material-icons edit-exercise-button">edit</span>
-                                <span class="material-icons delete-exercise-button">delete</span>
-                            </div>
-                        `;
-                        gym_plan_item.id = "orderExercise" + item.order;
+                        if (!item.intensity_techniques.includes("null")) {
+                            const gym_plan_item = document.createElement("div");
+                            gym_plan_item.classList.add("exercise-row");
+                            gym_plan_item.innerHTML = `
+                                <div class="exercise-number">${item.order}</div>
+                                <div class="exercise-title">
+                                    <input type="text" class="exercise-notes-input" value="${item.notes || ''}" />
+                                </div>
+                                <div class="exercise-technique">${techniques}</div>
+                                <div class="exercise-actions">
+                                    <span class="material-icons delete-exercise-button">delete</span>
+                                </div>
+                            `;
 
+                            gym_plan_item.id = "orderExercise" + item.order;
 
-                        gym_plan_item.querySelector(".edit-exercise-button").addEventListener("click", (e) => {
-                            alert("Modifica esercizio n." + item.id);
-                        });
+                            gym_plan_item.querySelector(".delete-exercise-button").addEventListener("click", async function () {
+                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/delete/${item.id}/`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                                    }
+                                });
 
-                        gym_plan_item.querySelector(".delete-exercise-button").addEventListener("click", async function () {
-                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/delete/${item.id}/`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': 'Token ' + getCookie('csrftoken'),
+                                if (response.ok) {
+                                    location.reload();
                                 }
                             });
 
-                            if (response.ok) {
-                                location.reload();
+                            gym_plan_item.querySelector(".exercise-notes-input").addEventListener("input", async function (e) {
+                                const updatedNotes = e.target.value;
+
+                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/update/${item.id}/`, {
+                                    method: 'PATCH', // o 'PUT', dipende dal tuo backend
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Token ' + getCookie('csrftoken'),
+                                    },
+                                    body: JSON.stringify({
+                                        notes: updatedNotes
+                                    })
+                                });
+
+                                if (!response.ok) {
+                                    alert("Errore nell'aggiornamento delle note.");
+                                }
+                            });
+
+                            let plan_item = item.id;
+
+                            divDay.appendChild(gym_plan_item);
+
+                            const groupedSets = {};
+                            item.sets.forEach(set => {
+                                if (!groupedSets[set.set_number]) {
+                                    groupedSets[set.set_number] = [];
+                                }
+                                groupedSets[set.set_number].push(set);
+                            });
+
+                            const setNumbers = Object.keys(groupedSets).sort((a, b) => a - b);
+
+                            if(item.intensity_techniques.includes("tempo-based")) {
+                                IntensityTechniquesTempoBase(setNumbers, groupedSets, divDay, openExercisePopup);
+                            } else if (item.intensity_techniques.includes("unilateral")) {
+                                IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, disabledDayBefore, openExercisePopup);
+                            } else if (item.intensity_techniques.includes("rest_pause")) {
+                                const button = document.createElement("button");
+                                button.classList.add("buttonCedimento");
+                                button.textContent = "Aggiungi serie a cedimento";
+                                button.style.margin = 0;
+
+                                IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup, plan_item, gym_plan_item);
+                            } else if (item.intensity_techniques.includes("myoreps")) {
+                                const button = document.createElement("button");
+                                button.classList.add("buttonCedimento");
+                                button.textContent = "Aggiungi serie a cedimento";
+                                button.style.margin = 0;
+                                button.style.display = 'none';
+
+                                IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup, plan_item, gym_plan_item);
+                            } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
+                                IntensityTechniquesIsometric(setNumbers, groupedSets, divDay, openExercisePopup);
+                            } else if (item.intensity_techniques.includes("emom")) {
+                                IntensityTechniquesEMOM(setNumbers, groupedSets, divDay, openExercisePopup);
+                            } else if (item.intensity_techniques.includes("amrap")) {
+                                IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay, openExercisePopup);
+                            } else if (item.intensity_techniques.includes("death_set")) {
+                                IntensityTechniquesDeathSet(setNumbers, groupedSets, divDay, openExercisePopup);
+                            } else {
+                                IntensityTechniquesDefault(setNumbers, groupedSets, divDay, openExercisePopup);
                             }
-                        });
-
-                        let plan_item = item.id;
-
-                        divDay.appendChild(gym_plan_item);
-
-                        const groupedSets = {};
-                        item.sets.forEach(set => {
-                            if (!groupedSets[set.set_number]) {
-                                groupedSets[set.set_number] = [];
-                            }
-                            groupedSets[set.set_number].push(set);
-                        });
-
-                        const setNumbers = Object.keys(groupedSets).sort((a, b) => a - b);
-
-                        if(item.intensity_techniques.includes("tempo-based")) {
-                            IntensityTechniquesTempoBase(setNumbers, groupedSets, divDay, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("unilateral")) {
-                            IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, disabledDayBefore, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("rest_pause")) {
-                            const button = document.createElement("button");
-                            button.classList.add("buttonCedimento");
-                            button.textContent = "Aggiungi serie a cedimento";
-                            button.style.margin = 0;
-
-                            IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("myoreps")) {
-                            const button = document.createElement("button");
-                            button.classList.add("buttonCedimento");
-                            button.textContent = "Aggiungi serie a cedimento";
-                            button.style.margin = 0;
-                            button.style.display = 'none';
-
-                            IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
-                            IntensityTechniquesIsometric(setNumbers, groupedSets, divDay, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("emom")) {
-                            IntensityTechniquesEMOM(setNumbers, groupedSets, divDay, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("amrap")) {
-                            IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay, openExercisePopup);
-                        } else if (item.intensity_techniques.includes("death_set")) {
-                            IntensityTechniquesDeathSet(setNumbers, groupedSets, divDay, openExercisePopup);
-                        } else {
-                            IntensityTechniquesDefault(setNumbers, groupedSets, divDay, openExercisePopup);
                         }
-
-                        /*const buttonAdd = document.createElement("button");
-                        buttonAdd.textContent = "Aggiungi serie";
-                        buttonAdd.style.margin = 0;
-                        buttonAdd.addEventListener("click", (e) => {
-                            showChooseExerciseModal = true;
-                        });
-                        buttonAdd.setAttribute("data-id", item.id)
-                        divDay.appendChild(buttonAdd);*/
                     }
                 });
             });

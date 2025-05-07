@@ -110,6 +110,8 @@
     }
 
     onMount(async() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'gym-program-icon-item',
             className: 'current-page',

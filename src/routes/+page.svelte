@@ -18,3 +18,20 @@
     <p>Telefono: +39 123 456 789</p>
     <p>Email: info@gm-palestra.com</p>
 </section>
+
+<script>
+    import {onMount} from "svelte";
+    import {getCookie} from "svelte-cookie";
+
+    onMount(() => {
+        if(getCookie('csrftoken') === "") {
+            document.getElementById("account-icon").style = "display: none";
+            document.getElementById("login-icon").style = "display: flex";
+            document.getElementById("signup-icon").style = "display: flex";
+        } else {
+            document.getElementById("account-icon").style = "display: flex";
+            document.getElementById("login-icon").style = "display: none";
+            document.getElementById("signup-icon").style = "display: none";
+        }
+    });
+</script>

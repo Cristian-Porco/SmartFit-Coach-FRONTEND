@@ -1,5 +1,5 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="/css/account/food-programs/style_add_food_programs.css">
+    <link rel="stylesheet" type="text/css" href="/css/account/gym-programs/style_add_gym_programs.css">
 </head>
 
 <p><b>Aggiungi</b></p>
@@ -63,6 +63,8 @@
 
 
     onMount(() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'gym-program-icon-item',
             className: 'current-page',
@@ -80,7 +82,7 @@
         const result = validateWeekRange("start_date", "end_date");
 
         if(result.valid) {
-            const response = await fetch("http://127.0.0.1:8000/api/v1/data/gym-plan/create/", {
+            const response1 = await fetch("http://127.0.0.1:8000/api/v1/data/gym-plan/create/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -93,16 +95,61 @@
                 })
             });
 
-            const data = await response.json();
+            const data1 = await response1.json();
 
-            if(response.ok) {
-                window.location.href = "/account/gym-programs/edit/" + data.id;
+            if(response1.ok) {
+                const days = ["lun", "mar", "mer", "gio", "ven", "sab", "dom"];
+                const author = getCookie("pk");
+                const gymPlanId = data1.id;
+
+                let gymPlanSections = [];
+
+                // 1. Creazione sezioni giornaliere
+                for (const day of days) {
+                    const response = await fetch("http://127.0.0.1:8000/api/v1/data/gym-plan-section/create/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": "Token " + getCookie('csrftoken'),
+                        },
+                        body: JSON.stringify({
+                            author: author,
+                            gym_plan: gymPlanId,
+                            day: day,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        gymPlanSections.push(data.id); // Salva l'ID della sezione
+                    }
+                }
+
+                // 2. Creazione item per ogni sezione
+                if(gymPlanSections.length === 7) {
+                    for (const sectionId of gymPlanSections) {
+                        const response = await fetch("http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Token " + getCookie('csrftoken'),
+                            },
+                            body: JSON.stringify({
+                                section_id: sectionId,
+                                order: 0,
+                                intensity_techniques: ["null"],
+                            }),
+                        });
+                    }
+                }
+
+                window.location.href = "/account/gym-programs/edit/" + data1.id;
             } else {
                 document.getElementById("error1").style.display = "block";
-                if(data.start_date.length != 0) {
-                    document.getElementById("error1").firstChild.textContent = "Data di inizio: " + data.start_date[0];
-                } else if(data.end_date.length != 0) {
-                    document.getElementById("error1").firstChild.textContent = "Data di fine: " + data.end_date[0];
+                if(data1.start_date.length != 0) {
+                    document.getElementById("error1").firstChild.textContent = "Data di inizio: " + data1.start_date[0];
+                } else if(data1.end_date.length != 0) {
+                    document.getElementById("error1").firstChild.textContent = "Data di fine: " + data1.end_date[0];
                 }
             }
         } else {

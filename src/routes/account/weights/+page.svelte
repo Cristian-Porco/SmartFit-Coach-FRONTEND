@@ -71,6 +71,8 @@
     let selectedId = null;
 
     onMount(async() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'weight-icon-item',
             className: 'current-page',

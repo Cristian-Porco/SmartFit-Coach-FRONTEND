@@ -60,6 +60,8 @@
     let content = [];
 
     onMount(async () => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathContains({
             substring: '/account/food-programs/view',
             targetId: 'food-program-icon-item',

@@ -69,11 +69,11 @@
         <p></p>
     </div>
     <div class="input-container">
-        <label for="email">Qual'è il tuo obiettivo? Esprimilo in poche parole:</label>
-        <textarea id="email" name="email" placeholder="Descrivi il tuo obiettivo..." required></textarea>
+        <label for="goal_description">Qual'è il tuo obiettivo? Esprimilo in poche parole:</label>
+        <textarea id="goal_description" name="goal_description" placeholder="Descrivi il tuo obiettivo..." required>{account.goal_description}</textarea>
     </div>
     <div class="form-group">
-        <button type="submit">Aggiorna obiettivo</button>
+        <button type="submit" on:click={updateGoal}>Aggiorna obiettivo</button>
     </div>
 </form>
 
@@ -435,6 +435,8 @@
     }
 
     onMount(async () => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'account-icon-item',
             className: 'current-page',
@@ -594,6 +596,11 @@
         }
 
         first_username = account.username;
+    }
+
+    async function updateGoal() {
+        const goal_description = document.getElementById("goal_description").value;
+        console.log(goal_description);
     }
 
     let password = "";

@@ -71,6 +71,8 @@
     let selectedDate = today;
 
     onMount(async() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathContains({
             substring: '/account/body-measurements/edit',
             targetId: 'body-measurements-icon-item',

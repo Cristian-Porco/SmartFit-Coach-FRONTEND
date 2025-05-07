@@ -71,6 +71,8 @@
     let selectedId = null;
 
     onMount(async() => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'food-program-icon-item',
             className: 'current-page',

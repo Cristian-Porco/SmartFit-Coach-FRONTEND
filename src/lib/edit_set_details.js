@@ -176,21 +176,21 @@ export function IntensityTechniquesTempoBase(setNumbers, groupedSets, divDay, op
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
 
-                    actionsDiv.appendChild(editIcon);
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);
@@ -452,21 +452,21 @@ export function IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, d
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
 
-                    actionsDiv.appendChild(editIcon);
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);
@@ -519,13 +519,13 @@ export function IntensityTechniquesUnilateral(setNumbers, groupedSets, divDay, d
     });
 }
 
-export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup) {
+export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup, plan_item, gym_plan_item) {
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
-        if(setNumber == 1)
+        if(setNumber == 0)
             box.innerHTML = `<h4>Serie d'introduzione</h4>`;
-        else if(setNumber >= 2)
+        else if(setNumber >= 1)
             box.innerHTML = `<h4>Serie a cedimento</h4>`;
 
         let sameExercisesOnSets = groupedSets[setNumber].every(
@@ -539,7 +539,7 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
         const headerRow = document.createElement("tr");
 
         let headers;
-        if(setNumber == 1) {
+        if(setNumber == 0) {
             headers = [
                 { className: "order-value", content: "" },
                 { style: "text-align: left", content: "Esercizio" },
@@ -553,7 +553,7 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
                 { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                 { className: "action-value" },
             ];
-        } else if(setNumber >= 2) {
+        } else if(setNumber >= 1) {
             headers = [
                 { className: "order-value", content: "" },
                 { style: "text-align: left", content: "Esercizio" },
@@ -599,7 +599,7 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
             const rest = set.rest_seconds;
 
             let data;
-            if(setNumber == 1) {
+            if(setNumber == 0) {
                 data = [
                     {
                         type: "div",
@@ -642,7 +642,7 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
                     },
                     { type: "action", mobilelabel: "Azioni:" }
                 ];
-            } else if(setNumber >= 2) {
+            } else if(setNumber >= 1) {
                 data = [
                     {
                         type: "div",
@@ -847,21 +847,21 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
 
-                    actionsDiv.appendChild(editIcon);
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);
@@ -904,7 +904,7 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
             tbody.appendChild(row);
             table.appendChild(tbody);
 
-            if(setNumber == 2 && test === array.length - 1) {
+            if(setNumber == 1 && test === array.length - 1) {
                 button.addEventListener("click", async() => {
                     const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
                         method: "POST",
@@ -946,14 +946,14 @@ export function IntensityTechniquesRestPause(setNumbers, groupedSets, divDay, da
     });
 }
 
-export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup) {
+export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayBeforeToday, full, button, openExercisePopup, plan_item, gym_plan_item) {
     let maxReps, minReps;
     setNumbers.forEach(setNumber => {
         const box = document.createElement("div");
         box.classList.add("set-box");
-        if(setNumber == 1)
+        if(setNumber == 0)
             box.innerHTML = `<h4>Serie d'introduzione</h4>`;
-        else if(setNumber >= 2)
+        else if(setNumber >= 1)
             box.innerHTML = `<h4>Serie a cedimento</h4>`;
 
         let sameExercisesOnSets = groupedSets[setNumber].every(
@@ -967,7 +967,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
         const headerRow = document.createElement("tr");
 
         let headers;
-        if(setNumber == 1) {
+        if(setNumber == 0) {
             headers = [
                 { className: "order-value", content: "" },
                 { style: "text-align: left", content: "Esercizio" },
@@ -981,7 +981,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
                 { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                 { className: "action-value" },
             ];
-        } else if(setNumber >= 2) {
+        } else if(setNumber >= 1) {
             headers = [
                 { className: "order-value", content: "" },
                 { style: "text-align: left", content: "Esercizio" },
@@ -1029,7 +1029,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
             const rest = set.rest_seconds;
 
             let data;
-            if(setNumber == 1) {
+            if(setNumber == 0) {
                 maxReps = set.prescribed_reps_2;
                 minReps = set.actual_reps_2;
                 data = [
@@ -1074,7 +1074,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
                     },
                     { type: "action", mobilelabel: "Azioni:" },
                 ];
-            } else if(setNumber >= 2) {
+            } else if(setNumber >= 1) {
                 data = [
                     {
                         type: "div",
@@ -1293,21 +1293,21 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
 
-                    actionsDiv.appendChild(editIcon);
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);
@@ -1344,10 +1344,14 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
                     row.appendChild(td);
                 }
 
-                if(index === 4 && test === array.length - 1 && setNumber == 2) {
-                    let cellInput = row.cells[3].querySelector("input");
+                if(index === 4 && test === array.length - 1 && setNumber == 1) {
+                    let cellInput = row.cells[4].querySelector("input");
+
+                    if(cellInput.value < minReps) button.style.display = 'none';
+                    else button.style.display = 'block';
+
                     cellInput.addEventListener("input", function () {
-                        if(this.value <= minReps) button.style.display = 'none';
+                        if(cellInput.value < minReps) button.style.display = 'none';
                         else button.style.display = 'block';
                     });
                 }
@@ -1356,7 +1360,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
             tbody.appendChild(row);
             table.appendChild(tbody);
 
-            if(setNumber == 2 && test === array.length - 1) {
+            if(setNumber == 1 && test === array.length - 1) {
                 button.addEventListener("click", async() => {
                     const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
                         method: "POST",
@@ -1639,21 +1643,21 @@ export function IntensityTechniquesIsometric(setNumbers, groupedSets, divDay, op
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
 
-                    actionsDiv.appendChild(editIcon);
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);
@@ -2179,6 +2183,40 @@ export function IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay, openEx
                     td.appendChild(span);
                     td.appendChild(wrapper);
                     row.appendChild(td);
+                } else if(item.target === "weight") {
+                    const span = document.createElement("span");
+                    span.className = "mobile-label";
+                    span.textContent = item.mobilelabel;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'input-kg-wrapper input-with-info-enabled';
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'set-input';
+                    input.value = item.value;
+                    input.addEventListener("input", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Token " + getCookie('csrftoken'),
+                            },
+                            body: JSON.stringify({
+                                weight: this.value
+                            })
+                        });
+                    });
+
+                    const label = document.createElement('span');
+                    label.className = 'kg-label';
+                    label.textContent = 'kg';
+
+                    wrapper.appendChild(input);
+                    wrapper.appendChild(label);
+                    td.appendChild(span);
+                    td.appendChild(wrapper);
+                    row.appendChild(td);
                 } else if(item.type === "action") {
                     const span = document.createElement("span");
                     span.className = "mobile-label";
@@ -2188,21 +2226,21 @@ export function IntensityTechniquesAMRAP(setNumbers, groupedSets, divDay, openEx
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
 
-                    actionsDiv.appendChild(editIcon);
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);
@@ -2512,6 +2550,40 @@ export function IntensityTechniquesDeathSet(setNumbers, groupedSets, divDay, ope
                     td.appendChild(span);
                     td.appendChild(wrapper);
                     row.appendChild(td);
+                } else if(item.target === "rest_seconds") {
+                    const span = document.createElement("span");
+                    span.className = "mobile-label";
+                    span.textContent = item.mobilelabel;
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'input-sec-wrapper input-with-info-enabled';
+
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.className = 'set-input';
+                    input.value = item.value;
+                    input.addEventListener("input", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Token " + getCookie('csrftoken'),
+                            },
+                            body: JSON.stringify({
+                                weight: this.value
+                            })
+                        });
+                    });
+
+                    const label = document.createElement('span');
+                    label.className = 'sec-label';
+                    label.textContent = 'sec';
+
+                    wrapper.appendChild(input);
+                    wrapper.appendChild(label);
+                    td.appendChild(span);
+                    td.appendChild(wrapper);
+                    row.appendChild(td);
                 } else {
                     const span = document.createElement("span");
                     span.className = "mobile-label";
@@ -2798,21 +2870,21 @@ export function IntensityTechniquesDefault(setNumbers, groupedSets, divDay, open
                     actionsDiv.classList.add("exercise-actions");
                     actionsDiv.style.marginLeft = 0;
 
-                    const editIcon = document.createElement("span");
-                    editIcon.classList.add("material-icons", "edit-details-exercise-button");
-                    editIcon.textContent = "edit";
-                    editIcon.addEventListener("click", (e) => {
-                        alert("Modifica dettaglio esercizio n." + set.id);
-                    });
-
                     const deleteIcon = document.createElement("span");
                     deleteIcon.classList.add("material-icons", "delete-details-exercise-button");
                     deleteIcon.textContent = "delete";
-                    deleteIcon.addEventListener("click", (e) => {
-                        alert("Elimina dettaglio esercizio n." + set.id);
+                    deleteIcon.addEventListener("click", async function () {
+                        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/delete/${set.id}/`, {
+                            method: "DELETE",
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Token ' + getCookie('csrftoken'),
+                            }
+                        });
+                        
+                        if(response.ok) location.reload();
                     });
-
-                    actionsDiv.appendChild(editIcon);
+                    
                     actionsDiv.appendChild(deleteIcon);
 
                     td.appendChild(span);

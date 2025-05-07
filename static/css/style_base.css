@@ -63,6 +63,7 @@ body { display: flex; flex-direction: row; height: 100vh; }
     border-radius: 54px;
     cursor: pointer;
     transition: background 0.3s, transform 0.2s;
+    width: 100%;
 }
 .menu-item:hover { background: #e3e9f0; }
 .menu-item:active { transform: scale(0.90); }
@@ -153,6 +154,7 @@ button {
 }
 button:hover { background: #0056b3; }
 button:active { transform: scale(0.95); background: #004494; }
+button:disabled { background: lightgray; }
 label { margin-bottom: 5px; }
 
 .error {

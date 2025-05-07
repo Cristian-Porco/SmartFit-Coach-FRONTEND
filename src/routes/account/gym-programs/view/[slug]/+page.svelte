@@ -1,342 +1,5 @@
 <head>
-    <style>
-        .icon-sidebar { display: flex; }
-        .sidebar { display: none; }
-        .main-content { width: 100%; min-width: 100%; }
-
-        .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            padding: 10px;
-        }
-        .container div { flex: 1; text-align: center; }
-        .container div:nth-child(1) { text-align: left; }
-        .container div:nth-child(2) { text-align: right; }
-
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 1rem;
-            border-radius: 10px;
-            background-color: #e1e7ee;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            flex: 1 1 120px;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        .tab:hover {
-            background-color: #acb0c3;
-        }
-
-        .tab.active {
-            background-color: #007bff;
-            color: white;
-            font-weight: bold;
-        }
-
-        .tab.active .day-full {
-            color: white;
-        }
-
-        .content-day, .content-note {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin: 1rem 0;
-        }
-
-        .content-note {
-            border: 1px solid #cfcfcf;
-        }
-
-        .day-title {
-            margin: 0;
-            margin-bottom: 0.5rem;
-            font-size: 1.5rem;
-            color: #333;
-        }
-
-        .day-subtitle {
-            color: #afafaf;
-        }
-
-        .exercise-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin: 8px 0;
-            background-color: #f9f9f9;
-        }
-
-        .exercise-number {
-            width: 30px;
-            height: 30px;
-            min-width: 30px;
-            min-height: 30px;
-            background-color: #007BFF;
-            color: white;
-            border-radius: 50%;
-            font-weight: bold;
-            text-align: center;
-            line-height: 30px;
-            margin-right: 10px;
-        }
-
-        .exercise-title {
-            flex: 1;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .exercise-technique {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #e74c3c;
-        }
-
-        .set-label {
-            margin-bottom: 4px;
-            font-size: 13px;
-        }
-
-        .set-col {
-            text-align: center;
-        }
-
-        .set-box {
-            margin: 20px 0;
-            padding: 10px;
-            border-left: 4px solid #007bff;
-        }
-
-        .set-box h3 {
-            margin-bottom: 10px;
-            color: #007bff;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            font-size: 16px;
-        }
-
-        th, td {
-            padding: 8px;
-            border: 0;
-        }
-
-        .set-number {
-            width: 26px;
-            height: 26px;
-            background-color: #007bff;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 26px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin: 0 auto;
-        }
-
-        .set-input {
-            height: 30px;
-            font-size: 0.85rem;
-            padding: 2px 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-
-        .input-with-info,
-        .input-with-info-enabled {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-with-info input,
-        .input-with-info-enabled input {
-            flex-grow: 1;
-        }
-
-        .info-icon {
-            cursor: help;
-        }
-
-        .order-value {
-            width: 56px;
-        }
-
-        .data-value {
-            width: 100px;
-        }
-
-        .set-box table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .set-box th, .set-box td {
-            padding: 0.5rem;
-        }
-
-        .mobile-label {
-            display: none;
-            font-weight: bold;
-            margin-bottom: 4px;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-        .modal-content {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            width: 700px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-        }
-        .modal-content>h2 { margin-bottom: 15px; }
-        .modal-content>h3 { margin: 8px 0; }
-        .modal-container {
-            display: flex;
-            gap: 20px;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .instructions-list {
-            border-radius: 10px;
-            height: 200px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        .instructions-list p {margin-bottom: 8px; }
-        .carousel {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .carousel-image {
-            width: 100%;
-            height: auto;
-            display: block;
-            object-fit: contain;
-            max-height: 400px;
-        }
-
-        .carousel-indicators {
-            display: flex;
-            justify-content: center;
-            margin-top: 8px;
-            gap: 6px;
-        }
-
-        .carousel-indicators button {
-            width: 50px;
-            padding: 0;
-            border-radius: 100%;
-            height: 50px;
-            font-size: 16px;
-        }
-
-        .carousel-indicators button.selected {
-            background-color: #0056b3;
-        }
-
-        @media screen and (max-width: 968px) {
-            .set-box table,
-            .set-box thead,
-            .set-box tbody,
-            .set-box th,
-            .set-box td,
-            .set-box tr {
-                display: block;
-                width: 100%;
-            }
-
-            .set-box thead {
-                display: none;
-            }
-
-            .set-box tr {
-                margin-bottom: 1rem;
-                padding: 0.5rem;
-                border-bottom: 1px solid #ccc;
-            }
-
-            .set-box tr:last-child {
-                border-bottom: none;
-            }
-
-            .set-box td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.4rem;
-                border: none;
-            }
-
-            .mobile-label {
-                display: inline-block;
-                font-weight: 600;
-                font-size: 0.9rem;
-            }
-
-            .input-with-info,
-            .input-with-info-enabled {
-                width: 80%;
-            }
-
-            .set-input {
-                width: 100%;
-                padding: 0.3rem;
-                font-size: 0.9rem;
-            }
-
-            .modal-content {
-                width: 100vw;
-                height: 100vh;
-                max-height: none;
-                border-radius: 0;
-                padding: 15px;
-                overflow-y: auto;
-                display: flex;
-                flex-direction: column;
-            }
-            .modal-container { flex-direction: column; gap: 10px; flex: 1; }
-        }
-
-        @media screen and (max-width: 768px) {
-            .container { flex-direction: column; align-items: center; }
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/account/gym-programs/style_view_gym_programs.css">
 </head>
 
 <div class="container">
@@ -488,6 +151,8 @@
     }
 
     onMount(async () => {
+        if(getCookie('csrftoken') === "") window.location.href = "/";
+
         toggleClassByPathEquals({
             targetId: 'gym-program-icon-item',
             className: 'current-page',
@@ -578,1451 +243,123 @@
                             techniques = item.intensity_techniques_display.split(/[,;|]/).map(t => t.trim()).join(', ');
                         }
 
-                        const gym_plan_item = document.createElement("div");
-                        gym_plan_item.classList.add("exercise-row");
-                        gym_plan_item.innerHTML = `
-                            <div class="exercise-number">${item.order}</div>
-                            <div class="exercise-title">${item.notes}</div>
-                            <div class="exercise-technique">${techniques}</div>
-                        `;
-                        gym_plan_item.id = "orderExercise" + item.order;
+                        if (!item.intensity_techniques.includes("null")) {
+                            const gym_plan_item = document.createElement("div");
+                            gym_plan_item.classList.add("exercise-row");
+                            gym_plan_item.innerHTML = `
+                                <div class="exercise-number">${item.order+1}</div>
+                                <div class="exercise-title">${item.notes}</div>
+                                <div class="exercise-technique">${techniques}</div>
+                            `;
+                            gym_plan_item.id = "orderExercise" + item.order;
 
-                        let plan_item = item.id;
+                            let plan_item = item.id;
 
-                        divDay.appendChild(gym_plan_item);
+                            divDay.appendChild(gym_plan_item);
 
-                        const groupedSets = {};
-                        item.sets.forEach(set => {
-                            if (!groupedSets[set.set_number]) {
-                                groupedSets[set.set_number] = [];
-                            }
-                            groupedSets[set.set_number].push(set);
-                        });
-
-                        const setNumbers = Object.keys(groupedSets).sort((a, b) => a - b);
-
-                        if(item.intensity_techniques.includes("tempo-based")) {
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                const headers = [
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    { className: "data-value", content: "Minuti Prescritti", title: "Numero di minuti prescritti da eseguire" },
-                                    { className: "data-value", content: "Minuti Effettuati", title: "Numero di minuti realmente eseguiti" },
-                                    { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
-                                ];
-
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    const data = [
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1 + " min.", disabled: true, mobilelabel: "Minuti Prescritti:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Minuti Effettuati:", event: true},
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
-                                    ];
-
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
-                                        }
-                                    });
-
-                                    tbody.appendChild(row);
-                                    table.appendChild(tbody);
-                                });
-
-                                divDay.appendChild(box);
-                            });
-                        } else if (item.intensity_techniques.includes("unilateral")) {
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                const headers = [
-                                    { className: "order-value", content: "" },
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    { className: "data-value", content: "Ripetizioni Prescritte (arto 1)", title: "Numero di ripetizioni prescritte da eseguire" },
-                                    { className: "data-value", content: "Ripetizioni Effettuate (arto 1)", title: "Numero di ripetizioni realmente eseguite" },
-                                    { className: "data-value", content: "Ripetizioni Prescritte (arto 2)", title: "Numero di ripetizioni prescritte da eseguire" },
-                                    { className: "data-value", content: "Ripetizioni Effettuate (arto 2)", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                    { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }]:[]),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }]:[]),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }]:[]),
-                                    { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
-                                ];
-
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte (arto 1):" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 1):", event: true},
-                                        { type: "input", value: set.prescribed_reps_2, disabled: true, mobilelabel: "Ripetizioni Prescritte (arto 2):" },
-                                        { type: "input", value: set.actual_reps_2, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 2):", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }]:[]),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }]:[]),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }]:[]),
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
-                                    ];
-
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event && index == 3) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-                                            else if(item.event && index == 5) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_2: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
-                                        }
-
-
-                                    });
-
-                                    tbody.appendChild(row);
-                                    table.appendChild(tbody);
-                                });
-
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
-
-                                divDay.appendChild(box);
-                            });
-                        } else if (item.intensity_techniques.includes("rest_pause")) {
-                            const button = document.createElement("button");
-                            button.classList.add("buttonCedimento");
-                            button.textContent = "Aggiungi serie a cedimento";
-                            button.style.margin = 0;
-
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                if(setNumber == 1)
-                                    box.innerHTML = `<h4>Serie d'introduzione</h4>`;
-                                else if(setNumber >= 2)
-                                    box.innerHTML = `<h4>Serie a cedimento</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                let headers;
-                                if(setNumber == 1) {
-                                    headers = [
-                                        { className: "order-value", content: "" },
-                                        { style: "text-align: left", content: "Esercizio" },
-                                        { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
-                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
-                                    ];
-                                } else if(setNumber >= 2) {
-                                    headers = [
-                                        { className: "order-value", content: "" },
-                                        { style: "text-align: left", content: "Esercizio" },
-                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
-                                    ];
+                            const groupedSets = {};
+                            item.sets.forEach(set => {
+                                if (!groupedSets[set.set_number]) {
+                                    groupedSets[set.set_number] = [];
                                 }
-
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test, array) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    let data;
-                                    if(setNumber == 1) {
-                                        data = [
-                                            {
-                                                type: "div",
-                                                className: "set-number",
-                                                value: test + 1,
-                                                mobilelabel: "Ordine:"
-                                            },
-                                            {
-                                                type: "text",
-                                                value: set.exercise.name,
-                                                disabled: true,
-                                                mobilelabel: "Esercizio:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: set.prescribed_reps_1,
-                                                disabled: true,
-                                                mobilelabel: "Ripetizioni Prescritte:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
-                                                mobilelabel: "Ripetizioni Effettuate:",
-                                                event: true
-                                            },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                            {
-                                                type: "input",
-                                                value: rest + " sec.",
-                                                disabled: true,
-                                                mobilelabel: "Recupero:"
-                                            }
-                                        ];
-                                    } else if(setNumber >= 2) {
-                                        data = [
-                                            {
-                                                type: "div",
-                                                className: "set-number",
-                                                value: test + 1,
-                                                mobilelabel: "Ordine:"
-                                            },
-                                            {
-                                                type: "text",
-                                                value: set.exercise.name,
-                                                disabled: true,
-                                                mobilelabel: "Esercizio:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
-                                                mobilelabel: "Ripetizioni Effettuate:",
-                                                event: true
-                                            },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                            {
-                                                type: "input",
-                                                value: rest + " sec.",
-                                                disabled: true,
-                                                mobilelabel: "Recupero:"
-                                            }
-                                        ];
-                                    }
-
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
-                                        }
-
-
-                                    });
-
-                                    tbody.appendChild(row);
-                                    table.appendChild(tbody);
-
-                                    if(setNumber == 2 && test === array.length - 1) {
-                                        button.addEventListener("click", async() => {
-                                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
-                                                method: "POST",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                    "Authorization": "Token " + getCookie('csrftoken'),
-                                                },
-                                                body: JSON.stringify({
-                                                    order: set.order+1,
-                                                    set_number: set.set_number,
-                                                    prescribed_reps_1: 0,
-                                                    prescribed_reps_2: 0,
-                                                    actual_reps_1: 0,
-                                                    actual_reps_2: 0,
-                                                    rir: set.rir,
-                                                    rest_seconds: set.rest_seconds,
-                                                    weight: set.weight,
-                                                    tempo_fcr: set.tempo_fcr,
-                                                    plan_item: plan_item,
-                                                    exercise_id: set.exercise.id
-                                                })
-                                            });
-
-                                            localStorage.setItem("scrollToId", gym_plan_item.id);
-                                            location.reload();
-                                        });
-                                    }
-                                });
-
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
-
-                                if(!dayBeforeToday.includes(full)) {
-                                    box.appendChild(button);
-                                }
-                                divDay.appendChild(box);
+                                groupedSets[set.set_number].push(set);
                             });
-                        } else if (item.intensity_techniques.includes("myoreps")) {
-                            const button = document.createElement("button");
-                            button.classList.add("buttonCedimento");
-                            button.textContent = "Aggiungi serie a cedimento";
-                            button.style.margin = 0;
-                            button.style.display = 'none';
 
-                            let maxReps, minReps;
+                            const setNumbers = Object.keys(groupedSets).sort((a, b) => a - b);
 
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                if(setNumber == 1)
-                                    box.innerHTML = `<h4>Serie d'introduzione</h4>`;
-                                else if(setNumber >= 2)
-                                    box.innerHTML = `<h4>Serie a cedimento</h4>`;
+                            if(item.intensity_techniques.includes("tempo-based")) {
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
 
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
 
-                                const table = document.createElement("table");
+                                    const table = document.createElement("table");
 
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
 
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                let headers;
-                                if(setNumber == 1) {
-                                    headers = [
-                                        { className: "order-value", content: "" },
+                                    const headers = [
                                         { style: "text-align: left", content: "Esercizio" },
-                                        { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
-                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        { className: "data-value", content: "Minuti Prescritti", title: "Numero di minuti prescritti da eseguire" },
+                                        { className: "data-value", content: "Minuti Effettuati", title: "Numero di minuti realmente eseguiti" },
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                                     ];
-                                } else if(setNumber >= 2) {
-                                    headers = [
-                                        { className: "order-value", content: "" },
-                                        { style: "text-align: left", content: "Esercizio" },
-                                        { className: "data-value", content: "Ripetizioni Prescritte massime", title: "Numero di ripetizioni massime prescritte da eseguire" },
-                                        { className: "data-value", content: "Ripetizioni Prescritte minime", title: "Numero di ripetizioni minime prescritte da eseguire" },
-                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
-                                    ];
-                                }
 
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
+                                            const span = document.createElement("span");
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
 
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
 
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
+                                    const tbody = document.createElement("tbody");
+                                    table.appendChild(tbody);
 
-                                box.append(table);
+                                    box.append(table);
 
-                                groupedSets[setNumber].forEach((set, test, array) => {
-                                    const row = document.createElement("tr");
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
 
-                                    let data;
-                                    if(setNumber == 1) {
-                                        maxReps = set.prescribed_reps_2;
-                                        minReps = set.actual_reps_2;
-                                        data = [
-                                            {
-                                                type: "div",
-                                                className: "set-number",
-                                                value: test + 1,
-                                                mobilelabel: "Ordine:"
-                                            },
-                                            {
-                                                type: "text",
-                                                value: set.exercise.name,
-                                                disabled: true,
-                                                mobilelabel: "Esercizio:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: set.prescribed_reps_1,
-                                                disabled: true,
-                                                mobilelabel: "Serie Prescritte:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
-                                                mobilelabel: "Serie Effettuate:",
-                                                event: true
-                                            },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                            {
-                                                type: "input",
-                                                value: rest + " sec.",
-                                                disabled: true,
-                                                mobilelabel: "Recupero:"
-                                            }
+                                        const data = [
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            { type: "input", value: set.prescribed_reps_1 + " min.", disabled: true, mobilelabel: "Minuti Prescritti:" },
+                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Minuti Effettuati:", event: true},
+                                            { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
                                         ];
-                                    } else if(setNumber >= 2) {
-                                        data = [
-                                            {
-                                                type: "div",
-                                                className: "set-number",
-                                                value: test + 1,
-                                                mobilelabel: "Ordine:"
-                                            },
-                                            {
-                                                type: "text",
-                                                value: set.exercise.name,
-                                                disabled: true,
-                                                mobilelabel: "Esercizio:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: maxReps,
-                                                disabled: true,
-                                                mobilelabel: "Serie Prescritte massime:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: minReps,
-                                                disabled: true,
-                                                mobilelabel: "Serie Prescritte minime:"
-                                            },
-                                            {
-                                                type: "input",
-                                                value: set.actual_reps_1,
-                                                disabled: disabledDayBefore,
-                                                mobilelabel: "Serie Effettuate:",
-                                                event: true
-                                            },
-                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                            {
-                                                type: "input",
-                                                value: rest + " sec.",
-                                                disabled: true,
-                                                mobilelabel: "Recupero:"
-                                            }
-                                        ];
-                                    }
 
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
-                                        }
-
-                                        if(index === 4 && test === array.length - 1 && setNumber == 2) {
-                                            let cellInput = row.cells[3].querySelector("input");
-                                            cellInput.addEventListener("input", function () {
-                                                if(this.value <= minReps) button.style.display = 'none';
-                                                else button.style.display = 'block';
-                                            });
-                                        }
-                                    });
-
-                                    tbody.appendChild(row);
-                                    table.appendChild(tbody);
-
-                                    if(setNumber == 2 && test === array.length - 1) {
-                                        button.addEventListener("click", async() => {
-                                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
-                                                method: "POST",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                    "Authorization": "Token " + getCookie('csrftoken'),
-                                                },
-                                                body: JSON.stringify({
-                                                    order: set.order+1,
-                                                    set_number: set.set_number,
-                                                    prescribed_reps_1: 0,
-                                                    prescribed_reps_2: 0,
-                                                    actual_reps_1: 0,
-                                                    actual_reps_2: 0,
-                                                    rir: set.rir,
-                                                    rest_seconds: set.rest_seconds,
-                                                    weight: set.weight,
-                                                    tempo_fcr: set.tempo_fcr,
-                                                    plan_item: plan_item,
-                                                    exercise_id: set.exercise.id
-                                                })
-                                            });
-
-                                            localStorage.setItem("scrollToId", gym_plan_item.id);
-                                            location.reload();
-                                        });
-                                    }
-                                });
-
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
-
-                                if(!dayBeforeToday.includes(full)) {
-                                    box.appendChild(button);
-                                }
-                                divDay.appendChild(box);
-                            });
-                        } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                const headers = [
-                                    { className: "order-value", content: "" },
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    { className: "data-value", content: "Secondi Prescritti", title: "Numero di secondi prescritti da eseguire" },
-                                    { className: "data-value", content: "Secondi Effettuati", title: "Numero di secondi realmente eseguiti" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                    { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                    { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
-                                ];
-
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
-                                    ];
-
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
-                                        }
-
-
-                                    });
-
-                                    tbody.appendChild(row);
-                                    table.appendChild(tbody);
-                                });
-
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
-
-                                divDay.appendChild(box);
-                            });
-                        } else if (item.intensity_techniques.includes("emom")) {
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                const headers = [
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    { className: "order-value", content: "Minuto" },
-                                    { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
-                                    { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                    { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                ];
-
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    const data = [
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Minuto:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                    ];
-
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else if (index === 1) {
-                                            const div = document.createElement("div");
-                                            div.className = item.className;
-                                            div.textContent = item.value;
-
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            td.appendChild(span);
-                                            td.appendChild(div);
-                                            row.appendChild(td);
-                                        } else {
-                                            const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
-                                        }
-
-
-                                    });
-
-                                    tbody.appendChild(row);
-                                    table.appendChild(tbody);
-                                });
-
-                                divDay.appendChild(box);
-                            });
-                        } else if (item.intensity_techniques.includes("amrap")) {
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                box.innerHTML = `<h4>Circuito</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let firstSet = groupedSets[setNumber][0];
-                                let rest = firstSet.rest_seconds;
-                                let skipDurationAndReps = rest === 0 && firstSet.prescribed_reps_1 === 0;
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                const headers = [
-                                    { className: "order-value", content: "" },
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    { className: "data-value", content: "Durata", title: "Durata dell'esercizio in AMRAP" },
-                                    { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
-                                    { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                    { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                ];
-
-                                headers.forEach((h, index) => {
-                                    if (skipDurationAndReps && (index === 2 || index === 3)) return; // Salta Durata e Ripetizioni Prescritte
-
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Durata:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                    ];
-
-                                    data.forEach((item, index) => {
-                                        if (skipDurationAndReps && (index === 2 || index === 3)) return;
-
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else if (index === 2) {
-                                            if (test === 0) {
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
                                                 const span = document.createElement("span");
                                                 span.className = "mobile-label";
                                                 span.textContent = item.mobilelabel;
@@ -2035,435 +372,1769 @@
                                                 input.className = "set-input";
                                                 input.value = item.value;
                                                 if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
 
                                                 wrapper.appendChild(input);
                                                 td.appendChild(span);
                                                 td.appendChild(wrapper);
-
-                                                td.rowSpan = lengthSets; // <-- RIGA IMPORTANTE: fa sì che la cella duri per tutte le righe
                                                 row.appendChild(td);
                                             }
-                                            // Se non è la prima riga, saltiamo la creazione della cella Durata
-                                        } else {
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    divDay.appendChild(box);
+                                });
+                            } else if (item.intensity_techniques.includes("unilateral")) {
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
+
+                                    const table = document.createElement("table");
+
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
+
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
+
+                                    const headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        { className: "data-value", content: "Ripetizioni Prescritte (arto 1)", title: "Numero di ripetizioni prescritte da eseguire" },
+                                        { className: "data-value", content: "Ripetizioni Effettuate (arto 1)", title: "Numero di ripetizioni realmente eseguite" },
+                                        { className: "data-value", content: "Ripetizioni Prescritte (arto 2)", title: "Numero di ripetizioni prescritte da eseguire" },
+                                        { className: "data-value", content: "Ripetizioni Effettuate (arto 2)", title: "Numero di ripetizioni realmente eseguite" },
+                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }]:[]),
+                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }]:[]),
+                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }]:[]),
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    ];
+
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
                                             const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
 
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
 
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
+                                    const tbody = document.createElement("tbody");
+                                    table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        const data = [
+                                            { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte (arto 1):" },
+                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 1):", event: true},
+                                            { type: "input", value: set.prescribed_reps_2, disabled: true, mobilelabel: "Ripetizioni Prescritte (arto 2):" },
+                                            { type: "input", value: set.actual_reps_2, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate (arto 2):", event: true},
+                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
+                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }]:[]),
+                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }]:[]),
+                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }]:[]),
+                                            { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        ];
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event && index == 3) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+                                                else if(item.event && index == 5) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_2: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+
+
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    divDay.appendChild(box);
+                                });
+                            } else if (item.intensity_techniques.includes("rest_pause")) {
+                                const button = document.createElement("button");
+                                button.classList.add("buttonCedimento");
+                                button.textContent = "Aggiungi serie a cedimento";
+                                button.style.margin = 0;
+
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    if(setNumber == 0)
+                                        box.innerHTML = `<h4>Serie d'introduzione</h4>`;
+                                    else if(setNumber >= 1)
+                                        box.innerHTML = `<h4>Serie a cedimento</h4>`;
+
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
+
+                                    const table = document.createElement("table");
+
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
+
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
+
+                                    let headers;
+                                    if(setNumber == 0) {
+                                        headers = [
+                                            { className: "order-value", content: "" },
+                                            { style: "text-align: left", content: "Esercizio" },
+                                            { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                            { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                            ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                            { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                            ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                            ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                            ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                            { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        ];
+                                    } else if(setNumber >= 1) {
+                                        headers = [
+                                            { className: "order-value", content: "" },
+                                            { style: "text-align: left", content: "Esercizio" },
+                                            { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                            ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                            { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                            ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                            ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                            ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                            { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        ];
+                                    }
+
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
+                                            const span = document.createElement("span");
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
+
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
+                                    table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test, array) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        let data;
+                                        if(setNumber == 0) {
+                                            data = [
+                                                {
+                                                    type: "div",
+                                                    className: "set-number",
+                                                    value: test + 1,
+                                                    mobilelabel: "Ordine:"
+                                                },
+                                                {
+                                                    type: "text",
+                                                    value: set.exercise.name,
+                                                    disabled: true,
+                                                    mobilelabel: "Esercizio:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: set.prescribed_reps_1,
+                                                    disabled: true,
+                                                    mobilelabel: "Ripetizioni Prescritte:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: set.actual_reps_1,
+                                                    disabled: disabledDayBefore,
+                                                    mobilelabel: "Ripetizioni Effettuate:",
+                                                    event: true
+                                                },
+                                                ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
+                                                { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                                ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                                ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                                ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                                {
+                                                    type: "input",
+                                                    value: rest + " sec.",
+                                                    disabled: true,
+                                                    mobilelabel: "Recupero:"
+                                                }
+                                            ];
+                                        } else if(setNumber >= 1) {
+                                            data = [
+                                                {
+                                                    type: "div",
+                                                    className: "set-number",
+                                                    value: test + 1,
+                                                    mobilelabel: "Ordine:"
+                                                },
+                                                {
+                                                    type: "text",
+                                                    value: set.exercise.name,
+                                                    disabled: true,
+                                                    mobilelabel: "Esercizio:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: set.actual_reps_1,
+                                                    disabled: disabledDayBefore,
+                                                    mobilelabel: "Ripetizioni Effettuate:",
+                                                    event: true
+                                                },
+                                                ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
+                                                { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                                ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                                ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                                ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                                {
+                                                    type: "input",
+                                                    value: rest + " sec.",
+                                                    disabled: true,
+                                                    mobilelabel: "Recupero:"
+                                                }
+                                            ];
+                                        }
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+
+
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+
+                                        if(setNumber == 1 && test === array.length - 1) {
+                                            button.addEventListener("click", async() => {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
+                                                    method: "POST",
                                                     headers: {
                                                         "Content-Type": "application/json",
                                                         "Authorization": "Token " + getCookie('csrftoken'),
                                                     },
                                                     body: JSON.stringify({
-                                                        actual_reps_1: this.value
+                                                        order: set.order+1,
+                                                        set_number: set.set_number,
+                                                        prescribed_reps_1: 0,
+                                                        prescribed_reps_2: 0,
+                                                        actual_reps_1: 0,
+                                                        actual_reps_2: 0,
+                                                        rir: set.rir,
+                                                        rest_seconds: set.rest_seconds,
+                                                        weight: set.weight,
+                                                        tempo_fcr: set.tempo_fcr,
+                                                        plan_item: plan_item,
+                                                        exercise_id: set.exercise.id
                                                     })
                                                 });
+
+                                                localStorage.setItem("scrollToId", gym_plan_item.id);
+                                                location.reload();
                                             });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
                                         }
-
-
                                     });
 
-                                    tbody.appendChild(row);
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    if(!dayBeforeToday.includes(full)) {
+                                        box.appendChild(button);
+                                    }
+                                    divDay.appendChild(box);
+                                });
+                            } else if (item.intensity_techniques.includes("myoreps")) {
+                                const button = document.createElement("button");
+                                button.classList.add("buttonCedimento");
+                                button.textContent = "Aggiungi serie a cedimento";
+                                button.style.margin = 0;
+                                button.style.display = 'none';
+
+                                let maxReps, minReps;
+
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    if(setNumber == 0)
+                                        box.innerHTML = `<h4>Serie d'introduzione</h4>`;
+                                    else if(setNumber >= 1)
+                                        box.innerHTML = `<h4>Serie a cedimento</h4>`;
+
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
+
+                                    const table = document.createElement("table");
+
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
+
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
+
+                                    let headers;
+                                    if(setNumber == 0) {
+                                        headers = [
+                                            { className: "order-value", content: "" },
+                                            { style: "text-align: left", content: "Esercizio" },
+                                            { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                            { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                            ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                            { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                            ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                            ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                            ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                            { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        ];
+                                    } else if(setNumber >= 1) {
+                                        headers = [
+                                            { className: "order-value", content: "" },
+                                            { style: "text-align: left", content: "Esercizio" },
+                                            { className: "data-value", content: "Ripetizioni Prescritte massime", title: "Numero di ripetizioni massime prescritte da eseguire" },
+                                            { className: "data-value", content: "Ripetizioni Prescritte minime", title: "Numero di ripetizioni minime prescritte da eseguire" },
+                                            { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                            ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                            { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                            ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                            ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                            ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                            { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }
+                                        ];
+                                    }
+
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
+                                            const span = document.createElement("span");
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
+
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
                                     table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test, array) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        let data;
+                                        if(setNumber == 0) {
+                                            maxReps = set.prescribed_reps_2;
+                                            minReps = set.actual_reps_2;
+                                            data = [
+                                                {
+                                                    type: "div",
+                                                    className: "set-number",
+                                                    value: test + 1,
+                                                    mobilelabel: "Ordine:"
+                                                },
+                                                {
+                                                    type: "text",
+                                                    value: set.exercise.name,
+                                                    disabled: true,
+                                                    mobilelabel: "Esercizio:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: set.prescribed_reps_1,
+                                                    disabled: true,
+                                                    mobilelabel: "Serie Prescritte:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: set.actual_reps_1,
+                                                    disabled: disabledDayBefore,
+                                                    mobilelabel: "Serie Effettuate:",
+                                                    event: true
+                                                },
+                                                ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
+                                                { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                                ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                                ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                                ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                                {
+                                                    type: "input",
+                                                    value: rest + " sec.",
+                                                    disabled: true,
+                                                    mobilelabel: "Recupero:"
+                                                }
+                                            ];
+                                        } else if(setNumber >= 1) {
+                                            data = [
+                                                {
+                                                    type: "div",
+                                                    className: "set-number",
+                                                    value: test + 1,
+                                                    mobilelabel: "Ordine:"
+                                                },
+                                                {
+                                                    type: "text",
+                                                    value: set.exercise.name,
+                                                    disabled: true,
+                                                    mobilelabel: "Esercizio:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: maxReps,
+                                                    disabled: true,
+                                                    mobilelabel: "Serie Prescritte massime:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: minReps,
+                                                    disabled: true,
+                                                    mobilelabel: "Serie Prescritte minime:"
+                                                },
+                                                {
+                                                    type: "input",
+                                                    value: set.actual_reps_1,
+                                                    disabled: disabledDayBefore,
+                                                    mobilelabel: "Serie Effettuate:",
+                                                    event: true
+                                                },
+                                                ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
+                                                { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                                ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                                ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                                ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                                {
+                                                    type: "input",
+                                                    value: rest + " sec.",
+                                                    disabled: true,
+                                                    mobilelabel: "Recupero:"
+                                                }
+                                            ];
+                                        }
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+
+                                            if(index === 4 && test === array.length - 1 && setNumber == 1) {
+                                                let cellInput = row.cells[4].querySelector("input");
+
+                                                if(cellInput.value < minReps) button.style.display = 'none';
+                                                else button.style.display = 'block';
+
+                                                cellInput.addEventListener("input", function () {
+                                                    if(cellInput.value < minReps) button.style.display = 'none';
+                                                    else button.style.display = 'block';
+                                                });
+                                            }
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+
+                                        if(setNumber == 1 && test === array.length - 1) {
+                                            button.addEventListener("click", async() => {
+                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/`, {
+                                                    method: "POST",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                                    },
+                                                    body: JSON.stringify({
+                                                        order: set.order+1,
+                                                        set_number: set.set_number,
+                                                        prescribed_reps_1: 0,
+                                                        prescribed_reps_2: 0,
+                                                        actual_reps_1: 0,
+                                                        actual_reps_2: 0,
+                                                        rir: set.rir,
+                                                        rest_seconds: set.rest_seconds,
+                                                        weight: set.weight,
+                                                        tempo_fcr: set.tempo_fcr,
+                                                        plan_item: plan_item,
+                                                        exercise_id: set.exercise.id
+                                                    })
+                                                });
+
+                                                localStorage.setItem("scrollToId", gym_plan_item.id);
+                                                location.reload();
+                                            });
+                                        }
+                                    });
+
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    if(!dayBeforeToday.includes(full)) {
+                                        box.appendChild(button);
+                                    }
+                                    divDay.appendChild(box);
                                 });
+                            } else if (item.intensity_techniques.includes("isometric") || item.intensity_techniques.includes("isometric_overload")) {
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
 
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
 
-                                divDay.appendChild(box);
-                            });
-                        } else if (item.intensity_techniques.includes("death_set")){
-                            setNumbers.forEach(setNumber => {
-                                let showRecoveryColumn = false;
-                                if(setNumber == 3) showRecoveryColumn = true;
+                                    const table = document.createElement("table");
 
-                                let isSecondSet = !(setNumber == 5);
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
 
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                const titles = {
-                                    1: "Serie iniziale",
-                                    2: "1° Drop Set",
-                                    3: "2° Drop Set + Rest Pause",
-                                    4: "Parziali",
-                                    5: "Isometria",
-                                };
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
 
-                                const title = titles[setNumber] || `Serie ${setNumber}`;
-                                box.innerHTML = `<h4>${title}</h4>`;
-
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
-
-                                const table = document.createElement("table");
-
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                const headers = [
-                                    { className: "order-value", content: "" },
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    ...(isSecondSet ? [
-                                        { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
-                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" }
-                                    ]: [
+                                    const headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
                                         { className: "data-value", content: "Secondi Prescritti", title: "Numero di secondi prescritti da eseguire" },
                                         { className: "data-value", content: "Secondi Effettuati", title: "Numero di secondi realmente eseguiti" },
-                                    ]),
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                    { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                    ...(showRecoveryColumn ? [{ className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }] : []),
-                                ];
+                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
+                                    ];
 
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
+                                            const span = document.createElement("span");
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
+
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
+                                    table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        const data = [
+                                            { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
+                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
+                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
+                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        ];
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+
+
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    divDay.appendChild(box);
                                 });
+                            } else if (item.intensity_techniques.includes("emom")) {
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
 
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
 
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
+                                    const table = document.createElement("table");
 
-                                box.append(table);
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
 
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
 
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
+                                    const headers = [
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        { className: "order-value", content: "Minuto" },
+                                        { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    ];
 
-                                    const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        ...(isSecondSet ? [
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
+                                            const span = document.createElement("span");
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
+
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
+                                    table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        const data = [
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            { type: "div", className: "set-number", value: test+1, mobilelabel: "Minuto:" },
+                                            { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
+                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
+                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
+                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                        ];
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else if (index === 1) {
+                                                const div = document.createElement("div");
+                                                div.className = item.className;
+                                                div.textContent = item.value;
+
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                td.appendChild(span);
+                                                td.appendChild(div);
+                                                row.appendChild(td);
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+
+
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    divDay.appendChild(box);
+                                });
+                            } else if (item.intensity_techniques.includes("amrap")) {
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    box.innerHTML = `<h4>Circuito</h4>`;
+
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let firstSet = groupedSets[setNumber][0];
+                                    let rest = firstSet.rest_seconds;
+                                    let skipDurationAndReps = rest === 0 && firstSet.prescribed_reps_1 === 0;
+                                    let lengthSets = groupedSets[setNumber].length;
+
+                                    const table = document.createElement("table");
+
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
+
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
+
+                                    const headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        { className: "data-value", content: "Durata", title: "Durata dell'esercizio in AMRAP" },
+                                        { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                    ];
+
+                                    headers.forEach((h, index) => {
+                                        if (skipDurationAndReps && (index === 2 || index === 3)) return; // Salta Durata e Ripetizioni Prescritte
+
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
+                                            const span = document.createElement("span");
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
+                                        }
+                                        headerRow.appendChild(th);
+                                    });
+
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
+                                    table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        const data = [
+                                            { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Durata:" },
                                             { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte:" },
                                             { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
-                                        ] : [
-                                            { type: "input", value: set.prescribed_reps_1 + " sec.", disabled: true, mobilelabel: "Secondi Prescritti:" },
-                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Secondi Effettuati:", event: true},
+                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
+                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                        ];
+
+                                        data.forEach((item, index) => {
+                                            if (skipDurationAndReps && (index === 2 || index === 3)) return;
+
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else if (index === 2) {
+                                                if (test === 0) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    const wrapper = document.createElement("div");
+                                                    wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                    const input = document.createElement("input");
+                                                    input.type = "text";
+                                                    input.className = "set-input";
+                                                    input.value = item.value;
+                                                    if (item.disabled) input.disabled = true;
+
+                                                    wrapper.appendChild(input);
+                                                    td.appendChild(span);
+                                                    td.appendChild(wrapper);
+
+                                                    td.rowSpan = lengthSets; // <-- RIGA IMPORTANTE: fa sì che la cella duri per tutte le righe
+                                                    row.appendChild(td);
+                                                }
+                                                // Se non è la prima riga, saltiamo la creazione della cella Durata
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+
+
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    divDay.appendChild(box);
+                                });
+                            } else if (item.intensity_techniques.includes("death_set")){
+                                setNumbers.forEach(setNumber => {
+                                    let showRecoveryColumn = false;
+                                    if(setNumber == 3) showRecoveryColumn = true;
+
+                                    let isSecondSet = !(setNumber == 5);
+
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    const titles = {
+                                        1: "Serie iniziale",
+                                        2: "1° Drop Set",
+                                        3: "2° Drop Set + Rest Pause",
+                                        4: "Parziali",
+                                        5: "Isometria",
+                                    };
+
+                                    const title = titles[setNumber] || `Serie ${setNumber}`;
+                                    box.innerHTML = `<h4>${title}</h4>`;
+
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
+
+                                    const table = document.createElement("table");
+
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
+
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
+
+                                    const headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        ...(isSecondSet ? [
+                                            { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                            { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" }
+                                        ]: [
+                                            { className: "data-value", content: "Secondi Prescritti", title: "Numero di secondi prescritti da eseguire" },
+                                            { className: "data-value", content: "Secondi Effettuati", title: "Numero di secondi realmente eseguiti" },
                                         ]),
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                        ...(showRecoveryColumn ? [{ type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" }] : []),
+                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        ...(showRecoveryColumn ? [{ className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" }] : []),
                                     ];
 
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
                                             const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
                                         }
+                                        headerRow.appendChild(th);
                                     });
 
-                                    tbody.appendChild(row);
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
                                     table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        const data = [
+                                            { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            ...(isSecondSet ? [
+                                                { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Ripetizioni Prescritte:" },
+                                                { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Ripetizioni Effettuate:", event: true},
+                                            ] : [
+                                                { type: "input", value: set.prescribed_reps_1 + " sec.", disabled: true, mobilelabel: "Secondi Prescritti:" },
+                                                { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Secondi Effettuati:", event: true},
+                                            ]),
+                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),
+                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            ...(showRecoveryColumn ? [{ type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" }] : []),
+                                        ];
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    divDay.appendChild(box);
                                 });
+                            } else {
+                                setNumbers.forEach(setNumber => {
+                                    const box = document.createElement("div");
+                                    box.classList.add("set-box");
+                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
 
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
+                                    let sameExercisesOnSets = groupedSets[setNumber].every(
+                                        set => set.exercise.name === groupedSets[setNumber][0].exercise.name
+                                    );
+                                    let lengthSets = groupedSets[setNumber].length;
 
-                                divDay.appendChild(box);
-                            });
-                        } else {
-                            setNumbers.forEach(setNumber => {
-                                const box = document.createElement("div");
-                                box.classList.add("set-box");
-                                box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    const table = document.createElement("table");
 
-                                let sameExercisesOnSets = groupedSets[setNumber].every(
-                                    set => set.exercise.name === groupedSets[setNumber][0].exercise.name
-                                );
-                                let lengthSets = groupedSets[setNumber].length;
+                                    const thead = document.createElement("thead");
+                                    const headerRow = document.createElement("tr");
 
-                                const table = document.createElement("table");
+                                    let eccs = [], fermos = [], concs = [], rirs = [];
+                                    groupedSets[setNumber].forEach((set) => {
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        eccs.push(ecc);
+                                        fermos.push(fermo);
+                                        concs.push(conc);
+                                        rirs.push(set.rir);
+                                    });
+                                    const eccsZero = eccs.some(e => parseInt(e) !== 0);
+                                    const fermosZero = fermos.some(f => parseInt(f) !== 0);
+                                    const concsZero = concs.some(c => parseInt(c) !== 0);
+                                    const rirsZero = rirs.some(c => parseInt(c) !== 0);
 
-                                const thead = document.createElement("thead");
-                                const headerRow = document.createElement("tr");
-
-                                let eccs = [], fermos = [], concs = [], rirs = [];
-                                groupedSets[setNumber].forEach((set) => {
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    eccs.push(ecc);
-                                    fermos.push(fermo);
-                                    concs.push(conc);
-                                    rirs.push(set.rir);
-                                });
-                                const eccsZero = eccs.some(e => parseInt(e) !== 0);
-                                const fermosZero = fermos.some(f => parseInt(f) !== 0);
-                                const concsZero = concs.some(c => parseInt(c) !== 0);
-                                const rirsZero = rirs.some(c => parseInt(c) !== 0);
-
-                                const headers = [
-                                    { className: "order-value", content: "" },
-                                    { style: "text-align: left", content: "Esercizio" },
-                                    { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
-                                    { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
-                                    ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
-                                    { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
-                                    ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
-                                    ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
-                                    ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
-                                    { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
-                                ];
-
-                                headers.forEach(h => {
-                                    const th = document.createElement("th");
-                                    if (h.className) th.className = h.className;
-                                    if (h.style) th.setAttribute("style", h.style);
-                                    if (h.title) {
-                                        const span = document.createElement("span");
-                                        span.className = "info-icon";
-                                        span.title = h.title;
-                                        span.textContent = h.content;
-                                        th.appendChild(span);
-                                    } else {
-                                        th.textContent = h.content;
-                                    }
-                                    headerRow.appendChild(th);
-                                });
-
-                                thead.appendChild(headerRow);
-                                table.appendChild(thead);
-
-                                const tbody = document.createElement("tbody");
-                                table.appendChild(tbody);
-
-                                box.append(table);
-
-                                groupedSets[setNumber].forEach((set, test) => {
-                                    const row = document.createElement("tr");
-
-                                    const [ecc, fermo, conc] = set.tempo_fcr.split("-");
-                                    const rest = set.rest_seconds;
-
-                                    const data = [
-                                        { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
-                                        { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
-                                        { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
-                                        { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
-                                        ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
-                                        { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
-                                        ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
-                                        ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
-                                        ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
-                                        { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                    const headers = [
+                                        { className: "order-value", content: "" },
+                                        { style: "text-align: left", content: "Esercizio" },
+                                        { className: "data-value", content: "Ripetizioni Prescritte", title: "Numero di ripetizioni prescritte da eseguire" },
+                                        { className: "data-value", content: "Ripetizioni Effettuate", title: "Numero di ripetizioni realmente eseguite" },
+                                        ...(rirsZero ? [{ className: "data-value", content: "RIR", title: "Reps In Reserve: quante ripetizioni avresti ancora potuto fare" }]:[]),
+                                        { className: "data-value", content: "Peso", title: "Peso utilizzato per la serie" },
+                                        ...(eccsZero ? [{ className: "data-value", content: "Eccentrica", title: "Fase eccentrica: discesa lenta e controllata" }] : []),
+                                        ...(fermosZero ? [{ className: "data-value", content: "Fermo", title: "Pausa in posizione intermedia o bassa" }] : []),
+                                        ...(concsZero ? [{ className: "data-value", content: "Concentrica", title: "Fase concentrica: spinta o contrazione muscolare" }] : []),
+                                        { className: "data-value", content: "Recupero", title: "Tempo di recupero tra le serie, in secondi" },
                                     ];
 
-                                    data.forEach((item, index) => {
-                                        const td = document.createElement("td");
-
-                                        if (index === 0) {
-                                            if(!sameExercisesOnSets) {
-                                                const div = document.createElement("div");
-                                                div.className = item.className;
-                                                div.textContent = item.value;
-
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-
-                                                td.appendChild(span);
-                                                td.appendChild(div);
-                                            }
-                                            row.appendChild(td);
-                                        } else if (index === 1) {
-                                            if(test === 0 && sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.rowSpan = lengthSets;
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            } else if(!sameExercisesOnSets) {
-                                                const span = document.createElement("span");
-                                                span.className = "mobile-label";
-                                                span.textContent = item.mobilelabel;
-                                                row.appendChild(span);
-
-                                                const link_exercise = document.createElement("a");
-                                                link_exercise.href = "";
-                                                link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
-                                                link_exercise.textContent = item.value;
-
-                                                td.appendChild(link_exercise);
-                                                row.appendChild(td);
-                                            }
-                                        } else {
+                                    headers.forEach(h => {
+                                        const th = document.createElement("th");
+                                        if (h.className) th.className = h.className;
+                                        if (h.style) th.setAttribute("style", h.style);
+                                        if (h.title) {
                                             const span = document.createElement("span");
-                                            span.className = "mobile-label";
-                                            span.textContent = item.mobilelabel;
-
-                                            const wrapper = document.createElement("div");
-                                            wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
-
-                                            const input = document.createElement("input");
-                                            input.type = "text";
-                                            input.className = "set-input";
-                                            input.value = item.value;
-                                            if (item.disabled) input.disabled = true;
-                                            if (item.event) input.addEventListener("input", async function () {
-                                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
-                                                    method: "PATCH",
-                                                    headers: {
-                                                        "Content-Type": "application/json",
-                                                        "Authorization": "Token " + getCookie('csrftoken'),
-                                                    },
-                                                    body: JSON.stringify({
-                                                        actual_reps_1: this.value
-                                                    })
-                                                });
-                                            });
-
-                                            wrapper.appendChild(input);
-                                            td.appendChild(span);
-                                            td.appendChild(wrapper);
-                                            row.appendChild(td);
+                                            span.className = "info-icon";
+                                            span.title = h.title;
+                                            span.textContent = h.content;
+                                            th.appendChild(span);
+                                        } else {
+                                            th.textContent = h.content;
                                         }
+                                        headerRow.appendChild(th);
                                     });
 
-                                    tbody.appendChild(row);
+                                    thead.appendChild(headerRow);
+                                    table.appendChild(thead);
+
+                                    const tbody = document.createElement("tbody");
                                     table.appendChild(tbody);
+
+                                    box.append(table);
+
+                                    groupedSets[setNumber].forEach((set, test) => {
+                                        const row = document.createElement("tr");
+
+                                        const [ecc, fermo, conc] = set.tempo_fcr.split("-");
+                                        const rest = set.rest_seconds;
+
+                                        const data = [
+                                            { type: "div", className: "set-number", value: test+1, mobilelabel: "Ordine:" },
+                                            { type: "text", value: set.exercise.name, disabled: true, mobilelabel: "Esercizio:" },
+                                            { type: "input", value: set.prescribed_reps_1, disabled: true, mobilelabel: "Serie Prescritte:" },
+                                            { type: "input", value: set.actual_reps_1, disabled: disabledDayBefore, mobilelabel: "Serie Effettuate:", event: true},
+                                            ...(rirsZero ? [{ type: "input", value: set.rir, disabled: true, mobilelabel: "RIR:" }]:[]),,
+                                            { type: "input", value: set.weight+"kg", disabled: true, mobilelabel: "Peso:" },
+                                            ...(eccsZero ? [{ type: "input", value: ecc+" sec.", disabled: true, mobilelabel: "Eccentrica:" }] : []),
+                                            ...(fermosZero ? [{ type: "input", value: fermo+" sec.", disabled: true, mobilelabel: "Fermo:" }] : []),
+                                            ...(concsZero ? [{ type: "input", value: conc+" sec.", disabled: true, mobilelabel: "Concentrica:" }] : []),
+                                            { type: "input", value: rest+" sec.", disabled: true, mobilelabel: "Recupero:" },
+                                        ];
+
+                                        data.forEach((item, index) => {
+                                            const td = document.createElement("td");
+
+                                            if (index === 0) {
+                                                if(!sameExercisesOnSets) {
+                                                    const div = document.createElement("div");
+                                                    div.className = item.className;
+                                                    div.textContent = item.value;
+
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+
+                                                    td.appendChild(span);
+                                                    td.appendChild(div);
+                                                }
+                                                row.appendChild(td);
+                                            } else if (index === 1) {
+                                                if(test === 0 && sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.rowSpan = lengthSets;
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                } else if(!sameExercisesOnSets) {
+                                                    const span = document.createElement("span");
+                                                    span.className = "mobile-label";
+                                                    span.textContent = item.mobilelabel;
+                                                    row.appendChild(span);
+
+                                                    const link_exercise = document.createElement("a");
+                                                    link_exercise.href = "";
+                                                    link_exercise.addEventListener("click", () => openExercisePopup(set.exercise));
+                                                    link_exercise.textContent = item.value;
+
+                                                    td.appendChild(link_exercise);
+                                                    row.appendChild(td);
+                                                }
+                                            } else {
+                                                const span = document.createElement("span");
+                                                span.className = "mobile-label";
+                                                span.textContent = item.mobilelabel;
+
+                                                const wrapper = document.createElement("div");
+                                                wrapper.className = item.disabled ? "input-with-info" : "input-with-info-enabled";
+
+                                                const input = document.createElement("input");
+                                                input.type = "text";
+                                                input.className = "set-input";
+                                                input.value = item.value;
+                                                if (item.disabled) input.disabled = true;
+                                                if (item.event) input.addEventListener("input", async function () {
+                                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/update/${set.id}/`, {
+                                                        method: "PATCH",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                                        },
+                                                        body: JSON.stringify({
+                                                            actual_reps_1: this.value
+                                                        })
+                                                    });
+                                                });
+
+                                                wrapper.appendChild(input);
+                                                td.appendChild(span);
+                                                td.appendChild(wrapper);
+                                                row.appendChild(td);
+                                            }
+                                        });
+
+                                        tbody.appendChild(row);
+                                        table.appendChild(tbody);
+                                    });
+
+                                    if(sameExercisesOnSets)
+                                        for (const riga of table.rows)
+                                            if (riga.cells[0])
+                                                riga.deleteCell(0);
+
+                                    divDay.appendChild(box);
                                 });
-
-                                if(sameExercisesOnSets)
-                                    for (const riga of table.rows)
-                                        if (riga.cells[0])
-                                            riga.deleteCell(0);
-
-                                divDay.appendChild(box);
-                            });
+                            }
                         }
                     }
                 });

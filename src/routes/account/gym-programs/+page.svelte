@@ -43,39 +43,6 @@
             border-bottom: none;
         }
 
-        .animated-gradient-border {
-            position: relative;
-            background: white;
-            padding: 8px 13px !important;
-            z-index: 0;
-            border: 2px solid transparent;
-            font-weight: bold;
-
-            /* Imposta sfumatura per bordo e testo */
-            background-image: linear-gradient(white, white),
-            linear-gradient(90deg, #ff0000, #ff9900, #33cc33, #3399ff, #cc33ff, #ff0000);
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-            animation: animated-border 6s linear infinite;
-            background-size: 400% 100%;
-        }
-
-        .animated-gradient-border:hover {
-            -webkit-text-fill-color: white; /* cambia il testo a bianco per contrasto */
-        }
-
-        @keyframes animated-border {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
         @media (max-width: 768px) {
             .main-content {
                 width: 100%;
@@ -164,8 +131,7 @@
                 let color;
                 if (today >= start && today <= end) {
                     targetView = "Allenati!";
-                    classList += " animated-gradient-border";
-                    color = "#3e3e3e";
+                    classList += " button-ai";
                 }
                 viewBtn.className = classList;
                 viewBtn.dataset.id = item.id;

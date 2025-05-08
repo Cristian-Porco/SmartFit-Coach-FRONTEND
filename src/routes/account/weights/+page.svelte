@@ -29,6 +29,12 @@
 
 <div id="chartWeights" class="areaChartZone">
     <canvas bind:this={chartCanvas} style="width:100%; height:100%;"></canvas>
+    <button class="button-ai" on:click={showAIDiv}>Ottieni un’analisi intelligente sui dati</button>
+</div>
+
+<div id="ai-box" class="ai-box hidden">
+    <h3>Risposta intelligente sui dati</h3>
+    <div id="ai-content" class="ai-loader"></div>
 </div>
 
 <div>
@@ -190,7 +196,12 @@
             }
         });
 
-        data.sort((a, b) => new Date(a.date_recorded) - new Date(b.date_recorded));
+        function parseItalianDate(str) {
+            const [dd, mm, yyyy] = str.split("/");
+            return new Date(`${yyyy}-${mm}-${dd}`);
+        }
+
+        data.sort((a, b) => parseItalianDate(a.date_recorded) - parseItalianDate(b.date_recorded));
 
         let labels_response = [];
         let data_response = [];
@@ -238,6 +249,30 @@
             }
         });
     });
+
+    async function showAIDiv() {
+        const aiBox = document.getElementById("ai-box");
+        const aiContent = document.getElementById("ai-content");
+
+        aiBox.classList.remove("hidden");
+        setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
+
+        const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/weight/analysis/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+
+        if(responseAnalysis.ok) {
+            aiContent.classList.remove("ai-loader");
+            aiContent.classList.add("ai-response");
+
+            const data = await responseAnalysis.json();
+            aiContent.innerText = data.analysis;
+        }
+    }
 
     // Funzione per aggiungere un record del peso
     async function addWeight() {

@@ -3,14 +3,21 @@
 .main-content { min-width: 800px; max-width: 800px; }
 
 .recap {
-    height: 40vh;
-    background: linear-gradient(to right, #007bff, #00d4ff);
+    background: linear-gradient(270deg, #ffa500, #ff4d4d, #ffa500);
+    background-size: 400% 400%;
+    animation: gradientMove 4s ease infinite;
+    transition: background 0.3s, transform 0.2s;
     padding: 25px;
     margin-bottom: 25px;
     border-radius: 25px;
 }
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 .recap h2 { color: white; font-size: 50px; }
-.recap p { color: white; }
+.recap p { color: white; font-size: 18px; }
 
 .form-container, .form-group { display: flex; gap: 15px; }
 .form-container { flex-direction: column; }
@@ -45,11 +52,12 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(2px);
 }
 .modal-content {
     background: white;

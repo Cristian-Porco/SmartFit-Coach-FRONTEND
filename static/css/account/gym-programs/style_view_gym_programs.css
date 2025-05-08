@@ -211,6 +211,8 @@ th, td {
     justify-content: center;
     align-items: center;
     z-index: 10000;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(2px);
 }
 .modal-content {
     background: white;

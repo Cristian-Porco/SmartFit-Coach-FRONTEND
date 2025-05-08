@@ -2,9 +2,13 @@
     <link rel="stylesheet" type="text/css" href="/css/account/style_account.css">
 </head>
 
+<div id="loading-overlay" style="display: none;">
+    <div class="spinner">Sto elaborando...</div>
+</div>
+
 <div class="recap">
     <h2>Bentornato, {account.first_name}</h2>
-    <p>SINTESI SPIEGAZIONE PROCEDIMENTO OBIETTIVO</p>
+    <p>La IA ha scelto che l'obiettivo che fa per te è <b style="color:white">{account.goal_targets}</b>. {account.goal_targets_explanation}</p>
 </div>
 
 <form class="form-container" id="updateDetailsForm" on:submit={updateDetails}>
@@ -63,7 +67,7 @@
     </div>
 </form>
 
-<form class="form-container"  id="updateObjectiveForm">
+<form class="form-container" id="updateObjectiveForm" method="POST">
     <h3>Obiettivo</h3>
     <div class="error" id="error2">
         <p></p>
@@ -73,7 +77,7 @@
         <textarea id="goal_description" name="goal_description" placeholder="Descrivi il tuo obiettivo..." required>{account.goal_description}</textarea>
     </div>
     <div class="form-group">
-        <button type="submit" on:click={updateGoal}>Aggiorna obiettivo</button>
+        <button class="button-ai" type="submit" on:click={updateGoal}>Aggiorna obiettivo</button>
     </div>
 </form>
 
@@ -284,7 +288,6 @@
     let first_username = "";
 
     let selectedFile = null;
-    let accountId = 1;
 
     let foodItems = [];
     let showFoodModal = false;
@@ -598,7 +601,12 @@
         first_username = account.username;
     }
 
-    async function updateGoal() {
+    async function updateGoal(event) {
+        event.preventDefault();
+
+        // Mostra overlay
+        document.getElementById("loading-overlay").style.display = "flex";
+
         const goal_description = document.getElementById("goal_description").value;
 
         const responseGoals = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
@@ -612,7 +620,12 @@
             })
         });
 
-        if(responseGoals.ok) window.location.reload();
+        if (responseGoals.ok) {
+            window.location.reload();
+        } else {
+            alert("Errore nell'aggiornamento. Riprova.");
+            document.getElementById("loading-overlay").style.display = "none";
+        }
     }
 
     let password = "";

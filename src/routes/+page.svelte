@@ -24,14 +24,27 @@
     import {getCookie} from "svelte-cookie";
 
     onMount(() => {
-        if(getCookie('csrftoken') === "") {
-            document.getElementById("account-icon").style = "display: none";
-            document.getElementById("login-icon").style = "display: flex";
-            document.getElementById("signup-icon").style = "display: flex";
-        } else {
-            document.getElementById("account-icon").style = "display: flex";
-            document.getElementById("login-icon").style = "display: none";
-            document.getElementById("signup-icon").style = "display: none";
+        const setWidth100 = (id) => {
+            const el = document.getElementById(id);
+            if (el?.firstElementChild) {
+                el.firstElementChild.style.width = "100%";
+            }
+        };
+
+        ["account-icon", "login-icon", "signup-icon"].forEach(setWidth100);
+
+        const isLoggedIn = getCookie("csrftoken") !== "";
+        const displayMap = {
+            "account-icon": isLoggedIn ? "flex" : "none",
+            "login-icon": isLoggedIn ? "none" : "flex",
+            "signup-icon": isLoggedIn ? "none" : "flex"
+        };
+
+        for (const [id, display] of Object.entries(displayMap)) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = display;
+            }
         }
     });
 </script>

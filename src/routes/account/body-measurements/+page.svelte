@@ -8,6 +8,15 @@
     <button on:click={addBodyMeasurement}>Aggiungi misurazione</button>
 </div>
 
+<div id="isNotEmpty" class="form-container">
+    <button class="button-ai" on:click={showAIDiv}>Ottieni un’analisi intelligente sui dati</button>
+</div>
+
+<div id="ai-box" class="ai-box hidden">
+    <h3>Risposta intelligente sui dati</h3>
+    <div id="ai-content" class="ai-loader"></div>
+</div>
+
 <div class="form-container">
     <h3>Storico misurazioni</h3>
     <div id="body-measurements-items">
@@ -54,8 +63,10 @@
 
                 if(item.average_measurement == null)
                     item.average_measurement = "Misurazione vuota"
-                else
+                else {
+                    item.average_measurement = parseFloat(item.average_measurement).toFixed(2);
                     item.average_measurement += " cm";
+                }
 
                 div.innerHTML = `
                     <div class="details">
@@ -96,12 +107,37 @@
                 });
             });
         } else {
+            document.getElementById("isNotEmpty").style.display = "none";
             const p = document.createElement('p');
             p.style = "margin: 10px 0;";
             p.innerHTML = "Nessuna misurazione presente!";
             container.appendChild(p);
         }
     });
+
+    async function showAIDiv() {
+        const aiBox = document.getElementById("ai-box");
+        const aiContent = document.getElementById("ai-content");
+
+        aiBox.classList.remove("hidden");
+        setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
+
+        const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/analysis/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+
+        if(responseAnalysis.ok) {
+            aiContent.classList.remove("ai-loader");
+            aiContent.classList.add("ai-response");
+
+            const data = await responseAnalysis.json();
+            aiContent.innerText = data.analysis;
+        }
+    }
 
     function addBodyMeasurement() {
         window.location.href = "/account/body-measurements/add";

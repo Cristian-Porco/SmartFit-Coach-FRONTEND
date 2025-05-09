@@ -28,6 +28,15 @@
     let scanning = false;
     let showScannerModal = false;
 
+    let showNaturalLanguageModal = false;
+    let naturalLanguageInput = "";
+    let naturalLanguageFoods = null;
+    let expanded = false;
+
+    function toggleMenu() {
+        expanded = !expanded;
+    }
+
     let total_grams = {
         "kcal": 0, "protein": 0, "carboids": 0, "sugar": 0,
         "fats": 0, "satured_fats": 0, "fiber": 0
@@ -74,6 +83,91 @@
                 errorEl.firstChild.textContent = "";
             }, 5000);
         }
+    }
+
+
+
+    async function showAIDivNaturalLanguage1() {
+        if(selectedSection !== "") {
+            if(naturalLanguageInput !== "") {
+                document.getElementById("addNaturalLanguage1").style.display = "none";
+
+                const aiBox = document.getElementById("ai-box-nl");
+                const aiContent = document.getElementById("ai-content-nl");
+
+                aiBox.classList.remove("hidden");
+                setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
+
+                const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/food-parsing/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Token " + getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({
+                        sentence: naturalLanguageInput
+                    })
+                });
+
+                if(responseAnalysis.ok) {
+                    aiContent.classList.remove("ai-loader");
+                    aiContent.classList.add("ai-response");
+
+                    const data = await responseAnalysis.json();
+                    naturalLanguageFoods = data.meals;
+
+                    document.getElementById("addNaturalLanguage2").style.display = "block";
+
+                    data.meals.forEach(meal => {
+                        const card = document.createElement("div");
+                        card.style.border = "1px solid #ccc";
+                        card.style.borderRadius = "10px";
+                        card.style.padding = "15px";
+                        card.style.marginBottom = "10px";
+                        card.style.backgroundColor = "#f9f9f9";
+                        card.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.1)";
+
+                        const mealTitle = document.createElement("h3");
+                        mealTitle.textContent = meal.matched_food_item.name;
+
+                        const quantity = document.createElement("p");
+                        quantity.innerHTML = `<strong>Quantità:</strong> ${meal.quantity}g`;
+
+                        card.appendChild(mealTitle);
+                        card.appendChild(quantity);
+
+                        aiContent.appendChild(card);
+                    });
+                } else {
+                    showError("Problemi di comunicazione con la IA!", "errorNaturalLanguage");
+                }
+            } else {
+                showError("Descrizione non inserita!", "errorNaturalLanguage");
+            }
+        } else {
+            showError("Sezione non inserita!", "errorNaturalLanguage");
+        }
+    }
+
+    async function showAIDivNaturalLanguage2() {
+        for (const food of naturalLanguageFoods) {
+            await fetch('http://127.0.0.1:8000/api/v1/data/food-plan-item/create/', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    eaten: true,
+                    quantity_in_grams: food.quantity,
+                    food_plan: data.id,
+                    food_item: food.matched_food_item.id,
+                    food_section: selectedSection
+                })
+            });
+        }
+
+        location.reload();
     }
 
 
@@ -1104,6 +1198,64 @@
         fetchFoodSections();
     });
 </script>
+
+{#if showNaturalLanguageModal}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Inserisci alimenti in linguaggio naturale</h3>
+
+            <div class="error" id="errorNaturalLanguage">
+                <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
+            </div>
+
+            <!-- Dropdown sezioni -->
+            <label for="sectionSelect">In che sezione della giornata vuoi inserire gli alimenti?</label>
+            <select id="sectionSelect" bind:value={selectedSection}>
+                <option disabled value="">-- Seleziona una sezione --</option>
+                {#each foodSections as section}
+                    <option value={section.id}>{section.name}</option>
+                {/each}
+            </select>
+
+            <!-- Input descrizione pasto -->
+            <label for="naturalLanguageInput" style="margin-top: 10px;">
+                Scrivi liberamente cosa hai mangiato: il sistema identificherà automaticamente gli alimenti, le parole chiave e le quantità stimate.
+            </label>
+            <textarea
+                    id="naturalLanguageInput"
+                    rows="4"
+                    bind:value={naturalLanguageInput}
+                    placeholder="Ad esempio: 'Ho mangiato una pasta al sugo con delle patate fritte'"
+            ></textarea>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti -->
+            <button class="button-ai" id="addNaturalLanguage1" on:click={showAIDivNaturalLanguage1}>Inserisci</button>
+
+            <div id="ai-box-nl" class="ai-box hidden">
+                <h3>Risposta intelligente sui dati</h3>
+                <div id="ai-content-nl" class="ai-loader"></div>
+            </div>
+
+            <button class="button-ai" id="addNaturalLanguage2" on:click={showAIDivNaturalLanguage2} style="display: none">Vuoi confermare la risposta?</button>
+
+            <button class="close-button" on:click={() => showNaturalLanguageModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+<div class="fab-container">
+    <!-- Pulsanti secondari -->
+    {#if expanded}
+        <div class="fab-sub" on:click={()=>{showNaturalLanguageModal=true;}}>Inserisci alimenti in linguaggio naturale</div>
+    {/if}
+
+    <!-- Pulsante principale -->
+    <button class="button-ai fab-main" on:click={toggleMenu}>
+        Elabora i dati con IA
+    </button>
+</div>
 
 <!-- Contenitore intestazione della pagina della scheda alimentare -->
 <div class="container">

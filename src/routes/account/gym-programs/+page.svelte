@@ -113,8 +113,6 @@
                 const start = parseDateIT(item.start_date);
                 const end = parseDateIT(item.end_date);
 
-
-
                 const detailsDiv = document.createElement("div");
                 detailsDiv.classList.add("details");
 

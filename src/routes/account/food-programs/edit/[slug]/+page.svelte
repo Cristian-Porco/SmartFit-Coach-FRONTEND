@@ -9,6 +9,7 @@
 
     export let data;
     let content = [];
+    let isEmpty = true;
 
     let showModal = false;
     let searchQuery = "";
@@ -32,6 +33,14 @@
     let naturalLanguageInput = "";
     let naturalLanguageFoods = null;
     let expanded = false;
+
+    let showImageModal = false;
+    let imageInput = null;
+    let imageFoods = null;
+
+    let showGenerateFoodPlanModal = false;
+
+    let showGenerateAlternativeModal = false;
 
     function toggleMenu() {
         expanded = !expanded;
@@ -98,7 +107,7 @@
                 aiBox.classList.remove("hidden");
                 setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
 
-                const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/food-parsing/", {
+                const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/food-text-parsing/", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -116,28 +125,40 @@
                     const data = await responseAnalysis.json();
                     naturalLanguageFoods = data.meals;
 
-                    document.getElementById("addNaturalLanguage2").style.display = "block";
+                    const conditionMealsEmpty = (
+                        data.meals.length === 1 &&
+                        data.meals[0].matched_food_item?.id === null
+                    );
+                    if(!conditionMealsEmpty) {
+                        document.getElementById("addNaturalLanguage2").style.display = "block";
 
-                    data.meals.forEach(meal => {
-                        const card = document.createElement("div");
-                        card.style.border = "1px solid #ccc";
-                        card.style.borderRadius = "10px";
-                        card.style.padding = "15px";
-                        card.style.marginBottom = "10px";
-                        card.style.backgroundColor = "#f9f9f9";
-                        card.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.1)";
+                        data.meals.forEach(meal => {
+                            const card = document.createElement("div");
+                            card.style.border = "1px solid #ccc";
+                            card.style.borderRadius = "10px";
+                            card.style.padding = "15px";
+                            card.style.marginBottom = "10px";
+                            card.style.backgroundColor = "#f9f9f9";
+                            card.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.1)";
 
-                        const mealTitle = document.createElement("h3");
-                        mealTitle.textContent = meal.matched_food_item.name;
+                            const mealTitle = document.createElement("h3");
+                            mealTitle.textContent = meal.matched_food_item.name;
 
-                        const quantity = document.createElement("p");
-                        quantity.innerHTML = `<strong>Quantità:</strong> ${meal.quantity}g`;
+                            const quantity = document.createElement("p");
+                            quantity.innerHTML = `<strong>Quantità:</strong> ${meal.quantity}g`;
 
-                        card.appendChild(mealTitle);
-                        card.appendChild(quantity);
+                            card.appendChild(mealTitle);
+                            card.appendChild(quantity);
 
-                        aiContent.appendChild(card);
-                    });
+                            aiContent.appendChild(card);
+                        });
+                    } else {
+                        aiBox.classList.add("hidden");
+                        aiContent.classList.add("ai-loader");
+                        aiContent.classList.remove("ai-response");
+                        document.getElementById("addNaturalLanguage1").style.display = "block";
+                        showError("Non hai inserito una descrizione valida, inserisci una descrizione in cui spieghi cosa hai mangiato!", "errorNaturalLanguage");
+                    }
                 } else {
                     showError("Problemi di comunicazione con la IA!", "errorNaturalLanguage");
                 }
@@ -170,6 +191,151 @@
         location.reload();
     }
 
+    async function showAIDivImage1() {
+        if(selectedSection !== "") {
+            if(imageInput !== null) {
+                document.getElementById("addImage1").style.display = "none";
+
+                const aiBox = document.getElementById("ai-box-i");
+                const aiContent = document.getElementById("ai-content-i");
+
+                aiBox.classList.remove("hidden");
+                setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
+
+                const formData = new FormData();
+                formData.append("image", imageInput);
+
+                const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/food-image-parsing/", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": "Token " + getCookie('csrftoken')
+                    },
+                    body: formData
+                });
+
+                if(responseAnalysis.ok) {
+                    aiContent.classList.remove("ai-loader");
+                    aiContent.classList.add("ai-response");
+
+                    const data = await responseAnalysis.json();
+                    imageFoods = data.meals;
+
+                    const conditionMealsEmpty = (
+                        data.meals.length === 1 &&
+                        data.meals[0].matched_food_item?.id === null
+                    );
+                    if(!conditionMealsEmpty) {
+                        document.getElementById("addImage2").style.display = "block";
+
+                        data.meals.forEach(meal => {
+                            const card = document.createElement("div");
+                            card.style.border = "1px solid #ccc";
+                            card.style.borderRadius = "10px";
+                            card.style.padding = "15px";
+                            card.style.marginBottom = "10px";
+                            card.style.backgroundColor = "#f9f9f9";
+                            card.style.boxShadow = "2px 2px 5px rgba(0,0,0,0.1)";
+
+                            const mealTitle = document.createElement("h3");
+                            mealTitle.textContent = meal.matched_food_item.name;
+
+                            const quantity = document.createElement("p");
+                            quantity.innerHTML = `<strong>Quantità:</strong> ${meal.quantity}g`;
+
+                            card.appendChild(mealTitle);
+                            card.appendChild(quantity);
+
+                            aiContent.appendChild(card);
+                        });
+                    } else {
+                        aiBox.classList.add("hidden");
+                        aiContent.classList.add("ai-loader");
+                        aiContent.classList.remove("ai-response");
+                        document.getElementById("addNaturalLanguage1").style.display = "block";
+                        showError("Non hai inserito una immagine valida, inserisci una descrizione in cui spieghi cosa hai mangiato!", "errorImage");
+                    }
+                } else {
+                    showError("Problemi di comunicazione con la IA!", "errorImage");
+                }
+            } else {
+                showError("Immagine non inserita!", "errorImage");
+            }
+        } else {
+            showError("Sezione non inserita!", "errorImage");
+        }
+    }
+
+    async function showAIDivImage2() {
+        for (const food of imageFoods) {
+            await fetch('http://127.0.0.1:8000/api/v1/data/food-plan-item/create/', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    eaten: true,
+                    quantity_in_grams: food.quantity,
+                    food_plan: data.id,
+                    food_item: food.matched_food_item.id,
+                    food_section: selectedSection
+                })
+            });
+        }
+
+        location.reload();
+    }
+
+    async function optimizeQuantity() {
+        document.getElementById("loading-overlay").style.display = "flex";
+
+        const responseOptimize = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan/optimize-grams/${data.id}/`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Token " + getCookie('csrftoken')
+            }
+        });
+
+        if(responseOptimize.ok) {
+            location.reload();
+        }
+    }
+
+    async function showAIGenerateFoodPlan() {
+        showGenerateFoodPlanModal = false;
+        document.getElementById("loading-overlay").style.display = "flex";
+
+        const responseGenerate = await fetch(`http://127.0.0.1:8000/api/v1/data/food-plan/generate/${data.id}/`, {
+            method: "GET",
+            headers: {
+                "Authorization": "Token " + getCookie('csrftoken')
+            }
+        });
+
+        if(responseGenerate.ok) {
+            location.reload();
+        }
+    }
+
+    async function showAIGenerateAlternative() {
+        showGenerateAlternativeModal = false;
+        document.getElementById("loading-overlay").style.display = "flex";
+
+        const responseGenerate = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/generate-alternative-section/", {
+            method: "GET",
+            headers: {
+                "Authorization": "Token " + getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                food_plan_id: data.id,
+                section_id: selectedSection
+            })
+        });
+
+        if(responseGenerate.ok) {
+            location.reload();
+        }
+    }
 
 
     /**
@@ -710,6 +876,8 @@
      * @listens click - Sull’icona di eliminazione di ogni alimento.
      */
     function renderFoodPlanTable(content, table) {
+        if(content.length !== 0) isEmpty = false;
+
         content.forEach(item => {
             if (item.type === "section") {
                 // Inserisce una riga separatrice tra le sezioni
@@ -1202,7 +1370,7 @@
 {#if showNaturalLanguageModal}
     <div class="modal">
         <div class="modal-content">
-            <h3>Inserisci alimenti in linguaggio naturale</h3>
+            <h3>Inserisci alimenti tramite linguaggio naturale</h3>
 
             <div class="error" id="errorNaturalLanguage">
                 <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
@@ -1245,10 +1413,101 @@
     </div>
 {/if}
 
+{#if showImageModal}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Inserisci alimenti tramite immagine</h3>
+
+            <div class="error" id="errorImage">
+                <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
+            </div>
+
+            <!-- Dropdown sezioni -->
+            <label for="sectionSelect">In che sezione della giornata vuoi inserire gli alimenti?</label>
+            <select id="sectionSelect" bind:value={selectedSection}>
+                <option disabled value="">-- Seleziona una sezione --</option>
+                {#each foodSections as section}
+                    <option value={section.id}>{section.name}</option>
+                {/each}
+            </select>
+
+            <!-- Input descrizione pasto -->
+            <label for="naturalLanguageInput" style="margin-top: 10px;">
+                Carica l'immagine del tuo pasto:
+            </label>
+            <input type="file" accept="image/*" on:change={(e) => imageInput = e.target.files[0]} />
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti -->
+            <button class="button-ai" id="addImage1" on:click={showAIDivImage1}>Inserisci</button>
+
+            <div id="ai-box-i" class="ai-box hidden">
+                <h3>Risposta intelligente sui dati</h3>
+                <div id="ai-content-i" class="ai-loader"></div>
+            </div>
+
+            <button class="button-ai" id="addImage2" on:click={showAIDivImage2} style="display: none">Vuoi confermare la risposta?</button>
+
+            <button class="close-button" on:click={() => showImageModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showGenerateFoodPlanModal}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Genera la scheda alimentare in base ai macronutrienti</h3>
+
+            <p style="margin-bottom: 10px"><b>ATTENZIONE!</b> Cliccando questo pulsante, <b>la scheda alimentare attuale verrà sovrascritta con i nuovi elementi</b>. Questa operazione non può essere annullata.</p>
+
+            <button class="button-ai" id="addImage2" on:click={showAIGenerateFoodPlan}>Procedi</button>
+
+            <button class="close-button" on:click={() => showGenerateFoodPlanModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showGenerateAlternativeModal}
+    <div class="modal">
+        <div class="modal-content">
+            <h3>Genere pasti alternativi di una sezione</h3>
+
+            <div class="error" id="errorNaturalLanguage">
+                <p></p> <!-- Il testo dell'errore viene inserito dinamicamente -->
+            </div>
+
+            <!-- Dropdown sezioni -->
+            <label for="sectionSelect">In che sezione della giornata vuoi generare i pasti alternativi?</label>
+            <select id="sectionSelect" bind:value={selectedSection}>
+                <option disabled value="">-- Seleziona una sezione --</option>
+                {#each foodSections as section}
+                    <option value={section.id}>{section.name}</option>
+                {/each}
+            </select>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti -->
+            <button class="button-ai" id="addGenerateAlternative" on:click={showAIGenerateAlternative}>Inserisci</button>
+
+            <button class="close-button" on:click={() => showGenerateAlternativeModal = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+<div id="loading-overlay" style="display: none;">
+    <div class="spinner">Sto elaborando...</div>
+</div>
+
 <div class="fab-container">
     <!-- Pulsanti secondari -->
     {#if expanded}
-        <div class="fab-sub" on:click={()=>{showNaturalLanguageModal=true;}}>Inserisci alimenti in linguaggio naturale</div>
+        <div class="fab-sub" on:click={()=>{showNaturalLanguageModal=true;}}>Inserisci alimenti tramite linguaggio naturale</div>
+        <div class="fab-sub" on:click={()=>{showImageModal=true;}}>Inserisci alimenti tramite immagine</div>
+        {#if !isEmpty}<div class="fab-sub" on:click={optimizeQuantity}>Ottimizza la quantità degli alimenti inseriti</div>{/if}
+        {#if !isEmpty}<div class="fab-sub" on:click={()=>{showGenerateAlternativeModal=true;}}>Genere pasti alternativi di una sezione</div>{/if}
+        {#if isEmpty}<div class="fab-sub" on:click={()=>{showGenerateFoodPlanModal=true;}}>Genera la scheda alimentare in base ai macronutrienti</div>{/if}
     {/if}
 
     <!-- Pulsante principale -->

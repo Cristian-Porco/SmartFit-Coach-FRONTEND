@@ -5,7 +5,7 @@
 <p><b>Aggiungi</b></p>
 <h2 class="titlePage">Scheda alimentare</h2>
 
-<form class="form-container" on:submit={addFoodPrograms}>
+<form class="form-container">
     <div class="error" id="error1">
         <p></p>
     </div>
@@ -18,6 +18,13 @@
             <label for="end_date">Data di fine:</label>
             <input type="date" id="end_date">
         </div>
+    </div>
+    <div class="input-container">
+        <button id="button-ai-generate" class="button-ai" on:click={showAIDiv}>Genera i macronutrienti sui dati a disposizione</button>
+    </div>
+    <div id="ai-box" class="ai-box hidden" style="margin: 0">
+        <h3>Risposta intelligente sui dati</h3>
+        <div id="ai-content" class="ai-loader"></div>
     </div>
     <div class="input-container">
         <label for="kcal">Max Kcal:</label>
@@ -35,7 +42,7 @@
         <label for="fat">Max Grassi:</label>
         <input type="number" id="max_fats" on:blur={autoCalculationKCal} placeholder="Aggiungi max grassi...">
     </div>
-    <button type="submit">Aggiungi</button>
+    <button type="submit" on:click={addFoodPrograms}>Aggiungi</button>
 </form>
 
 <script>
@@ -59,6 +66,58 @@
             ]
         });
     });
+
+    async function showAIDiv() {
+        const aiBox = document.getElementById("ai-box");
+        const aiContent = document.getElementById("ai-content");
+        const buttonAI = document.getElementById("button-ai-generate");
+
+        aiBox.classList.add("hidden");
+        aiContent.innerText = "";
+        aiContent.classList.add("ai-loader");
+        aiContent.classList.remove("ai-response");
+
+        aiBox.classList.remove("hidden");
+        buttonAI.disabled = true;
+        setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
+
+        const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/generate-macro/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+
+        if(responseAnalysis.ok) {
+            aiContent.classList.remove("ai-loader");
+            aiContent.classList.add("ai-response");
+
+            const data = await responseAnalysis.json();
+            console.log(data);
+            aiContent.innerHTML = data.reason;
+
+            const inputMaxProtein = document.getElementById("max_protein");
+            inputMaxProtein.click();
+            inputMaxProtein.value = data.max_protein;
+            inputMaxProtein.dispatchEvent(new Event("input", { bubbles: true }));
+            inputMaxProtein.dispatchEvent(new Event("blur", { bubbles: true }));
+
+            const inputMaxCarbs = document.getElementById("max_carbs");
+            inputMaxCarbs.click();
+            inputMaxCarbs.value = data.max_carbs;
+            inputMaxCarbs.dispatchEvent(new Event("input", { bubbles: true }));
+            inputMaxCarbs.dispatchEvent(new Event("blur", { bubbles: true }));
+
+            const inputMaxFats = document.getElementById("max_fats");
+            inputMaxFats.click();
+            inputMaxFats.value = data.max_fats;
+            inputMaxFats.dispatchEvent(new Event("input", { bubbles: true }));
+            inputMaxFats.dispatchEvent(new Event("blur", { bubbles: true }));
+
+            buttonAI.disabled = false;
+        }
+    }
 
     async function addFoodPrograms() {
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/food-plan/create/", {

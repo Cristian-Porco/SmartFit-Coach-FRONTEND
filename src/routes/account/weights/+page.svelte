@@ -29,7 +29,7 @@
 
 <div id="chartWeights" class="areaChartZone">
     <canvas bind:this={chartCanvas} style="width:100%; height:100%;"></canvas>
-    <button class="button-ai" on:click={showAIDiv}>Ottieni un’analisi intelligente sui dati</button>
+    <button id="button-ai-analysis" class="button-ai" on:click={showAIDiv}>Ottieni un’analisi intelligente sui dati</button>
 </div>
 
 <div id="ai-box" class="ai-box hidden">
@@ -253,8 +253,15 @@
     async function showAIDiv() {
         const aiBox = document.getElementById("ai-box");
         const aiContent = document.getElementById("ai-content");
+        const buttonAI = document.getElementById("button-ai-analysis");
+
+        aiBox.classList.add("hidden");
+        aiContent.innerText = "";
+        aiContent.classList.add("ai-loader");
+        aiContent.classList.remove("ai-response");
 
         aiBox.classList.remove("hidden");
+        buttonAI.disabled = true;
         setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
 
         const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/weight/analysis/", {
@@ -271,6 +278,8 @@
 
             const data = await responseAnalysis.json();
             aiContent.innerText = data.analysis;
+
+            buttonAI.disabled = false;
         }
     }
 

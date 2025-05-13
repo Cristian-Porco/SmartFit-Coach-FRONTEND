@@ -1317,6 +1317,16 @@
     }
 
     function openSelectedTechnique() {
+        notesGymPlanItems = "";
+        numSeries = 0;
+        numReps = 0;
+        rir = 0;
+        weight = 0;
+        eccentric = 0;
+        pause = 0;
+        concentric = 0;
+        rest_seconds = 0;
+
         switch (selectedTechnique) {
             case "bilateral":
                 showBilateralExercise = true;

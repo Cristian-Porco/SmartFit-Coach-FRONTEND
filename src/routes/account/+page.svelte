@@ -3,9 +3,15 @@
     <link rel="stylesheet" type="text/css" href="/css/account/style_account.css">
 </head>
 
+{#if isLoading}
+    <div class="loader-container" transition:fade={{ duration: 200 }}>
+        <div class="spinner"></div>
+    </div>
+{/if}
+
 <!-- Overlay di caricamento -->
 <div id="loading-overlay" style="display: none;">
-    <div class="spinner">Sto elaborando...</div>
+    <div class="spinnerIA">Sto elaborando...</div>
 </div>
 
 <!-- Messaggio di benvenuto e obiettivo scelto dall’IA -->
@@ -245,8 +251,11 @@
 
 <script>
     import { onMount, tick } from "svelte";
-    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import { getCookie } from 'svelte-cookie';
     import { Html5Qrcode } from "html5-qrcode";
+    import { fade } from 'svelte/transition';
+
+    let isLoading = true;
 
     // Account utente e valore iniziale dell'username
     let account = {};
@@ -696,5 +705,7 @@
             fetchFoodItems(),
             fetchFoodSectionItems()
         ]);
+
+        isLoading = false;
     });
 </script>

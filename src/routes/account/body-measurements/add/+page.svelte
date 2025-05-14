@@ -1,14 +1,25 @@
+<!-- Collegamento al foglio di stile della pagina -->
 <head>
     <link rel="stylesheet" type="text/css" href="/css/account/body-measurements/style_add_edit_body_measurements.css">
 </head>
 
+{#if isLoading}
+    <div class="loader-container" transition:fade={{ duration: 200 }}>
+        <div class="spinner"></div>
+    </div>
+{/if}
+
+<!-- Titolo della pagina -->
 <h2 class="titlePage">Misure corporee</h2>
 
+<!-- Form di inserimento misurazioni, collegato a una funzione Svelte -->
 <form class="form-container" on:submit={addBodyMeasurement}>
     <h3>Aggiungi misurazione</h3>
-    <div class="error" id="error1">
-        <p></p>
-    </div>
+
+    <!-- Contenitore per eventuali errori di validazione -->
+    <div class="error" id="error1"><p></p></div>
+
+    <!-- Primo gruppo: torace e avambraccio -->
     <div class="form-group">
         <div class="input-container">
             <label for="chest">Circonferenza torace (in centimetri):</label>
@@ -19,6 +30,8 @@
             <input type="text" id="bicep" name="bicep" placeholder="Bicipite...">
         </div>
     </div>
+
+    <!-- Secondo gruppo: coscia e vita -->
     <div class="form-group">
         <div class="input-container">
             <label for="thigh">Circonferenza coscia (in centimetri):</label>
@@ -29,6 +42,8 @@
             <input type="text" id="waist" name="waist" placeholder="Vita...">
         </div>
     </div>
+
+    <!-- Terzo gruppo: fianchi e addome -->
     <div class="form-group">
         <div class="input-container">
             <label for="hips">Circonferenza fianchi (in centimetri):</label>
@@ -39,6 +54,8 @@
             <input type="text" id="abdomen" name="abdomen" placeholder="Addome...">
         </div>
     </div>
+
+    <!-- Quarto gruppo: polpaccio e collo -->
     <div class="form-group">
         <div class="input-container">
             <label for="calf">Circonferenza polpaccio (in centimetri):</label>
@@ -49,28 +66,48 @@
             <input type="text" id="neck" name="neck" placeholder="Collo...">
         </div>
     </div>
+
+    <!-- Campo singolo: larghezza spalle -->
     <div class="input-container">
         <label for="shoulders">Lunghezza spalla (in centimetri):</label>
         <input type="text" id="shoulders" name="shoulders" placeholder="Spalle...">
     </div>
 
+    <!-- Campo obbligatorio: data della misurazione -->
     <div class="input-container" style="margin-top: 30px;">
         <label for="date_recorded">Data di registrazione:</label>
-        <input type="date" id="date_recorded" name="date_recorded"  bind:value={selectedDate} required>
+        <input
+                type="date"
+                id="date_recorded"
+                name="date_recorded"
+                bind:value={selectedDate}
+                required
+        >
     </div>
+
+    <!-- Pulsante invio form -->
     <button type="submit">Aggiungi</button>
 </form>
 
 <script>
-    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
-    import {onMount} from "svelte";
+    import { getCookie } from 'svelte-cookie';
+    import { onMount } from "svelte";
+    import { fade } from 'svelte/transition';
 
+    let isLoading = true;
+
+    // Imposta la data odierna come valore predefinito del campo data
     let today = new Date().toISOString().split('T')[0];
     let selectedDate = today;
 
-    onMount(async() =>  {
-        if(getCookie('csrftoken') === "") window.location.href = "/";
+    // Hook eseguito al montaggio del componente
+    onMount(() => {
+        // Reindirizza alla home se l'utente non è autenticato
+        if (getCookie('csrftoken') === "") {
+            window.location.href = "/";
+        }
 
+        // Evidenzia nel menu la voce "Misure corporee"
         toggleClassByPathEquals({
             targetId: 'body-measurements-icon-item',
             className: 'current-page',
@@ -81,21 +118,23 @@
                 'gym-program-icon-item'
             ]
         });
+
+        isLoading = false;
     });
 
+    /**
+     * Funzione per inviare le misurazioni corporee all'API
+     */
     async function addBodyMeasurement() {
-        let values_clear = {
-            chest: replaceAllCommasWithDots(document.getElementById("chest").value),
-            bicep: replaceAllCommasWithDots(document.getElementById("bicep").value),
-            thigh: replaceAllCommasWithDots(document.getElementById("thigh").value),
-            waist: replaceAllCommasWithDots(document.getElementById("waist").value),
-            hips: replaceAllCommasWithDots(document.getElementById("hips").value),
-            abdomen: replaceAllCommasWithDots(document.getElementById("abdomen").value),
-            calf: replaceAllCommasWithDots(document.getElementById("calf").value),
-            neck: replaceAllCommasWithDots(document.getElementById("neck").value),
-            shoulders: replaceAllCommasWithDots(document.getElementById("shoulders").value),
+        // Raccoglie e normalizza i valori (converte virgole in punti)
+        const fields = ["chest", "bicep", "thigh", "waist", "hips", "abdomen", "calf", "neck", "shoulders"];
+        let values_clear = {};
+        for (const field of fields) {
+            const el = document.getElementById(field);
+            values_clear[field] = replaceAllCommasWithDots(el?.value || "");
         }
 
+        // Invia richiesta POST all'API per salvare la misurazione
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/body-measurement/create/", {
             method: "POST",
             headers: {
@@ -103,44 +142,36 @@
                 "Authorization": "Token " + getCookie('csrftoken'),
             },
             body: JSON.stringify({
-                chest: values_clear.chest,
-                bicep: values_clear.bicep,
-                thigh: values_clear.thigh,
-                waist: values_clear.waist,
-                hips: values_clear.hips,
-                abdomen: values_clear.abdomen,
-                calf: values_clear.calf,
-                neck: values_clear.neck,
-                shoulders: values_clear.shoulders,
-                date_recorded: document.getElementById("date_recorded").value,
+                ...values_clear,
+                date_recorded: selectedDate,
                 author: getCookie("pk")
             })
         });
 
         const data = await response.json();
 
-        if(response.ok) {
+        if (response.ok) {
+            // Reindirizza alla pagina delle misurazioni dopo inserimento riuscito
             window.location.href = "/account/body-measurements/";
         } else {
-            document.getElementById("error1").style.display = "block";
-            if(data.chest.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Torace: " + data.chest[0];
-            } else if(data.bicep.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Bicipite: " + data.bicep[0];
-            } else if(data.thigh.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Coscia: " + data.thigh[0];
-            } else if(data.waist.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Vita: " + data.waist[0];
-            } else if(data.hips.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Fianchi: " + data.hips[0];
-            } else if(data.abdomen.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Addome: " + data.abdomen[0];
-            } else if(data.calf.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Polpaccio: " + data.calf[0];
-            } else if(data.neck.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Collo: " + data.neck[0];
-            } else if(data.shoulders.length != 0) {
-                document.getElementById("error1").firstChild.textContent = "Spalle: " + data.shoulders[0];
+            // Mostra primo errore rilevato
+            const fieldLabels = {
+                chest: "Torace",
+                bicep: "Bicipite",
+                thigh: "Coscia",
+                waist: "Vita",
+                hips: "Fianchi",
+                abdomen: "Addome",
+                calf: "Polpaccio",
+                neck: "Collo",
+                shoulders: "Spalle"
+            };
+
+            for (const field of fields) {
+                if (data[field]?.length) {
+                    showMessage(`${fieldLabels[field]}: ${data[field][0]}`, "error1")
+                    break;
+                }
             }
         }
     }

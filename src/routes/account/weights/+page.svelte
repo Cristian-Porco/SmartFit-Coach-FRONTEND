@@ -1,55 +1,77 @@
+<!-- Collegamento al foglio di stile per la pagina del peso -->
 <head>
     <link rel="stylesheet" type="text/css" href="/css/account/weights/style_weights.css">
 </head>
 
+{#if isLoading}
+    <div class="loader-container" transition:fade={{ duration: 200 }}>
+        <div class="spinner"></div>
+    </div>
+{/if}
+
+<!-- Titolo della pagina -->
 <h2 class="titlePage">Peso</h2>
 
+<!-- Form per aggiungere un nuovo peso -->
 <form class="form-container" on:submit={addWeight}>
     <h3>Aggiungi peso</h3>
-    <div class="error" id="error1">
-        <p></p>
-    </div>
-    <div class="info" id="info1">
-        <p></p>
-    </div>
+
+    <!-- Messaggi di errore e informativi -->
+    <div class="error" id="error1"><p></p></div>
+    <div class="info" id="info1"><p></p></div>
+
+    <!-- Input per peso e data -->
     <div class="form-group">
         <div class="input-container">
-            <label for="weight">Peso:</label>
+            <label for="add-weight">Peso:</label>
             <input type="text" id="add-weight" name="weight" placeholder="Peso..." required>
         </div>
         <div class="input-container">
-            <label for="date_recorded">Data di registrazione:</label>
+            <label for="add-date">Data di registrazione:</label>
             <input type="date" id="add-date" name="date_recorded" required>
         </div>
     </div>
+
+    <!-- Pulsante di invio -->
     <div class="form-group">
         <button type="submit">Aggiungi</button>
     </div>
 </form>
 
+<!-- Area del grafico del peso e analisi AI -->
 <div id="chartWeights" class="areaChartZone">
+    <!-- Canvas del grafico (es. Chart.js), collegato via bind:this -->
     <canvas bind:this={chartCanvas} style="width:100%; height:100%;"></canvas>
-    <button id="button-ai-analysis" class="button-ai" on:click={showAIDiv}>Ottieni un’analisi intelligente sui dati</button>
+
+    <!-- Bottone per attivare l'analisi AI -->
+    <button id="button-ai-analysis" class="button-ai" on:click={showAIDiv}>
+        Ottieni un’analisi intelligente sui dati
+    </button>
 </div>
 
+<!-- Sezione analisi AI -->
 <div id="ai-box" class="ai-box hidden">
     <h3>Risposta intelligente sui dati</h3>
     <div id="ai-content" class="ai-loader"></div>
 </div>
 
+<!-- Storico delle pesate -->
 <div>
     <h3>Storico peso</h3>
     <div id="weight-items">
-
+        <!-- Qui verranno iniettati dinamicamente gli elementi del peso storico -->
     </div>
 </div>
 
+<!-- Popup per modificare un peso esistente -->
 <div id="edit-popup" class="popup-overlay">
     <div class="popup">
         <h3>Modifica Peso</h3>
-        <div class="error" id="error2">
-            <p></p>
-        </div>
+
+        <!-- Messaggio di errore -->
+        <div class="error" id="error2"><p></p></div>
+
+        <!-- Form di modifica peso e data -->
         <div class="form-group">
             <div class="input-container">
                 <label for="edit-weight">Peso:</label>
@@ -60,6 +82,8 @@
                 <input type="date" id="edit-date" required>
             </div>
         </div>
+
+        <!-- Pulsanti per salvare o annullare -->
         <div class="form-group">
             <button id="save-edit">Salva</button>
             <button id="cancel-edit">Annulla</button>
@@ -70,247 +94,249 @@
 <script>
     import { onMount } from "svelte";
     import Chart from "chart.js/auto";
-    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
-    import { redirect } from "@sveltejs/kit";
+    import { getCookie } from "svelte-cookie";
+    import { fade } from 'svelte/transition';
+
+    let isLoading = true;
 
     let chartCanvas;
     let selectedId = null;
 
-    onMount(async() => {
-        if(getCookie('csrftoken') === "") window.location.href = "/";
+    /**
+     * Analisi AI sui dati del peso utente
+     */
+    async function showAIDiv() {
+        // Recupera elementi DOM coinvolti: contenitore, contenuto e bottone
+        const aiBox = document.getElementById("ai-box");
+        const aiContent = document.getElementById("ai-content");
+        const button = document.getElementById("button-ai-analysis");
 
+        // Mostra il contenitore dell’AI (rimuove "hidden" e aggiunge "visible")
+        aiBox.classList.remove("hidden");
+        aiBox.classList.add("visible");
+
+        // Imposta lo stato di caricamento (spinner)
+        aiContent.className = "ai-loader";
+        aiContent.innerText = "";
+
+        // Disabilita il bottone per evitare clic multipli
+        button.disabled = true;
+
+        // Effettua una richiesta GET all'endpoint AI per ottenere l'analisi dei dati peso
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/analysis/", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie("csrftoken"), // Autenticazione
+            },
+        });
+
+        // Se la richiesta è andata a buon fine
+        if (response.ok) {
+            const data = await response.json(); // Estrae il contenuto JSON
+
+            // Mostra il risultato dell’analisi
+            aiContent.className = "ai-response";
+            aiContent.innerText = data.analysis;
+
+            // Riabilita il bottone
+            button.disabled = false;
+        }
+    }
+
+    /**
+     * Aggiunta peso
+     */
+    async function addWeight() {
+        // Legge e normalizza il valore del peso (converte virgole in punti decimali)
+        const weight = replaceAllCommasWithDots(document.getElementById("add-weight").value);
+
+        // Legge la data di registrazione inserita dall’utente
+        const date = document.getElementById("add-date").value;
+
+        // Invia una richiesta POST all'API per creare un nuovo record del peso
+        const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/create/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie("csrftoken"), // Autenticazione via cookie
+            },
+            body: JSON.stringify({
+                author: getCookie("pk"),      // ID utente autenticato
+                weight_value: weight,         // Valore del peso
+                date_recorded: date           // Data inserita
+            }),
+        });
+
+        const data = await response.json(); // Parsing della risposta JSON
+
+        // Se la risposta è OK, ricarica la pagina per aggiornare lista/grafico
+        if (response.ok) {
+            location.reload();
+        } else {
+            // Altrimenti mostra messaggi di errore nel contenitore #error1
+            showMessage(data, "error1");
+        }
+    }
+
+    /**
+     * Al caricamento del componente
+     */
+    onMount(async () => {
+        // 1. Verifica autenticazione
+        if (getCookie("csrftoken") === "")
+            window.location.href = "/"; // Redirect alla login se non autenticato
+
+        // 2. Evidenziazione menu attivo
         toggleClassByPathEquals({
-            targetId: 'weight-icon-item',
-            className: 'current-page',
+            targetId: "weight-icon-item", // Attiva l’icona del peso
+            className: "current-page",
             removeFromIds: [
-                'account-icon-item',
-                'body-measurements-icon-item',
-                'food-program-icon-item',
-                'gym-program-icon-item'
+                "account-icon-item",
+                "body-measurements-icon-item",
+                "food-program-icon-item",
+                "gym-program-icon-item"
             ]
         });
 
+        // 3. Fetch dei dati peso
         const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/me/", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": "Token " + getCookie('csrftoken'),
+                "Authorization": "Token " + getCookie("csrftoken")
             }
         });
-
         const data = await response.json();
-        const container = document.getElementById('weight-items');
+        const container = document.getElementById("weight-items");
 
-        if(data.length > 0) {
-            data.forEach(item => {
-                const div = document.createElement('div');
-                div.classList.add('weight-item');
+        // 4. Visualizza elenco pesi (o messaggio se vuoto)
+        if (data.length > 0) {
+            data.forEach((item) => {
+                const div = document.createElement("div");
+                div.classList.add("weight-item");
 
-                let date_format_ita = formatDateForInput(item.date_recorded);
+                const dateITA = formatDateForInput(item.date_recorded); // Data formattata per input
 
+                // Inietta HTML con valore e azioni (icone mod/modifica)
                 div.innerHTML = `
-                    <div class="details">
-                        <span class="weight">${item.weight_value} kg</span>
-                        <span class="date">${item.date_recorded}</span>
-                    </div>
-                    <div class="buttons">
-                        <button class="edit-btn" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${date_format_ita}">Modifica</button>
-                        <button class="delete-btn" data-id="${item.id}">Elimina</button>
-                    </div>
+                  <div class="details">
+                    <span class="weight">${item.weight_value} kg</span>
+                    <span class="date">${item.date_recorded}</span>
+                  </div>
+                  <div class="buttons">
+                    <button class="edit-btn material-icon-button" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${dateITA}">
+                      <i class="material-icons" data-id="${item.id}" data-weight="${item.weight_value}" data-date="${dateITA}">edit</i>
+                    </button>
+                    <button class="delete-btn material-icon-button" data-id="${item.id}">
+                      <i class="material-icons" data-id="${item.id}">delete</i>
+                    </button>
+                  </div>
                 `;
-
                 container.appendChild(div);
             });
         } else {
+            // Nasconde il grafico se non ci sono dati
             document.getElementById("chartWeights").style.display = "none";
-
-            const p = document.createElement('p');
+            const p = document.createElement("p");
             p.style = "margin: 10px 0;";
-            p.innerHTML = "Nessun peso presente!";
+            p.innerText = "Nessun peso presente!";
             container.appendChild(p);
         }
 
-        // Event listener per aprire il popup
-        document.querySelectorAll(".edit-btn").forEach(button => {
-            button.addEventListener("click", (event) => {
-                selectedId = event.target.getAttribute("data-id");
-                document.getElementById("edit-weight").value = event.target.getAttribute("data-weight");
-                document.getElementById("edit-date").value = event.target.getAttribute("data-date");
+        // 5. Eventi per UI dinamica
 
+        // Apre popup modifica con dati precompilati
+        document.querySelectorAll(".edit-btn").forEach((btn) =>
+            btn.addEventListener("click", (e) => {
+                selectedId = e.target.dataset.id;
+                document.getElementById("edit-weight").value = e.target.dataset.weight;
+                document.getElementById("edit-date").value = e.target.dataset.date;
                 document.getElementById("edit-popup").style.display = "flex";
-            });
-        });
+            })
+        );
 
-        // Event listener per eliminare il peso
-        document.querySelectorAll(".delete-btn").forEach(button => {
-            button.addEventListener("click", async (event) => {
-                selectedId = event.target.getAttribute("data-id");
-                const deleteResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/delete/${selectedId}/`, {
+        // Elimina un record peso
+        document.querySelectorAll(".delete-btn").forEach((btn) =>
+            btn.addEventListener("click", async (e) => {
+                selectedId = e.target.dataset.id;
+                const del = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/delete/${selectedId}/`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": "Token " + getCookie('csrftoken'),
+                        "Authorization": "Token " + getCookie("csrftoken")
                     }
                 });
+                if (del.ok) location.reload(); // Aggiorna la lista
+            })
+        );
 
-                if(deleteResponse.ok) {
-                    location.reload();
-                }
-            });
-        });
-
-        // Event listener per chiudere il popup
+        // Chiude il popup modifica
         document.getElementById("cancel-edit").addEventListener("click", () => {
             document.getElementById("edit-popup").style.display = "none";
         });
 
-        // Event listener per salvare le modifiche
+        // Salva la modifica del peso
         document.getElementById("save-edit").addEventListener("click", async () => {
-            const newWeight = replaceAllCommasWithDots(document.getElementById("edit-weight").value);
-            const newDate = document.getElementById("edit-date").value;
+            const weight = replaceAllCommasWithDots(document.getElementById("edit-weight").value);
+            const date = document.getElementById("edit-date").value;
 
-            const updateResponse = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/update/${selectedId}/`, {
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/weight/update/${selectedId}/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Token " + getCookie('csrftoken'),
+                    "Authorization": "Token " + getCookie("csrftoken")
                 },
                 body: JSON.stringify({
                     author: getCookie("pk"),
-                    weight_value: newWeight,
-                    date_recorded: newDate
+                    weight_value: weight,
+                    date_recorded: date
                 })
             });
 
-            const data = await updateResponse.json();
-
-            if(updateResponse.ok) {
-                location.reload();
-            } else {
-                document.getElementById("error2").style.display = "block";
-                if(data.weight_value.length != 0) {
-                    document.getElementById("error2").firstChild.textContent = data.weight_value[0];
-                } else if(data.date_recorded.length != 0) {
-                    document.getElementById("error2").firstChild.textContent = data.date_recorded[0];
-                }
-            }
+            const result = await response.json();
+            if (response.ok) location.reload();
+            else showMessage(result, "error2"); // Mostra eventuale errore validazione
         });
 
-        function parseItalianDate(str) {
-            const [dd, mm, yyyy] = str.split("/");
-            return new Date(`${yyyy}-${mm}-${dd}`);
-        }
+        // 6. Crea grafico con Chart.js
 
-        data.sort((a, b) => parseItalianDate(a.date_recorded) - parseItalianDate(b.date_recorded));
-
-        let labels_response = [];
-        let data_response = [];
-
-        for (let i = 0; i < data.length; i++) {
-            labels_response.push(data[i].date_recorded);
-            data_response.push(data[i].weight_value);
-        }
+        // Ordina dal più vecchio al più recente, ma poi inverte per mostrare dal più recente
+        data.sort((a, b) => formatDateForInput(a.date_recorded) - formatDateForInput(b.date_recorded));
+        const labels = data.map(d => d.date_recorded).reverse();
+        const values = data.map(d => d.weight_value).reverse();
 
         const ctx = chartCanvas.getContext("2d");
 
         new Chart(ctx, {
             type: "line",
             data: {
-                labels: labels_response,
-                datasets: [
-                    {
-                        label: "Peso",
-                        data: data_response, // Dati esempio
-                        fill: true,
-                        backgroundColor: "rgba(255, 255, 255, 0.2)",
-                        borderColor: "white",
-                        tension: 0.4
-                    }
-                ]
+                labels,
+                datasets: [{
+                    label: "Peso",
+                    data: values,
+                    fill: true,
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                    borderColor: "white",
+                    tension: 0.4
+                }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false // Nasconde la legenda
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
                     x: {
                         ticks: { color: "white" },
-                        grid: { color: "rgba(255, 255, 255, 0.2)" }
+                        grid: { color: "rgba(255,255,255,0.2)" }
                     },
                     y: {
                         ticks: { color: "white" },
-                        grid: { color: "rgba(255, 255, 255, 0.2)" }
+                        grid: { color: "rgba(255,255,255,0.2)" }
                     }
                 }
             }
         });
+        isLoading = false;
     });
-
-    async function showAIDiv() {
-        const aiBox = document.getElementById("ai-box");
-        const aiContent = document.getElementById("ai-content");
-        const buttonAI = document.getElementById("button-ai-analysis");
-
-        aiBox.classList.add("hidden");
-        aiContent.innerText = "";
-        aiContent.classList.add("ai-loader");
-        aiContent.classList.remove("ai-response");
-
-        aiBox.classList.remove("hidden");
-        buttonAI.disabled = true;
-        setTimeout(() => aiBox.classList.add("visible"), 10); // per attivare la transizione
-
-        const responseAnalysis = await fetch("http://127.0.0.1:8000/api/v1/data/weight/analysis/", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token " + getCookie('csrftoken'),
-            }
-        });
-
-        if(responseAnalysis.ok) {
-            aiContent.classList.remove("ai-loader");
-            aiContent.classList.add("ai-response");
-
-            const data = await responseAnalysis.json();
-            aiContent.innerText = data.analysis;
-
-            buttonAI.disabled = false;
-        }
-    }
-
-    // Funzione per aggiungere un record del peso
-    async function addWeight() {
-        let weight_value_clear = replaceAllCommasWithDots(document.getElementById("add-weight").value);
-
-        const response = await fetch("http://127.0.0.1:8000/api/v1/data/weight/create/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Token " + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                author: getCookie("pk"),
-                weight_value: weight_value_clear,
-                date_recorded: document.getElementById("add-date").value
-            })
-        });
-
-        const data = await response.json();
-
-        if(response.ok) {
-            location.reload();
-        } else {
-            document.getElementById("error1").style.display = "block";
-            if(data.weight_value.length != 0) {
-                document.getElementById("error1").firstChild.textContent = data.weight_value[0];
-            } else if(data.date_recorded.length != 0) {
-                document.getElementById("error1").firstChild.textContent = data.date_recorded[0];
-            } 
-        }
-    }
 </script>

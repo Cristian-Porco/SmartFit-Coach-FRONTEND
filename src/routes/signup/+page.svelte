@@ -1,41 +1,12 @@
-<style>
-    * {
-        box-sizing: border-box;
-    }
+<head>
+    <link rel="stylesheet" type="text/css" href="/css/signup/style_signup.css">
+</head>
 
-    html, body {
-        height: 100%;
-        margin: 0;
-        font-family: sans-serif;
-        background-color: #f5f5f5;
-    }
-
-    #container {
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .step {
-        display: none;
-        flex-direction: column;
-        gap: 10px;
-        padding: 20px;
-        background: white;
-        border-radius: 8px;
-        width: 100%;
-        max-width: 500px;
-    }
-
-    .step.active {
-        display: flex;
-    }
-
-    .title-presentation {
-        text-align: center;
-    }
-</style>
+{#if isLoading}
+    <div class="loader-container" transition:fade={{ duration: 200 }}>
+        <div class="spinner"></div>
+    </div>
+{/if}
 
 <div id="container">
     <div class="step active" data-step="0">
@@ -166,15 +137,43 @@
 </div>
 
 <script>
-    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
-    import {onMount} from "svelte";
+    import { getCookie, setCookie } from 'svelte-cookie';
+    import { onMount } from "svelte";
+    import { fade } from 'svelte/transition';
 
-    let currentStep = 0;
+    let isLoading = true; // Caricamento iniziale
+    let currentStep = 0;  // Step iniziale
 
     onMount(() => {
-        if(getCookie('csrftoken') === "") window.location.href = "/";
+        const setWidth100 = (id) => {
+            const el = document.getElementById(id);
+            if (el?.firstElementChild) {
+                el.firstElementChild.style.width = "100%";
+            }
+        };
+
+        ["account-icon", "login-icon", "signup-icon"].forEach(setWidth100);
+
+        const isLoggedIn = getCookie("csrftoken") !== "";
+        const displayMap = {
+            "account-icon": isLoggedIn ? "flex" : "none",
+            "login-icon": isLoggedIn ? "none" : "flex",
+            "signup-icon": isLoggedIn ? "none" : "flex"
+        };
+
+        for (const [id, display] of Object.entries(displayMap)) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = display;
+            }
+        }
+
+        // Se già autenticato, reindirizza
+        if (getCookie('csrftoken') !== "") window.location.href = "/";
+        isLoading = false;
     });
 
+    // Passaggio al prossimo step
     function nextStep() {
         const steps = document.querySelectorAll('.step');
         steps[currentStep].classList.remove('active');
@@ -182,29 +181,12 @@
         steps[currentStep].classList.add('active');
     }
 
+    // Utility asincrona per delay
     function wait(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    function showError(message, elementId) {
-        const errorEl = document.getElementById(elementId);
-
-        if (errorEl) {
-            // Mostra l'errore
-            errorEl.style.display = "block";
-            errorEl.firstChild.textContent = message;
-
-            // Scroll animato verso l'elemento
-            errorEl.scrollIntoView({ behavior: "smooth", block: "center" });
-
-            // Nasconde l'errore dopo 5 secondi
-            setTimeout(() => {
-                errorEl.style.display = "none";
-                errorEl.firstChild.textContent = "";
-            }, 5000);
-        }
-    }
-
+    // Registrazione utente base (step 1-4)
     async function register1() {
         const username = document.getElementById("username").value;
         const email = document.getElementById("email").value;
@@ -216,9 +198,7 @@
         try {
             const response = await fetch("http://127.0.0.1:8000/api/v1/auth/registration/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
 
@@ -228,41 +208,25 @@
                 setCookie("csrftoken", data.key);
                 nextStep();
             } else {
-                document.querySelectorAll('.step')[currentStep].classList.remove('active');
-
-                if (data.username?.length) {
-                    currentStep = 1;
-                    showError(data.username[0], "error1");
-                } else if (data.email?.length) {
-                    currentStep = 2;
-                    showError(data.email[0], "error2");
-                } else if (data.password1?.length) {
-                    currentStep = 3;
-                    showError(data.password1[0], "error3");
-                } else if (data.password2?.length) {
-                    currentStep = 4;
-                    showError(data.password2[0], "error4");
-                }
-
-                document.querySelectorAll('.step')[currentStep].classList.add('active');
+                showStepError(data);
             }
         } catch (err) {
+            // Tentativo forzato di login
             await wait(2000);
-            const responseForcedLogin = await fetch("http://127.0.0.1:8000/api/v1/auth/login/", {
+            const responseLogin = await fetch("http://127.0.0.1:8000/api/v1/auth/login/", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ username: username, password: password1 })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password: password1 })
             });
 
-            if (responseForcedLogin.ok) {
-                const data1 = await responseForcedLogin.json();
-                setCookie("csrftoken", data1.key);
+            if (responseLogin.ok) {
+                const dataLogin = await responseLogin.json();
+                setCookie("csrftoken", dataLogin.key);
                 nextStep();
             }
         }
 
+        // Recupera info utente (PK, username)
         const responseDetails = await fetch("http://127.0.0.1:8000/api/v1/auth/user/", {
             method: "GET",
             headers: {
@@ -272,12 +236,13 @@
         });
 
         if (responseDetails.ok) {
-            const data2 = await responseDetails.json();
-            setCookie("pk", data2.pk);
-            setCookie("username", data2.username);
+            const data = await responseDetails.json();
+            setCookie("pk", data.pk);
+            setCookie("username", data.username);
         }
     }
 
+    // Salva dettagli personali (step 6-10)
     async function register2() {
         const first_name = document.getElementById("name").value;
         const last_name = document.getElementById("surname").value;
@@ -285,87 +250,95 @@
         const biological_gender = document.getElementById("biological_gender").value;
         const height_cm = document.getElementById("height").value;
 
-        const responseDetailsAccount1 = await fetch("http://127.0.0.1:8000/api/v1/auth/user/", {
+        const updateUser = await fetch("http://127.0.0.1:8000/api/v1/auth/user/", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Token " + getCookie('csrftoken'),
             },
-            body: JSON.stringify({
-                first_name: first_name,
-                last_name: last_name
-            })
+            body: JSON.stringify({ first_name, last_name })
         });
 
-        const data1 = await responseDetailsAccount1.json();
+        const data1 = await updateUser.json();
 
-        if(responseDetailsAccount1.ok) {
-            const responseDetailsAccount2 = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/", {
+        if (updateUser.ok) {
+            const updateDetails = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": "Token " + getCookie('csrftoken')
+                    "Authorization": "Token " + getCookie('csrftoken'),
                 },
                 body: JSON.stringify({
                     author: getCookie("pk"),
-                    date_of_birth: date_of_birth,
-                    biological_gender: biological_gender,
-                    height_cm: height_cm
+                    date_of_birth,
+                    biological_gender,
+                    height_cm
                 })
             });
 
-            const data2 = await responseDetailsAccount2.json();
+            const data2 = await updateDetails.json();
 
-            if (responseDetailsAccount2.ok) nextStep();
-            else {
-                document.querySelectorAll('.step')[currentStep].classList.remove('active');
-
-                if (data2.date_of_birth?.length) {
-                    currentStep = 8;
-                    showError(data2.date_of_birth[0], "error8");
-                } else if (data2.biological_gender?.length) {
-                    currentStep = 9;
-                    showError(data2.biological_gender[0], "error9");
-                } else if (data2.height_cm?.length) {
-                    currentStep = 10;
-                    showError(data2.height_cm[0], "error10");
-                }
-
-                document.querySelectorAll('.step')[currentStep].classList.add('active');
-            }
+            if (updateDetails.ok) nextStep();
+            else showStepError(data2);
         } else {
-            document.querySelectorAll('.step')[currentStep].classList.remove('active');
-
-            if (data1.first_name?.length) {
-                currentStep = 6;
-                showError(data1.first_name[0], "error6");
-            } else if (data1.last_name?.length) {
-                currentStep = 7;
-                showError(data1.last_name[0], "error7");
-            }
-
-            document.querySelectorAll('.step')[currentStep].classList.add('active');
+            showStepError(data1);
         }
     }
 
+    // Salva obiettivo (step 12)
     async function register3() {
         const goal_description = document.getElementById("goals").value;
 
-        const responseGoals = await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
+        await fetch("http://127.0.0.1:8000/api/v1/data/detailsaccount/me/", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Token " + getCookie('csrftoken')
             },
-            body: JSON.stringify({
-                goal_description: goal_description
-            })
+            body: JSON.stringify({ goal_description })
         });
 
         nextStep();
     }
 
+    // Reindirizza alla dashboard (step finale)
     function register4() {
         window.location.href = "/account";
+    }
+
+    // Visualizza errore specifico e torna allo step corrispondente
+    function showStepError(data) {
+        document.querySelectorAll('.step')[currentStep].classList.remove('active');
+
+        if (data.username?.length) {
+            currentStep = 1;
+            showMessage(data.username[0], "error1");
+        } else if (data.email?.length) {
+            currentStep = 2;
+            showMessage(data.email[0], "error2");
+        } else if (data.password1?.length) {
+            currentStep = 3;
+            showMessage(data.password1[0], "error3");
+        } else if (data.password2?.length) {
+            currentStep = 4;
+            showMessage(data.password2[0], "error4");
+        } else if (data.first_name?.length) {
+            currentStep = 6;
+            showMessage(data.first_name[0], "error6");
+        } else if (data.last_name?.length) {
+            currentStep = 7;
+            showMessage(data.last_name[0], "error7");
+        } else if (data.date_of_birth?.length) {
+            currentStep = 8;
+            showMessage(data.date_of_birth[0], "error8");
+        } else if (data.biological_gender?.length) {
+            currentStep = 9;
+            showMessage(data.biological_gender[0], "error9");
+        } else if (data.height_cm?.length) {
+            currentStep = 10;
+            showMessage(data.height_cm[0], "error10");
+        }
+
+        document.querySelectorAll('.step')[currentStep].classList.add('active');
     }
 </script>

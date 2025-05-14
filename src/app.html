@@ -143,7 +143,18 @@
 			if (parts.length === 2) return parts.pop().split(';').shift();
 		}
 
-		function showMessage(message, elementId) {
+		/**
+		 * Mostra un messaggio di errore temporaneo all'interno di un elemento HTML specifico.
+		 *
+		 * L'elemento di destinazione viene identificato tramite il suo `id` (di default `"error1"`).
+		 * Il messaggio viene visualizzato impostando `display: block` sull'elemento e assegnando
+		 * il testo al suo primo nodo figlio. Dopo 5 secondi, l'elemento viene nascosto nuovamente
+		 * e il testo viene svuotato.
+		 *
+		 * @param {string} message - Il messaggio di errore da mostrare all'utente.
+		 * @param {string} [elementId="error1"] - L'ID dell'elemento HTML in cui mostrare l'errore.
+		 */
+		function showMessage(message, elementId = "error1") {
 			const messageEl = document.getElementById(elementId);
 
 			if (messageEl) {

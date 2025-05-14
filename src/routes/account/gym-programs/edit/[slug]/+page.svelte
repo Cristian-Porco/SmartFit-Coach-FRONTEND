@@ -1177,7 +1177,7 @@
         IntensityTechniquesRestPause,
         IntensityTechniquesTempoBase,
         IntensityTechniquesUnilateral
-    } from "$lib/edit_set_details.js";
+    } from "$lib/edit_gym_programs.js";
 
     export let data;
     let idGymPlan;

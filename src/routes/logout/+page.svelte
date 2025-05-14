@@ -1,13 +1,19 @@
+<div class="loader-container">
+    <div class="spinner"></div>
+</div>
+
 <script>
     import { onMount } from 'svelte';
-    import { getCookie, setCookie, deleteCookie } from 'svelte-cookie';
+    import { deleteCookie } from 'svelte-cookie';
 
+    // Eseguito al montaggio del componente
     onMount(() => {
-        if(getCookie('csrftoken') === "") window.location.href = "/";
+        // Rimozione dei cookie di autenticazione
+        deleteCookie('csrftoken'); // Token di sessione
+        deleteCookie('pk');        // ID utente
+        deleteCookie('username'); // Nome utente
 
-        deleteCookie('csrftoken');
-        deleteCookie('pk');
-        deleteCookie('username');
-        window.location.href = "/";
+        // Reindirizzamento alla home dopo il logout
+        location.href = "/";
     });
 </script>

@@ -606,7 +606,7 @@
             const fields = ["username", "first_name", "last_name"];
             for (const field of fields) {
                 if (data1[field]?.length) {
-                    showError(data1[field][0], "error1");
+                    showMessage(data1[field][0], "error1");
                     break;
                 }
             }

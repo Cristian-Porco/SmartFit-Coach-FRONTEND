@@ -410,6 +410,27 @@ th, td {
 }
 .close-button { margin-bottom: 0; }
 
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+.input-wrapper input,
+.input-wrapper textarea {
+    width: 100%;
+    padding-right: 2.5rem; /* spazio per il bottone */
+    box-sizing: border-box;
+}
+.inside-button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    border: none;
+    cursor: pointer;
+    width: auto;
+    height: 40px;
+    padding: 0 15px;
+}
+
 @media screen and (max-width: 968px) {
     .set-box table,
     .set-box thead,

@@ -143,7 +143,12 @@ input:disabled, select:disabled, textarea:disabled { background: #d5dde5; }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; }
-textarea { max-width: 100%; min-width: 100%; min-height:130px;}
+textarea {
+    max-width: 100%;
+    min-width: 100%;
+    min-height:130px;
+    border-radius: 25px;
+}
 button {
     background: #007bff;
     color: white;

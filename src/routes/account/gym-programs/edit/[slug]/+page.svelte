@@ -2,6 +2,12 @@
     <link rel="stylesheet" type="text/css" href="/css/account/gym-programs/style_edit_gym_programs.css">
 </head>
 
+{#if isLoading}
+    <div class="loader-container" transition:fade={{ duration: 200 }}>
+        <div class="spinner"></div>
+    </div>
+{/if}
+
 <!-- Contenitore intestazione della pagina della scheda alimentare -->
 <div class="container">
     <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda di allenamento</h1></div>
@@ -27,7 +33,10 @@
 
     <div class="content-note" id="notes">
         <h2 class="day-title">Note sulla scheda di allenamento</h2>
-        <textarea placeholder="Inserisci le note sulla scheda di allenamento qui..." id="notes_plan" style="margin-bottom: 0;"></textarea>
+        <div class="input-wrapper">
+            <textarea placeholder="Inserisci le note sulla scheda di allenamento qui..." id="notes_plan" style="margin-bottom: 0;"></textarea>
+            <button type="button" class="inside-button button-ai" id="ai_notes_plan">Genera</button>
+        </div>
     </div>
     <button on:click={saveGymPlan}>Modifica scheda di allenamento</button>
 </div>
@@ -85,8 +94,8 @@
             <div class="intensity-select">
                 <label for="intensity-technique">Tecnica d’intensità:</label>
                 <select id="intensity-technique" bind:value={selectedTechnique}>
-                    <option value="bilateral">Bilaterale (entrambe le gambe)</option>
-                    <option value="unilateral">Unilaterale (gamba singola)</option>
+                    <option value="bilateral">Bilaterale (entrambe gli arti)</option>
+                    <option value="unilateral">Unilaterale (arto singolo)</option>
                     <option value="tempo-based">Tempo-Based (durata fissa)</option>
                     <option value="drop_set">Drop Set / Stripping</option>
                     <option value="super_set">Super Set / Giant Set</option>
@@ -1178,6 +1187,9 @@
         IntensityTechniquesTempoBase,
         IntensityTechniquesUnilateral
     } from "$lib/edit_gym_programs.js";
+    import { fade } from 'svelte/transition';
+
+    let isLoading = true;
 
     export let data;
     let idGymPlan;
@@ -1303,7 +1315,7 @@
 
             if (!response.ok) {
                 // In caso di risposta non valida (es. 500, 404)
-                showError("Errore durante il caricamento degli alimenti!");
+                showMessage("Errore durante il caricamento degli alimenti!");
                 return;
             }
 
@@ -1312,7 +1324,7 @@
             filteredGymItems = gymItems; // Aggiorna la lista filtrata
         } catch (error) {
             // In caso di errore di rete o eccezione imprevista
-            showError("Errore durante il caricamento degli alimenti!");
+            showMessage("Errore durante il caricamento degli alimenti!");
         }
     }
 
@@ -1515,6 +1527,7 @@
             const setData = await setResponse.json();
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -1574,6 +1587,7 @@
             const setData = await setResponse.json();
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -1646,6 +1660,7 @@
             }
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -1713,6 +1728,7 @@
             }
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -1782,6 +1798,7 @@
             }
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -1857,7 +1874,7 @@
             }),
         });
 
-
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -1936,7 +1953,7 @@
             }),
         });
 
-
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -2004,6 +2021,7 @@
             }
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -2071,14 +2089,13 @@
             }
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
     async function addPyramidExercise() {
         const arrayNumReps = String(numReps).split(",");
         const arrayWeight = String(weight).split(",");
-        console.log(arrayNumReps);
-        console.log(arrayWeight);
 
         if (arrayNumReps.length != arrayWeight.length) {}
 
@@ -2137,6 +2154,7 @@
             const setData = await setResponse.json();
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -2196,6 +2214,7 @@
             const setData = await setResponse.json();
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -2255,6 +2274,7 @@
             const setData = await setResponse.json();
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -2314,6 +2334,7 @@
             const setData = await setResponse.json();
         }
 
+        localStorage.setItem("isAddingElement", "true");
         location.reload();
     }
 
@@ -2379,25 +2400,6 @@
         return { valid: true };
     }
 
-    function showError(message, elementId = "error1") {
-        const errorEl = document.getElementById(elementId);
-
-        if (errorEl) {
-            // Mostra l'errore
-            errorEl.style.display = "block";
-            errorEl.firstChild.textContent = message;
-
-            // Scroll animato verso l'elemento
-            errorEl.scrollIntoView({ behavior: "smooth", block: "center" });
-
-            // Nasconde l'errore dopo 5 secondi
-            setTimeout(() => {
-                errorEl.style.display = "none";
-                errorEl.firstChild.textContent = "";
-            }, 5000);
-        }
-    }
-
     async function saveGymPlan() {
         const result = validateWeekRange("start_date", "end_date");
 
@@ -2422,10 +2424,10 @@
                 location.href = "/account/gym-programs/";
             } else {
                 // Altrimenti mostra un messaggio di errore all'utente
-                showError("Errore durante il salvataggio della scheda di allenamento!");
+                showMessage("Errore durante il salvataggio della scheda di allenamento!");
             }
         } else {
-            showError(result.message);
+            showMessage(result.message);
         }
     }
 
@@ -2460,6 +2462,22 @@
         document.getElementById("end_date").value = formattedEndDate;
 
         document.getElementById("notes_plan").innerText = gym_plan_json["note"];
+        document.getElementById('ai_notes_plan').addEventListener("click", async function () {
+            document.getElementById("ai_notes_plan").disabled = true;
+            document.getElementById("notes_plan").disabled = true;
+            document.getElementById("notes_plan").cursor = "not-allowed";
+
+            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan/generate-note/${idGymPlan}/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": "Token " + getCookie('csrftoken'),
+                }
+            });
+
+            const result = await response.json();
+            if(response.ok) location.reload();
+        });
 
         let isNameDayOrNull = getTodayWeekdayIfInRange(gym_plan_json["start_date"], gym_plan_json["end_date"]);
         let dayBeforeToday = giorniPrecedenti(isNameDayOrNull);
@@ -2511,18 +2529,25 @@
                     </h2>
 
                     <label for="type_day">Tipologia della giornata:</label>
-                    <input type="text" id="type_day" name="type_day" value="${type_day}"
-                        placeholder="Inserisci la tipologia della giornata qui..."/>
+                    <div class="input-wrapper">
+                        <input type="text" id="type_day" name="type_day" value="${type_day}"
+                            placeholder="Inserisci la tipologia della giornata qui..." />
+                        <button type="button" class="inside-button button-ai" id="ai_type_day">Genera</button>
+                    </div>
 
                     <label for="notes_day">Note della giornata:</label>
-                    <textarea id="notes_day" name="notes_day"
-                        placeholder="Inserisci le note della giornata qui...">${notes_day}</textarea>
+                    <div class="input-wrapper">
+                        <textarea id="notes_day" name="notes_day"
+                            placeholder="Inserisci le note della giornata qui...">${notes_day}</textarea>
+                        <button type="button" class="inside-button button-ai" id="ai_notes_day">Genera</button>
+                    </div>
 
                     <div id="${short}"></div>
                 `;
 
+                let oneTime = true;
                 gym_plan_items.forEach((item) => {
-                    if (item.section.day === short) {
+                    if (item.section.day === short && oneTime) {
                         document.getElementById('type_day').addEventListener("input", async function () {
                             const newType = this.value;
                             const sectionId = item.section.id;
@@ -2537,13 +2562,35 @@
                                     type: newType
                                 }),
                             });
+
+                            item.section.type = this.value;
+                        });
+
+                        document.getElementById('ai_type_day').addEventListener("click", async function () {
+                            const sectionId = item.section.id;
+                            document.getElementById("ai_type_day").disabled = true;
+                            document.getElementById("type_day").disabled = true;
+                            document.getElementById("type_day").cursor = "not-allowed";
+
+                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-section/classify/${sectionId}/`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "Authorization": "Token " + getCookie('csrftoken'),
+                                }
+                            });
+
+                            const result = await response.json();
+                            if(response.ok) {
+                                localStorage.setItem("sectionDay", item.section.day)
+                                localStorage.setItem("isAddingElement", "true");
+                                location.reload();
+                            }
                         });
 
                         document.getElementById('notes_day').addEventListener("input", async function () {
                             const newNote = this.value;
                             const sectionId = item.section.id;
-
-                            console.log(newNote);
 
                             const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-section/update/${sectionId}/`, {
                                 method: 'PATCH',
@@ -2555,7 +2602,33 @@
                                     note: newNote
                                 }),
                             });
+
+                            item.section.note = this.value;
                         });
+
+                        document.getElementById('ai_notes_day').addEventListener("click", async function () {
+                            const sectionId = item.section.id;
+                            document.getElementById("ai_notes_day").disabled = true;
+                            document.getElementById("notes_day").disabled = true;
+                            document.getElementById("notes_day").cursor = "not-allowed";
+
+                            const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-section/generate-note/${sectionId}/`, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    "Authorization": "Token " + getCookie('csrftoken'),
+                                }
+                            });
+
+                            const result = await response.json();
+                            if(response.ok) {
+                                localStorage.setItem("sectionDay", item.section.day)
+                                localStorage.setItem("isAddingElement", "true");
+                                location.reload();
+                            }
+                        });
+
+                        oneTime = false;
                     }
                 });
 
@@ -2572,6 +2645,7 @@
                 gym_plan_items.forEach((item) => {
                     if (item.section.day === short) {
                         idGymSection = item.section.id;
+                        localStorage.setItem("sectionDay", item.section.day_display);
                         let techniques = "";
                         if (Array.isArray(item.intensity_techniques_display)) {
                             techniques = item.intensity_techniques_display.join(', ');
@@ -2584,8 +2658,9 @@
                             gym_plan_item.classList.add("exercise-row");
                             gym_plan_item.innerHTML = `
                                 <div class="exercise-number">${item.order}</div>
-                                <div class="exercise-title">
-                                    <input type="text" class="exercise-notes-input" value="${item.notes || ''}" />
+                                <div class="exercise-title input-wrapper">
+                                    <input type="text" class="exercise-notes-input" id="exercise_notes_input" value="${item.notes || ''}" />
+                                    <button type="button" class="inside-button button-ai generate-exercise-notes-button" id="ai_exercise_notes_input" style="top: 5px; right: 6px;">Genera</button>
                                 </div>
                                 <div class="exercise-technique">${techniques}</div>
                                 <div class="exercise-actions">
@@ -2594,6 +2669,27 @@
                             `;
 
                             gym_plan_item.id = "orderExercise" + item.order;
+
+                            gym_plan_item.querySelector(".generate-exercise-notes-button").addEventListener("click", async function () {
+                                document.getElementById("ai_exercise_notes_input").disabled = true;
+                                document.getElementById("exercise_notes_input").disabled = true;
+                                document.getElementById("exercise_notes_input").cursor = "not-allowed";
+
+                                const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/generate-note/${item.id}/`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        "Authorization": "Token " + getCookie('csrftoken'),
+                                    }
+                                });
+
+                                const result = await response.json();
+                                if(response.ok) {
+                                    localStorage.setItem("sectionDay", item.section.day)
+                                    localStorage.setItem("isAddingElement", "true");
+                                    location.reload();
+                                }
+                            });
 
                             gym_plan_item.querySelector(".delete-exercise-button").addEventListener("click", async function () {
                                 const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/delete/${item.id}/`, {
@@ -2682,6 +2778,15 @@
 
         if(isNameDayOrNull !== null)
             document.getElementById(isNameDayOrNull + "Tab").click();
+        
+        if(localStorage.getItem("isAddingElement") === "true") {
+            document.getElementById(localStorage.getItem("sectionDay") + "Tab").click();
+
+            const el = document.getElementById(localStorage.getItem("sectionDay") + "Tab");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+            localStorage.setItem("isAddingElement", "false");
+            localStorage.removeItem("sectionDay");
+        }
 
         const id = localStorage.getItem("scrollToId");
         if (id) {
@@ -2691,5 +2796,7 @@
         }
 
         fetchGymItems();
+
+        isLoading = false;
     });
 </script>

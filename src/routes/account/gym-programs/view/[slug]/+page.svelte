@@ -2,6 +2,12 @@
     <link rel="stylesheet" type="text/css" href="/css/account/gym-programs/style_view_gym_programs.css">
 </head>
 
+{#if isLoading}
+    <div class="loader-container" transition:fade={{ duration: 200 }}>
+        <div class="spinner"></div>
+    </div>
+{/if}
+
 <div class="container">
     <div><p><b>Visualizza</b></p><h1 class="titlePage">Scheda di allenamento</h1></div>
     <div>
@@ -72,6 +78,9 @@
 <script>
     import {onMount} from "svelte";
     import {getCookie} from "svelte-cookie";
+    import { fade } from 'svelte/transition';
+
+    let isLoading = true;
 
     export let data;
     let idGymPlan;
@@ -218,7 +227,7 @@
                 gym_plan_items.forEach((item) => {
                     if (item.section.day === short) {
                         type_day = item.section.type;
-                        notes_day = item.section.notes;
+                        notes_day = item.section.note;
                     }
                 });
                 if(type_day === undefined ) { type_day = ""; }
@@ -2156,5 +2165,7 @@
             if (el) el.scrollIntoView({ behavior: "smooth" });
             localStorage.removeItem("scrollToId");
         }
+
+        isLoading = false;
     });
 </script>

@@ -259,6 +259,11 @@
                                 <div class="exercise-number">${item.order+1}</div>
                                 <div class="exercise-title">${item.notes}</div>
                                 <div class="exercise-technique">${techniques}</div>
+                                <div class="exercise-technique">
+                                    <button class="button-ai" style="margin-bottom: 0; margin-left: 10px;">
+                                        Genera riscaldamento
+                                    </button>
+                                </div>
                             `;
                             gym_plan_item.id = "orderExercise" + item.order;
 

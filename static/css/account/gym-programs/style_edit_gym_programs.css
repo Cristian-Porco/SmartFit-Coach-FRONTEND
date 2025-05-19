@@ -378,6 +378,18 @@ th, td {
     width: 100%;
     margin-bottom: 10px;
 }
+.day-checkbox {
+    display: flex;
+    background: #f1f5f9;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+.day-checkbox input {
+    width: 14px;
+    margin-right: 10px;
+    margin-bottom: 8px;
+}
 .food-search { width: 50%; }
 .food-list {
     list-style: none;

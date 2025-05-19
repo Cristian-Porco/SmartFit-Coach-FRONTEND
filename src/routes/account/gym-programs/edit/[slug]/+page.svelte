@@ -8,6 +8,26 @@
     </div>
 {/if}
 
+<div id="loading-overlay" style="display: none;">
+    <div class="spinnerIA">Sto elaborando...</div>
+</div>
+
+<div class="fab-container">
+    <!-- Pulsanti secondari -->
+    {#if expanded}
+        {#if isEmpty}<div class="fab-sub" on:click={()=>{showGenerateEntirePlan = true;}}>Genera la scheda di allenamento completa</div>{/if}
+        {#if !isDayEmpty}<div class="fab-sub" on:click={()=>{showGenerateAlternativeItem = true}}>Genera alternativa in base all'esercizio</div>{/if}
+        {#if isDayEmpty && showDayGeneration != ""}<div class="fab-sub" on:click={()=>{generateGymPlan(data.id, [showDayShortGeneration])}}>Genera la scheda di allenamento di {showDayGeneration}</div>{/if}
+    {/if}
+
+    <!-- Pulsante principale -->
+    {#if isNotLoaded}
+    <button class="button-ai fab-main" on:click={toggleMenu}>
+        Elabora i dati con IA
+    </button>
+    {/if}
+</div>
+
 <!-- Contenitore intestazione della pagina della scheda alimentare -->
 <div class="container">
     <div><p><b>Modifica</b></p><h1 class="titlePage">Scheda di allenamento</h1></div>
@@ -40,6 +60,53 @@
     </div>
     <button on:click={saveGymPlan}>Modifica scheda di allenamento</button>
 </div>
+
+{#if showGenerateEntirePlan}
+    <div class="modal">
+        <div class="modal-content" style="width: 400px">
+            <h3>Genera la scheda di allenamento completa</h3>
+
+            <p>Seleziona i giorni della settimana in cui dovresti allenarti in modo tale che la IA possa generare la scheda di allenamento.</p>
+
+            <!-- Checkbox per i giorni -->
+            {#each daysOfWeek as day}
+                <div class="day-checkbox">
+                    <input type="checkbox" id={day.value} checked={selectedDays.has(day.value)} on:change={() => toggleDay(day.value)} />
+                    <label for={day.value}>{day.label}</label>
+                </div>
+            {/each}
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="button-ai" on:click={confirmSelectionGenerationPlan}>Genera</button>
+            <button class="close-button" on:click={() => showGenerateEntirePlan = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
+
+{#if showGenerateAlternativeItem}
+    <div class="modal">
+        <div class="modal-content" style="width: 400px">
+            <h3>Genera alternativa in base all'esercizio</h3>
+
+            <p>Scegli un esercizio che non ti convince e la IA genererà per te un esercizio alternativo per la zona muscolare dell'esercizio scelto.</p>
+
+            <select bind:value={selectedSelection}>
+                <option disabled selected value="">Scegli un esercizio...</option>
+                {#each currentSelection as option}
+                    <option value={option.value}>{option.label}</option>
+                {/each}
+            </select>
+
+            <div class="separator-row"></div>
+
+            <!-- Pulsanti azione -->
+            <button class="button-ai" on:click={confirmSelectionGenerationAlternative}>Genera</button>
+            <button class="close-button" on:click={() => showGenerateAlternativeItem = false}>Annulla</button>
+        </div>
+    </div>
+{/if}
 
 {#if showExercisePopup}
     <div class="modal">
@@ -1246,6 +1313,128 @@
     let showEMOMExercise = false;
     let showAMRAPExercise = false;
     let showDeathSetExercise = false;
+
+    let expanded = false;
+    let isEmpty = true;
+    let isDayEmpty = true;
+    let showDayGeneration = "";
+    let showDayShortGeneration = "";
+    let isNotLoaded = true;
+
+    let showGenerateEntirePlan = false;
+    let selectedDays = new Set(); // oppure puoi usare un array se preferisci
+
+    let showGenerateAlternativeItem = false;
+    let currentSelection = [];
+    let selectedSelection = "";
+
+    const daysOfWeek = [
+        { label: 'Lunedì', value: 'lun' },
+        { label: 'Martedì', value: 'mar' },
+        { label: 'Mercoledì', value: 'mer' },
+        { label: 'Giovedì', value: 'gio' },
+        { label: 'Venerdì', value: 'ven' },
+        { label: 'Sabato', value: 'sab' },
+        { label: 'Domenica', value: 'dom' }
+    ];
+
+    function toggleDay(day) {
+        if (selectedDays.has(day)) {
+            selectedDays.delete(day);
+        } else {
+            selectedDays.add(day);
+        }
+        selectedDays = new Set(selectedDays); // per far scattare il reattivo in Svelte
+    }
+
+    async function confirmSelectionGenerationPlan() {
+        document.getElementById("loading-overlay").style.display = "flex";
+        showGenerateEntirePlan = false;
+
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan/generate-entire/${data.id}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                days: Array.from(selectedDays) // es. ["lun", "mer", "ven"]
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            location.reload();
+        }
+    }
+
+    async function confirmSelectionGenerationAlternative() {
+        document.getElementById("loading-overlay").style.display = "flex";
+        showGenerateAlternativeItem = false;
+
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/generate-alternative/${selectedSelection}/`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + getCookie('csrftoken')
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            location.reload();
+        }
+    }
+
+    function isDefaultWeeklyPlan(gym_plan_items) {
+        const expectedDays = new Set(['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom']);
+
+        if (gym_plan_items.length !== 7) {
+            return false;
+        }
+
+        const seenDays = new Set();
+
+        for (const item of gym_plan_items) {
+            const day = item.section?.day;
+            const techniques = item.intensity_techniques;
+
+            if (!expectedDays.has(day) || seenDays.has(day)) {
+                return false;
+            }
+
+            if (!Array.isArray(techniques) || techniques.length !== 1 || techniques[0] !== 'null') {
+                return false;
+            }
+
+            seenDays.add(day);
+        }
+
+        return seenDays.size === 7;
+    }
+
+    function isDefaultDayItem(gym_plan_items, day) {
+        const itemsForDay = gym_plan_items.filter(item => item.section?.day === day);
+
+        if (itemsForDay.length !== 1) {
+            return false;
+        }
+
+        const techniques = itemsForDay[0].intensity_techniques;
+
+        return Array.isArray(techniques) && techniques.length === 1 && techniques[0] === 'null';
+    }
+
+    async function generateGymPlan(planId, selectedDays) {
+
+    }
+
+
+    function toggleMenu() {
+        expanded = !expanded;
+    }
 
     async function openExercisePopup(exercise) {
         const imageIds = exercise.image_urls || [];
@@ -2483,6 +2672,7 @@
         let dayBeforeToday = giorniPrecedenti(isNameDayOrNull);
 
         let gym_plan_items = gym_plan_json["gym_plan_items"];
+        isEmpty = isDefaultWeeklyPlan(gym_plan_items);
 
         const days = [
             { full: "Lunedì", short: "lun" },
@@ -2505,6 +2695,13 @@
             tab.innerHTML = `<span class="day-full">${full}</span>`;
 
             tab.addEventListener("click", () => {
+                isDayEmpty = isDefaultDayItem(gym_plan_items, short);
+                showDayGeneration = full;
+                showDayShortGeneration = short;
+                isNotLoaded = true;
+
+                currentSelection = [];
+
                 let disabledDayBefore = false;
                 if(dayBeforeToday.includes(full)) {
                     disabledDayBefore = true;
@@ -2582,7 +2779,7 @@
 
                             const result = await response.json();
                             if(response.ok) {
-                                localStorage.setItem("sectionDay", item.section.day)
+                                localStorage.setItem("sectionDay", item.section.day_display)
                                 localStorage.setItem("isAddingElement", "true");
                                 location.reload();
                             }
@@ -2622,7 +2819,7 @@
 
                             const result = await response.json();
                             if(response.ok) {
-                                localStorage.setItem("sectionDay", item.section.day)
+                                localStorage.setItem("sectionDay", item.section.day_display)
                                 localStorage.setItem("isAddingElement", "true");
                                 location.reload();
                             }
@@ -2685,7 +2882,7 @@
 
                                 const result = await response.json();
                                 if(response.ok) {
-                                    localStorage.setItem("sectionDay", item.section.day)
+                                    localStorage.setItem("sectionDay", item.section.day_display)
                                     localStorage.setItem("isAddingElement", "true");
                                     location.reload();
                                 }
@@ -2727,6 +2924,8 @@
                             let plan_item = item.id;
 
                             divDay.appendChild(gym_plan_item);
+
+                            currentSelection.push({value: item.id, label: item.order + ": " + item.notes + " (" + techniques + ")"})
 
                             const groupedSets = {};
                             item.sets.forEach(set => {
@@ -2778,6 +2977,8 @@
 
         if(isNameDayOrNull !== null)
             document.getElementById(isNameDayOrNull + "Tab").click();
+        else
+            isNotLoaded = false;
         
         if(localStorage.getItem("isAddingElement") === "true") {
             document.getElementById(localStorage.getItem("sectionDay") + "Tab").click();

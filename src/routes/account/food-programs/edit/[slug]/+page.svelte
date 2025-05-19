@@ -147,7 +147,7 @@
         <div class="fab-sub" on:click={()=>{showNaturalLanguageModal=true;}}>Inserisci alimenti tramite linguaggio naturale</div>
         <div class="fab-sub" on:click={()=>{showImageModal=true;}}>Inserisci alimenti tramite immagine</div>
         {#if !isEmpty}<div class="fab-sub" on:click={optimizeQuantity}>Ottimizza la quantità degli alimenti inseriti</div>{/if}
-        {#if !isEmpty}<div class="fab-sub" on:click={()=>{showGenerateAlternativeModal=true;}}>Genere pasti alternativi di una sezione</div>{/if}
+        {#if !isEmpty}<div class="fab-sub" on:click={()=>{showGenerateAlternativeModal=true;}}>Genera pasti alternativi di una sezione</div>{/if}
         {#if isEmpty}<div class="fab-sub" on:click={()=>{showGenerateFoodPlanModal=true;}}>Genera la scheda alimentare in base ai macronutrienti</div>{/if}
     {/if}
 

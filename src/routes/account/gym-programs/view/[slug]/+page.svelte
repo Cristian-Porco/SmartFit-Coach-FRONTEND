@@ -89,6 +89,8 @@
     let showExercisePopup = false;
     let currentSlide = 0;
 
+    let isNotLoaded = true;
+
     async function openExercisePopup(exercise) {
         const imageIds = exercise.image_urls || [];
         const imageFiles = await fetchExerciseImages(imageIds);
@@ -215,6 +217,8 @@
             tab.innerHTML = `<span class="day-full">${full}</span>`;
 
             tab.addEventListener("click", () => {
+                isNotLoaded = true;
+
                 let disabledDayBefore = false;
                 if(dayBeforeToday.includes(full)) {
                     disabledDayBefore = true;
@@ -255,16 +259,46 @@
                         if (!item.intensity_techniques.includes("null")) {
                             const gym_plan_item = document.createElement("div");
                             gym_plan_item.classList.add("exercise-row");
-                            gym_plan_item.innerHTML = `
-                                <div class="exercise-number">${item.order+1}</div>
-                                <div class="exercise-title">${item.notes}</div>
-                                <div class="exercise-technique">${techniques}</div>
-                                <div class="exercise-technique">
-                                    <button class="button-ai" style="margin-bottom: 0; margin-left: 10px;">
-                                        Genera riscaldamento
-                                    </button>
-                                </div>
-                            `;
+
+                            if(item.intensity_techniques.includes("rest_pause") || item.intensity_techniques.includes("myoreps")) {
+                                gym_plan_item.innerHTML = `
+                                    <div class="exercise-number">${item.order}</div>
+                                    <div class="exercise-title">${item.notes || ''}</div>
+                                    <div class="exercise-technique">${techniques}</div>
+                                `;
+                            } else {
+                                gym_plan_item.innerHTML = `
+                                    <div class="exercise-number">${item.order}</div>
+                                    <div class="exercise-title">${item.notes || ''}</div>
+                                    <div class="exercise-technique">${techniques}</div>
+                                    <div class="exercise-technique">
+                                        <button class="button-ai generate-warm-up" style="margin: 0 10px">
+                                            Genera riscaldamento
+                                        </button>
+                                    </div>
+                                `;
+
+                                gym_plan_item.querySelector(".generate-warm-up").addEventListener("click", async function (event) {
+                                    event.currentTarget.disabled = true;
+
+                                    const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/generate-warmup/${item.id}/`, {
+                                        method: 'GET',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            "Authorization": "Token " + getCookie('csrftoken'),
+                                        }
+                                    });
+
+                                    const result = await response.json();
+                                    console.log(result);
+                                    if(response.ok) {
+                                        localStorage.setItem("sectionDay", item.section.day_display)
+                                        localStorage.setItem("isAddingElement", "true");
+                                        location.reload();
+                                    }
+                                });
+                            }
+
                             gym_plan_item.id = "orderExercise" + item.order;
 
                             let plan_item = item.id;
@@ -285,7 +319,8 @@
                                 setNumbers.forEach(setNumber => {
                                     const box = document.createElement("div");
                                     box.classList.add("set-box");
-                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
 
                                     let sameExercisesOnSets = groupedSets[setNumber].every(
                                         set => set.exercise.name === groupedSets[setNumber][0].exercise.name
@@ -416,7 +451,8 @@
                                 setNumbers.forEach(setNumber => {
                                     const box = document.createElement("div");
                                     box.classList.add("set-box");
-                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
 
                                     let sameExercisesOnSets = groupedSets[setNumber].every(
                                         set => set.exercise.name === groupedSets[setNumber][0].exercise.name
@@ -1226,7 +1262,8 @@
                                 setNumbers.forEach(setNumber => {
                                     const box = document.createElement("div");
                                     box.classList.add("set-box");
-                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
 
                                     let sameExercisesOnSets = groupedSets[setNumber].every(
                                         set => set.exercise.name === groupedSets[setNumber][0].exercise.name
@@ -1403,7 +1440,8 @@
                                 setNumbers.forEach(setNumber => {
                                     const box = document.createElement("div");
                                     box.classList.add("set-box");
-                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
 
                                     let sameExercisesOnSets = groupedSets[setNumber].every(
                                         set => set.exercise.name === groupedSets[setNumber][0].exercise.name
@@ -1571,7 +1609,8 @@
                                 setNumbers.forEach(setNumber => {
                                     const box = document.createElement("div");
                                     box.classList.add("set-box");
-                                    box.innerHTML = `<h4>Circuito</h4>`;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Circuito</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
 
                                     let sameExercisesOnSets = groupedSets[setNumber].every(
                                         set => set.exercise.name === groupedSets[setNumber][0].exercise.name
@@ -1777,6 +1816,8 @@
                             } else if (item.intensity_techniques.includes("death_set")){
                                 setNumbers.forEach(setNumber => {
                                     let showRecoveryColumn = false;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
                                     if(setNumber == 3) showRecoveryColumn = true;
 
                                     let isSecondSet = !(setNumber == 5);
@@ -1977,7 +2018,8 @@
                                 setNumbers.forEach(setNumber => {
                                     const box = document.createElement("div");
                                     box.classList.add("set-box");
-                                    box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    if(setNumber > 0) box.innerHTML = `<h4>Serie ${setNumber}</h4>`;
+                                    else box.innerHTML = `<h4>Riscaldamento</h4>`;
 
                                     let sameExercisesOnSets = groupedSets[setNumber].every(
                                         set => set.exercise.name === groupedSets[setNumber][0].exercise.name
@@ -2150,6 +2192,10 @@
                                 });
                             }
                         }
+
+                        document.querySelectorAll('.generate-warm-up').forEach(button => {
+                            button.disabled = disabledDayBefore;
+                        });
                     }
                 });
 
@@ -2163,6 +2209,17 @@
 
         if(isNameDayOrNull !== null)
             document.getElementById(isNameDayOrNull + "Tab").click();
+        else
+            isNotLoaded = false;
+
+        if(localStorage.getItem("isAddingElement") === "true") {
+            document.getElementById(localStorage.getItem("sectionDay") + "Tab").click();
+
+            const el = document.getElementById(localStorage.getItem("sectionDay") + "Tab");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+            localStorage.setItem("isAddingElement", "false");
+            localStorage.removeItem("sectionDay");
+        }
 
         const id = localStorage.getItem("scrollToId");
         if (id) {

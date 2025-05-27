@@ -1244,6 +1244,19 @@
     import {onMount} from "svelte";
     import {getCookie} from "svelte-cookie";
     import {
+        AddDefaultExercise,
+        AddDefaultWithNoteExercise,
+        AddDropSetExercise,
+        AddSuperSetExercise,
+        AddForcedRepsExercise,
+        AddRestPauseExercise,
+        AddMyorepsExercise,
+        AddSevenSevenExercise,
+        AddClusterExercise,
+        AddPyramidExercise,
+        AddEMOMExercise,
+        AddAMRAPExercise,
+        AddDeathSetExercise,
         IntensityTechniquesDefault,
         IntensityTechniquesDeathSet,
         IntensityTechniquesAMRAP,
@@ -1427,11 +1440,6 @@
         return Array.isArray(techniques) && techniques.length === 1 && techniques[0] === 'null';
     }
 
-    async function generateGymPlan(planId, selectedDays) {
-
-    }
-
-
     function toggleMenu() {
         expanded = !expanded;
     }
@@ -1547,6 +1555,7 @@
                 showSuperSetExercise = true;
                 break;
             case "forced_reps":
+                numSeries = "";
                 showForcedRepsExercise = true;
                 break;
             case "half_reps":
@@ -1610,6 +1619,7 @@
                 showAMRAPExercise = true;
                 break;
             case "death_set":
+                numSeries = 5;
                 showDeathSetExercise = true;
                 break;
         }
@@ -1661,870 +1671,55 @@
     }
 
     async function addDefaultExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": "Token " + getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    exercise_id: idExercises[0],
-                    order: 0, // puoi personalizzare l’ordine se necessario
-                    set_number: i,
-                    prescribed_reps_1: numReps,
-                    prescribed_reps_2: numReps,
-                    rir: rir,
-                    rest_seconds: rest_seconds,
-                    weight: weight,
-                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
-                    plan_item: planItemId
-                }),
-            });
-
-            const setData = await setResponse.json();
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddDefaultExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addDefaultWithNoteExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: notesGymPlanItems
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": "Token " + getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    exercise_id: idExercises[0],
-                    order: 0, // puoi personalizzare l’ordine se necessario
-                    set_number: i,
-                    prescribed_reps_1: numReps,
-                    prescribed_reps_2: numReps,
-                    rir: rir,
-                    rest_seconds: rest_seconds,
-                    weight: weight,
-                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
-                    plan_item: planItemId
-                }),
-            });
-
-            const setData = await setResponse.json();
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddDefaultWithNoteExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric, notesGymPlanItems);
     }
 
     async function addDropSetExercise() {
-        const arrayNumReps = String(numReps).split(",");
-        const arrayWeight = String(weight).split(",");
-
-        if (arrayNumReps.length != arrayWeight.length) {}
-
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            for (let j=0; j < arrayNumReps.length; j++) {
-                let calcRest = rest_seconds;
-
-                if (j !== arrayNumReps.length - 1) {
-                    calcRest = 10;
-                }
-
-                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        exercise_id: idExercises[0],
-                        order: j,
-                        set_number: i,
-                        prescribed_reps_1: arrayNumReps[j],
-                        prescribed_reps_2: arrayNumReps[j],
-                        rir: rir,
-                        rest_seconds: calcRest,
-                        weight: arrayWeight[j],
-                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                        plan_item: planItemId
-                    }),
-                });
-
-                const setData = await setResponse.json();
-            }
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddDropSetExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addSuperSetExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            for (let j=0; j < idExercises.length; j++) {
-                let calcRest = rest_seconds;
-
-                if (j !== idExercises.length - 1) {
-                    calcRest = 0;
-                }
-
-                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        exercise_id: idExercises[j],
-                        order: j,
-                        set_number: i,
-                        prescribed_reps_1: 0,
-                        prescribed_reps_2: 0,
-                        rir: 0,
-                        rest_seconds: calcRest,
-                        weight: 0,
-                        tempo_fcr: `0-0-0`,
-                        plan_item: planItemId
-                    }),
-                });
-
-                const setData = await setResponse.json();
-            }
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddSuperSetExercise(idGymSection, selectedTechnique, numSeries, idExercises, rest_seconds);
     }
 
     async function addForcedRepsExercise() {
-        const arrayNumReps = String(numReps).split(",");
-
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            for (let j=0; j < arrayNumReps.length; j++) {
-                let calcRest = rest_seconds;
-
-                if (j !== arrayNumReps.length - 1) {
-                    calcRest = 0;
-                }
-
-                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        exercise_id: idExercises[0],
-                        order: j,
-                        set_number: i,
-                        prescribed_reps_1: arrayNumReps[j],
-                        prescribed_reps_2: arrayNumReps[j],
-                        rir: rir,
-                        rest_seconds: calcRest,
-                        weight: weight,
-                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                        plan_item: planItemId
-                    }),
-                });
-
-                const setData = await setResponse.json();
-            }
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddForcedRepsExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addRestPauseExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        let setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                exercise_id: idExercises[0],
-                order: 0,
-                set_number: 0,
-                prescribed_reps_1: numReps,
-                prescribed_reps_2: numReps,
-                rir: rir,
-                rest_seconds: rest_seconds,
-                weight: weight,
-                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                plan_item: planItemId
-            }),
-        });
-
-        setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                exercise_id: idExercises[0],
-                order: 0,
-                set_number: 1,
-                prescribed_reps_1: numReps,
-                prescribed_reps_2: numReps,
-                rir: rir,
-                rest_seconds: rest_seconds,
-                weight: weight,
-                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                plan_item: planItemId
-            }),
-        });
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddRestPauseExercise(idGymSection, selectedTechnique, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addMyorepsExercise() {
-        const arrayNumRepsMaxMin = String(numSeries).split(",");
-
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        let setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                exercise_id: idExercises[0],
-                order: 0,
-                set_number: 0,
-                prescribed_reps_1: numReps,
-                prescribed_reps_2: arrayNumRepsMaxMin[0],
-                actual_reps_2: arrayNumRepsMaxMin[1],
-                rir: rir,
-                rest_seconds: rest_seconds,
-                weight: weight,
-                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                plan_item: planItemId
-            }),
-        });
-
-        setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                exercise_id: idExercises[0],
-                order: 0,
-                set_number: 1,
-                prescribed_reps_1: arrayNumRepsMaxMin[0],
-                prescribed_reps_2: arrayNumRepsMaxMin[1],
-                rir: rir,
-                rest_seconds: rest_seconds,
-                weight: weight,
-                tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                plan_item: planItemId
-            }),
-        });
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddMyorepsExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addSevenSevenExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            for (let j=0; j < 3; j++) {
-                let calcRest = rest_seconds;
-
-                if (j !== 2) {
-                    calcRest = 10;
-                }
-
-                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        exercise_id: idExercises[0],
-                        order: j,
-                        set_number: i,
-                        prescribed_reps_1: 7,
-                        prescribed_reps_2: 7,
-                        rir: rir,
-                        rest_seconds: calcRest,
-                        weight: weight,
-                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                        plan_item: planItemId
-                    }),
-                });
-
-                const setData = await setResponse.json();
-            }
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddSevenSevenExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addClusterExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            for (let j=0; j < numReps; j++) {
-                let calcRest = rest_seconds;
-
-                if (j !== numReps-1) {
-                    calcRest = 10;
-                }
-
-                const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Token ' + getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({
-                        exercise_id: idExercises[0],
-                        order: j,
-                        set_number: i,
-                        prescribed_reps_1: 0,
-                        prescribed_reps_2: 0,
-                        rir: rir,
-                        rest_seconds: calcRest,
-                        weight: weight,
-                        tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                        plan_item: planItemId
-                    }),
-                });
-
-                const setData = await setResponse.json();
-            }
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddClusterExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addPyramidExercise() {
-        const arrayNumReps = String(numReps).split(",");
-        const arrayWeight = String(weight).split(",");
-
-        if (arrayNumReps.length != arrayWeight.length) {}
-
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let j=1; j <= arrayNumReps.length; j++) {
-            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Token ' + getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    exercise_id: idExercises[0],
-                    order: 0,
-                    set_number: j,
-                    prescribed_reps_1: arrayNumReps[j],
-                    prescribed_reps_2: arrayNumReps[j],
-                    rir: rir,
-                    rest_seconds: rest_seconds,
-                    weight: arrayWeight[j],
-                    tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                    plan_item: planItemId
-                }),
-            });
-
-            const setData = await setResponse.json();
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddPyramidExercise(idGymSection, selectedTechnique, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addEMOMExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let j=1; j <= numSeries; j++) {
-            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Token ' + getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    exercise_id: idExercises[0],
-                    order: j,
-                    set_number: 1,
-                    prescribed_reps_1: numReps,
-                    prescribed_reps_2: numReps,
-                    rir: rir,
-                    rest_seconds: rest_seconds,
-                    weight: weight,
-                    tempo_fcr: `${eccentric}-${pause}-${concentric}`,
-                    plan_item: planItemId
-                }),
-            });
-
-            const setData = await setResponse.json();
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddEMOMExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addAMRAPExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= idExercises.length; i++) {
-            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": "Token " + getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    exercise_id: idExercises[0],
-                    order: i, // puoi personalizzare l’ordine se necessario
-                    set_number: 1,
-                    prescribed_reps_1: numReps,
-                    prescribed_reps_2: numReps,
-                    rir: rir,
-                    rest_seconds: rest_seconds,
-                    weight: weight,
-                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
-                    plan_item: planItemId
-                }),
-            });
-
-            const setData = await setResponse.json();
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddAMRAPExercise(idGymSection, selectedTechnique, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     async function addDeathSetExercise() {
-        const orderRes = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-item/first-available-order/${idGymSection}/`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            }
-        });
-        const orderData = await orderRes.json();
-        const order = orderData.first_available_order;
-
-        const intensityTechniques = selectedTechnique ? [selectedTechnique] : [];
-
-        // Step 1: Crea GymPlanItem
-        const response = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-item/create/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + getCookie('csrftoken'),
-            },
-            body: JSON.stringify({
-                section_id: idGymSection,
-                order: order,
-                intensity_techniques: intensityTechniques,
-                notes: "Nessuna nota tecnica"
-            }),
-        });
-
-        const data = await response.json();
-        const planItemId = data.id;
-
-        // Step 2: Ciclo per creare i set associati
-        for (let i = 1; i <= numSeries; i++) {
-            const setResponse = await fetch('http://127.0.0.1:8000/api/v1/data/gym-plan-set/create/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    "Authorization": "Token " + getCookie('csrftoken'),
-                },
-                body: JSON.stringify({
-                    exercise_id: idExercises[0],
-                    order: 0, // puoi personalizzare l’ordine se necessario
-                    set_number: i,
-                    prescribed_reps_1: numReps,
-                    prescribed_reps_2: numReps,
-                    rir: rir,
-                    rest_seconds: rest_seconds,
-                    weight: weight,
-                    tempo_fcr: eccentric+"-"+pause+"-"+concentric,
-                    plan_item: planItemId
-                }),
-            });
-
-            const setData = await setResponse.json();
-        }
-
-        localStorage.setItem("isAddingElement", "true");
-        location.reload();
+        AddDeathSetExercise(idGymSection, selectedTechnique, numSeries, idExercises, numReps, rir, rest_seconds, weight, eccentric, pause, concentric);
     }
 
     function parseDateIT(str) {

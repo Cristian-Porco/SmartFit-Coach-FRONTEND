@@ -2218,7 +2218,7 @@ export function IntensityTechniquesMyoreps(setNumbers, groupedSets, divDay, dayB
                 }
 
                 if(index === 4 && test === array.length - 1 && setNumber == 1) {
-                    let cellInput = row.cells[4].querySelector("input");
+                    let cellInput = row.cells[3].querySelector("input");
 
                     if(cellInput.value < minReps) button.style.display = 'none';
                     else button.style.display = 'block';

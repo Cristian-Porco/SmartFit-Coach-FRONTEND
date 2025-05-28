@@ -218,7 +218,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -263,7 +263,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -335,7 +335,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg, separate dalla virgola):</label>
-                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -411,7 +411,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -456,7 +456,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -498,7 +498,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -543,7 +543,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -588,7 +588,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -630,7 +630,7 @@
                 <input id="reps" type="number" bind:value={numReps} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="1" step="1" />
@@ -669,7 +669,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -711,7 +711,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -756,7 +756,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="concentric">Recupero (in secondi):</label>
                 <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
@@ -789,7 +789,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="concentric">Recupero (in secondi):</label>
                 <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
@@ -825,7 +825,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -871,7 +871,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg, separate dalla virgola):</label>
-                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -913,7 +913,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg, separate dalla virgola):</label>
-                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="text" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -958,7 +958,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="concentric">Recupero (in secondi):</label>
                 <input id="concentric" type="number" bind:value={rest_seconds} min="0" step="1" />
@@ -997,7 +997,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -1042,7 +1042,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="pause">Fermo (in secondi):</label>
                 <input id="pause" type="number" bind:value={pause} min="0" step="1" />
@@ -1081,7 +1081,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -1123,7 +1123,7 @@
                 <input id="rir" type="number" bind:value={rir} min="0" />
 
                 <label for="weight">Peso (in kg):</label>
-                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" />
+                <input id="weight" type="number" bind:value={weight} min="0" step="0.25" placeholder="{suggestedWeight}"/>
 
                 <label for="eccentric">Eccentrica (in secondi):</label>
                 <input id="eccentric" type="number" bind:value={eccentric} min="0" step="1" />
@@ -1234,7 +1234,7 @@
             <div class="separator-row"></div>
 
             <!-- Pulsanti azione -->
-            <button on:click={addExerciseToVector}>Aggiungi</button>
+            <button id="addExerciseToVector" on:click={addExerciseToVector}>Aggiungi</button>
             <button class="close-button" on:click={() => showChooseExerciseModal = false}>Annulla</button>
         </div>
     </div>
@@ -1284,6 +1284,7 @@
     let gymItems = [];
     let filteredGymItems = [];
     let selectedGymItem = null;
+    let suggestedWeight = "";
 
     let showChooseIntensityModal = false;
     let selectedTechnique = 'bilateral';
@@ -1364,7 +1365,7 @@
         document.getElementById("loading-overlay").style.display = "flex";
         showGenerateEntirePlan = false;
 
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan/generate-entire/${data.id}/`, {
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan/generate-entire/${idGymPlan}/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -1535,6 +1536,7 @@
         pause = 0;
         concentric = 0;
         rest_seconds = 0;
+        suggestedWeight = "";
 
         switch (selectedTechnique) {
             case "bilateral":
@@ -1625,14 +1627,31 @@
         }
     }
 
-    function addExerciseToVector() {
+    async function addExerciseToVector() {
+        document.getElementById("addExerciseToVector").disabled = true;
         idExercises.push(selectedGymItem.id);
+
+        weight = "";
+
+        const suggested_weight_response = await fetch(`http://127.0.0.1:8000/api/v1/data/gym-plan-set/suggested-weight/${selectedGymItem.id}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Token " + getCookie('csrftoken'),
+            }
+        });
+
+        const suggested_weight_response_data = await suggested_weight_response.json();
+        let suggested_weight_single = suggested_weight_response_data.suggested_weight;
 
         if(idExercises.length === 1) {
             nameExercises = selectedGymItem.name;
+            suggestedWeight = "Suggerito: " + suggested_weight_single;
         } else {
             nameExercises += ", ";
             nameExercises += selectedGymItem.name;
+            suggestedWeight += ", ";
+            suggestedWeight += suggested_weight_single;
         }
 
         if(idExercises.length >= 1) {
@@ -1653,6 +1672,7 @@
         });
 
         showChooseExerciseModal = false;
+        document.getElementById("addExerciseToVector").disabled = false;
     }
 
     function resetExerciseModal() {
